@@ -1,0 +1,46 @@
+﻿<Page x:Class="Bookkeeping_manager.Windows.ClientPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Bookkeeping_manager.Windows"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ClientPage">
+
+    <ScrollViewer x:Name="CLientPageScroller" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
+        <StackPanel Background="AliceBlue" Orientation="Vertical">
+            <DockPanel>
+                <Label Content="Client Name: "  Style="{StaticResource LableTitle}" DockPanel.Dock="Left"/>
+                <TextBox Text="{Binding Client.Name}" DockPanel.Dock="Left" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
+                <Button Content="Save" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0"/>
+                <Button Content="Remove" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0" Click="Button_Click"/>
+            </DockPanel>
+            <Separator Style="{StaticResource HorizontalDividingLine}"/>
+            <Grid VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <DockPanel>
+                    <ListView x:Name="ClientCategories" SelectionChanged="ClientCategories_SelectionChanged" Style="{StaticResource ScrollOveridedList}" DockPanel.Dock="Top">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Margin" Value="0,10,0,0"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                    <Border CornerRadius="7" BorderThickness="5" BorderBrush="RoyalBlue" Margin="10,100,10,0" Height="250" VerticalAlignment="Top">
+                        <TextBox Text="{Binding Client.Comments}" HorizontalAlignment="Stretch" Height="250" DockPanel.Dock="Bottom" BorderThickness="0"
+                             AcceptsReturn="True"/>
+                    </Border>
+                </DockPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                    <Frame x:Name="CategoryFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Style="{StaticResource mainFrameStyle}" 
+                           VerticalAlignment="Stretch" MouseWheel="CategoryFrame_MouseWheel"/>
+                </ScrollViewer>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

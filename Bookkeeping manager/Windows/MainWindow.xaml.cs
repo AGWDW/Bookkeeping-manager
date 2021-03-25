@@ -1,0 +1,100 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Bookkeeping_manager.Scripts;
+using System.Diagnostics;
+using System.Windows.Threading;
+using System.Threading;
+
+namespace Bookkeeping_manager.Windows
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private readonly DispatcherTimer clock;
+        private List<Event> Events
+        {
+            get => DataHandler.AllEvents;
+            set => DataHandler.AllEvents = value;
+        }
+
+        public MainWindow()
+        {
+            // converter
+
+
+            // Login
+            /*UtilityWindows.LoginWindow login = new UtilityWindows.LoginWindow();
+            login.ShowDialog();
+            if (!login.Successful)
+            {
+                Close();
+                return;
+            }*/
+
+            InitializeComponent();
+            DataHandler.Init();
+
+            // Converter
+            AM_Converter.AM_To_BM.Convert();
+            // Converter
+            
+
+
+            DataContext = this;
+            Clock.Content = $"{DateTime.Now:dddd dd/MM/yy} : {DateTime.Now:t}";
+            clock = new DispatcherTimer
+            {
+                Interval = new TimeSpan(0, 0, 1)
+            };
+            clock.Tick += (e, o) =>
+            {
+                var t = DateTime.Now;
+                Clock.Content = $"{t:dddd dd/MM/yy} : {t:t}";
+            };
+            clock.Start();
+        }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Home(Events));
+        }
+
+        private void ClientOverviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ClientOverview());
+        }
+
+        private void CalenderViewMonth_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new MonthView(Events));
+        }
+
+        private void CalenderViewYear_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new YearView(Events));
+        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //DataHandler.UploadToDatabase();
+        }
+
+        private void ReportsViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Reports());
+        }
+    }
+}

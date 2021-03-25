@@ -1,0 +1,21 @@
+﻿<Window x:Class="Bookkeeping_manager.Windows.UtilityWindows.PayrollTypeSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Bookkeeping_manager.Windows.UtilityWindows"
+        mc:Ignorable="d"
+        Title="PayrollTypeSelector" Height="125" Width="375" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Please select payroll frequency" HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2">
+            <Button x:Name="WeeklyButton" Content="Weekly" Click="WeeklyButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ActionButton}"/>
+            <Button x:Name="BiWeeklyButton" Content="2 Weekly" Click="BiWeeklyButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" Style="{StaticResource ActionButton}"/>
+            <Button x:Name="MonthlyButton" Content="Monthly" Click="MonthlyButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ActionButton}"/>
+        </StackPanel>
+    </Grid>
+</Window>

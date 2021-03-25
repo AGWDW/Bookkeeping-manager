@@ -1,0 +1,30 @@
+﻿<Page x:Class="Bookkeeping_manager.Windows.ClientPages.ContactDetails"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Bookkeeping_manager.Windows.ClientPages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="400"
+      Title="ContactDetails" Unloaded="Page_Unloaded">
+
+    <Grid x:Name="ContactDetailsGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button x:Name="PrevContactButton" HorizontalAlignment="Left" Margin="5,10,0,0" Style="{StaticResource LeftRightArrow}" Click="PrevContactButton_Click">
+            <Path  Fill="Black" Data="M 0 10 L 10 0 L 10 20 Z"/>
+        </Button>
+        <Button x:Name="NextContactButton" Grid.Column="1" Margin="0,10,5,0" HorizontalAlignment="Right" Style="{StaticResource LeftRightArrow}" Click="NextContactButton_Click">
+            <Path  Fill="Black" Data="M 0 0 L 10 10 L 0 20 Z"/>
+        </Button>
+        <TextBox x:Name="ContactName" HorizontalAlignment="Center" Grid.ColumnSpan="2" Text="Contact Name" TextWrapping="Wrap" HorizontalContentAlignment="Center"
+                 Focusable="True" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Margin="0,0,0,10" MaxLines="2" Width="300"/>
+        <Separator Style="{StaticResource HorizontalDividingLine}" Grid.ColumnSpan="2" Margin="0,50,0,10"/>
+    </Grid>
+</Page>
