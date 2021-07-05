@@ -41,9 +41,9 @@ namespace Bookkeeping_manager.Windows
             NextDate.Text = Next;
 
            HorizontalSepration.SetBinding(Line.Y1Property, new Binding("ActualHeight")
-            {
-                Source = PrimaryGrid
-            });
+           {
+               Source = PrimaryGrid
+           });
         }
         public void CreateTodaysTasks()
         {
@@ -98,7 +98,8 @@ namespace Bookkeeping_manager.Windows
                 {
                     if (!e.Advance(1))
                     {
-                        Events.Remove(e);
+                        // Events.Remove(e);
+                        e.Delete = true;
                     }
 
                     CreateTodaysTasks();

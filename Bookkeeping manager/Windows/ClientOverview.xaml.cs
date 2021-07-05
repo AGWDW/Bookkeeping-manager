@@ -42,7 +42,7 @@ namespace Bookkeeping_manager.Windows
                 HorizontalAlignment = HorizontalAlignment.Left,
                 BorderThickness = new Thickness(0),
                 Margin = new Thickness(0, 0, 30, 0),
-                Background = Brushes.Transparent
+                Background = Brushes.Transparent,
             };
             TextBox commentBox = new TextBox()
             {
@@ -101,6 +101,11 @@ namespace Bookkeeping_manager.Windows
 
             nameBox.SetBinding(TextBox.TextProperty, nameBinding);
             commentBox.SetBinding(TextBox.TextProperty, commentsBinding);
+
+            nameBox.TextChanged += (o, e) =>
+            {
+                client.Changed = true;
+            };
 
             stack.Children.Add(rectangle);
             stack.Children.Add(vistitClient);

@@ -175,7 +175,7 @@ namespace AM_Converter
                 AutoEnrolmentRecordsRecieved      = NotNull( detatils.AutoEnrolmentRecordsReceived),
                 AutoEnrolmentProgressNote         = NotNull( detatils.AutoEnrolmentProgressNote),
                 AutoEnrolmentStaging              = NotNull( detatils.AutoEnrolmentStaging),
-                PostponemnetDate                  = NotNull( detatils.PostponementDate),
+                PostponementDate                  = NotNull( detatils.PostponementDate),
                 PensionsRegulatorOptOutDate       = NotNull( detatils.ThePensionsRegulatorOptOutDate),
                 ReEnrolmentDate                   = NotNull( detatils.ReEnrolmentDate),
                 PensionProvider                   = NotNull( detatils.PensionProvider),
@@ -192,7 +192,7 @@ namespace AM_Converter
             {
                 if (string.IsNullOrEmpty(payrol.FistPayDate))
                     continue;
-                res.PayRolls.Add(new PayRoll(client)
+                res.Payrols.Add(new PayRoll(client)
                 {
                     Date = NotNull( payrol.FistPayDate),
                     NumberOfEmployees = NotNull( payrol.NumberOfEmployees),
@@ -201,13 +201,13 @@ namespace AM_Converter
                 switch (i++)
                 {
                     case 0: // weekly
-                        res.PayRolls.Last().Type = "Weekly";
+                        res.Payrols.Last().Type = "Weekly";
                         break;
                     case 1: // 2weekly
-                        res.PayRolls.Last().Type = "2Weekly";
+                        res.Payrols.Last().Type = "2Weekly";
                         break;
                     case 2: // monthly
-                        res.PayRolls.Last().Type = "Monthly";
+                        res.Payrols.Last().Type = "Monthly";
                         break;
                 }
             }

@@ -17,7 +17,19 @@ namespace Bookkeeping_manager.Scripts
         public string BindingName { get; set; }
         public string BindingType { get; set; }
         public bool CanBeEdited { get; set; }
+        [BsonIgnore]
         public DateTime Date { get; internal set; }
+        public string DateRaw 
+        { 
+            get
+            {
+                return Date.GetString();
+            }
+            set
+            {
+                Date = DateTime.Parse(value);
+            }
+        }
         public string DisplayName { get; set; }
         public string Comment { get; set; }
         public string ColourType { get; set; }

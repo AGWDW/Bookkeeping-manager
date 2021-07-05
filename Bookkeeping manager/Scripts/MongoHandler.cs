@@ -7,6 +7,8 @@ using MongoDB.Bson.Serialization;
 using System.IO;
 using MongoDB.Driver.GridFS;
 using System.Windows;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.IO;
 
 namespace Bookkeeping_manager.Scripts
 {
@@ -17,7 +19,7 @@ namespace Bookkeeping_manager.Scripts
         private Database ActiveDatabase { get; set; }
         public MongoHandler(string connectionString)
         {
-            Client = new MongoClient(connectionString);                      
+            Client = new MongoClient(connectionString); 
         }
         public IMongoDatabase GetDatabase()
         {

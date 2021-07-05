@@ -318,7 +318,10 @@ namespace Bookkeeping_manager.Scripts
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         string companyNumber, charityNumber, incorpDate, condirStateDate, tradingAs, regAdress,
            postalAdress, email, phone, sic, nature, utr, chAuth;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         bool confirmation;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        string[] softwares;
 
         public CompanyDetails(Client client)
         {
@@ -326,6 +329,13 @@ namespace Bookkeeping_manager.Scripts
             companyNumber = charityNumber = incorpDate = condirStateDate = tradingAs = regAdress =
             postalAdress = email = phone = sic = nature = utr = chAuth = "";
             confirmation = false;
+            softwares = new string[4]
+            {
+                "0",
+                "",
+                "Xero",
+                "Quickbooks"
+            };
         }
 
         #region Poropeties
@@ -541,15 +551,29 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
         }
+        public string[] MainSoftware
+        {
+            get => softwares;
+            set
+            {
+                if (softwares != value)
+                {
+                    var c = softwares;
+                    softwares = value;
+                    OnPropertyChanged(c);
+                }
+            }
+        }
         #endregion
 
         public override byte[] GetControlTypes()
         {
-            return new byte[14]
+            return new byte[15]
             {
                 1, 1, 1, 6, 1, 1,
                 2, 2, 1,
-                1, 1, 1, 1, 1
+                1, 1, 1, 1, 1, 
+                7
             };
         }
 
@@ -1630,7 +1654,7 @@ namespace Bookkeeping_manager.Scripts
             {
                 if (vatPeriodEnd != value)
                 {
-                    var c = vatPeriodEnd;
+                    string c = vatPeriodEnd;
                     vatPeriodEnd = DataEnforce.LastDay(c, DataEnforce.Date(c, value));
                     if (DataHandler.AllowSet && (vatPeriodEnd == "" || vatPeriodEnd != c))
                     {
@@ -1892,7 +1916,7 @@ namespace Bookkeeping_manager.Scripts
             mtd = direct = stand = cashAcc = flat = false;
             vatFreq = new string[3]
             {
-                "0", "Quartly", "Monthly"
+                "0", "Quarterly", "Monthly"
             };
         }
         public override byte[] GetControlTypes()
@@ -2103,7 +2127,7 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
         }
-        public List<PayRoll> PayRolls
+        public List<PayRoll> Payrols
         {
             get
             {
@@ -2199,7 +2223,7 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
         }
-        public string PostponemnetDate
+        public string PostponementDate
         {
             get => postDate;
             set

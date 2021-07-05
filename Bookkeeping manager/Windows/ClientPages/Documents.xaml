@@ -22,7 +22,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="Documnets" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+            <TextBlock Text="Documents" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
             <Button Content="Add Document" Grid.Column="1" HorizontalAlignment="Right" Margin="10,0,10,10" Style="{StaticResource ActionButton}" Click="Button_Click"/>
             <Separator Style="{StaticResource HorizontalDividingLine}" Grid.ColumnSpan="2" Grid.Row="1"/>
         </Grid>

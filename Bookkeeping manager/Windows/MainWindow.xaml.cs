@@ -46,10 +46,10 @@ namespace Bookkeeping_manager.Windows
             }*/
 
             InitializeComponent();
-            DataHandler.Init();
+            DataHandler.Init(); // allows the database to be accessed
 
             // Converter
-            AM_Converter.AM_To_BM.Convert();
+            // AM_Converter.AM_To_BM.Convert();
             // Converter
             
 
@@ -62,7 +62,7 @@ namespace Bookkeeping_manager.Windows
             };
             clock.Tick += (e, o) =>
             {
-                var t = DateTime.Now;
+                DateTime t = DateTime.Now;
                 Clock.Content = $"{t:dddd dd/MM/yy} : {t:t}";
             };
             clock.Start();
@@ -74,7 +74,7 @@ namespace Bookkeeping_manager.Windows
         }
 
         private void ClientOverviewButton_Click(object sender, RoutedEventArgs e)
-        {
+        { 
             MainFrame.Navigate(new ClientOverview());
         }
 
@@ -90,6 +90,7 @@ namespace Bookkeeping_manager.Windows
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //DataHandler.UploadToDatabase();
+            // MessageBox.Show("Saved to database");
         }
 
         private void ReportsViewButton_Click(object sender, RoutedEventArgs e)

@@ -280,7 +280,7 @@ namespace Bookkeeping_manager.Scripts
             {
                 return next;
             }
-            if (Regex.IsMatch(next, "^[0-9]{3}[-|/]*[0-9]{6}[-|/]*[0-9]{6}$"))
+            if (next.IsAlphaNumeric() && next.Length == 6) // Regex.IsMatch(next, "^[0-9]{3}[-|/]*[0-9]{6}[-|/]*[0-9]{6}$")
             {
                 return next;
             }

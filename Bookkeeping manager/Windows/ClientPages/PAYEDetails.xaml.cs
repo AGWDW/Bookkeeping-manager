@@ -64,7 +64,7 @@ namespace Bookkeeping_manager.Windows.ClientPages
                     case 8:
                         style = "Page";
                         control = new Frame();
-                        (control as Frame).Navigate(new PayRollPage(Details.PayRolls, Details.Client));
+                        (control as Frame).Navigate(new PayRollPage(Details.Payrols, Details.Client));
                         break;
                 }
                 if (style.Contains("TB")) // is a TextBox

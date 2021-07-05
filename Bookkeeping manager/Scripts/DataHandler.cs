@@ -118,12 +118,17 @@ namespace Bookkeeping_manager.Scripts
             {
                 if (@event.Changed || @event.Delete)
                 {
+                    if (@event.DisplayName.Contains("Equicob"))
+                    {
+                        _ = 0;
+                    }
                     bool t = Handler.Delete("Events", "DisplayName", @event.DisplayName);
                     /*if (!t)
                     {
                         MessageBox.Show("Failed to delete event");
                         throw new System.Exception();
                     }*/
+                    @event.Date = @event.Date.Date;
                     if(@event.Changed)
                         Handler.AddDocument("Events", @event);
                 }
