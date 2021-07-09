@@ -1,53 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MongoDB.Driver;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using System.IO;
+using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson.IO;
 
 namespace Bookkeeping_manager.Scripts
 {
     using Database = Tuple<IMongoDatabase, string>;
-    class MongoHandler
+
+    internal class MongoHandler
     {
         private MongoClient Client { get; set; }
         private Database ActiveDatabase { get; set; }
         public MongoHandler(string connectionString)
         {
-            Client = new MongoClient(connectionString); 
+            Client = new MongoClient(connectionString);
         }
+        /// <summary>
+        /// returns the active database
+        /// </summary>
         public IMongoDatabase GetDatabase()
         {
             return ActiveDatabase.Item1;
         }
+        /// <summary>
+        /// returns the active database's name
+        /// </summary>
+        /// <returns></returns>
         public string GetDatabaseName()
         {
             return ActiveDatabase.Item2;
         }
+        /// <summary>
+        /// sets the active database not sure if it would create one 
+        /// </summary>
+        /// <param name="name"></param>
         public void SetDatabase(string name)
         {
             ActiveDatabase = new Database(Client.GetDatabase(name), name);
         }
+        /// <summary>
+        /// converts the bson doc then adds to the specified collection InsertOne
+        /// </summary>
         public void AddDocument(string collectionName, MongoObject doc)
         {
             var collection = GetCollection(collectionName);
             collection.InsertOne(doc.ToBsonDocument());
         }
+        /// <summary>
+        /// converts the bson doc then adds to the specified collection InsertMany
+        /// </summary>
         public void AddDocuments(string collectionName, params MongoObject[] docs)
         {
             var collection = GetCollection(collectionName);
             List<BsonDocument> docs_ = new List<BsonDocument>();
-            foreach(MongoObject obj in docs)
+            foreach (MongoObject obj in docs)
             {
                 docs_.Add(obj.ToBsonDocument());
             }
             collection.InsertMany(docs_);
         }
+        /// <summary>
+        /// gets the doc with the specifed id and deserilizes
+        /// </summary>
         public T GetDocument<T>(string collectionName, ObjectId id)
         {
             var collection = GetCollection(collectionName);
@@ -55,14 +74,69 @@ namespace Bookkeeping_manager.Scripts
             var doc = collection.Find(filter).FirstOrDefault();
             return Deserialize<T>(doc);
         }
+        /// <summary>
+        /// gets all docs with the specifed and deserilizes
+        /// </summary>
         public List<T> GetAllDocuments<T>(string collectionName)
         {
-            var collection = GetCollection(collectionName);
-            var doc = collection.Find(new BsonDocument());
-            var docs = doc.ToList();
+            IMongoCollection<BsonDocument> collection = GetCollection(collectionName);
+            IFindFluent<BsonDocument, BsonDocument> doc = collection.Find(new BsonDocument());
+            List<BsonDocument> docs = doc.ToList();
             List<T> documents = new List<T>();
             docs.ForEach(d => documents.Add(Deserialize<T>(d)));
             return documents;
+        }
+        /// <summary>
+        /// manualy deserialize the docs calls the constructor and the task group static menthods based on their type
+        /// </summary>
+        /// <returns></returns>
+        public IndexSet<Tasks.TaskGroup> GetTasks()
+        {
+            IMongoCollection<BsonDocument> collection = GetCollection("Tasks");
+            IFindFluent<BsonDocument, BsonDocument> doc = collection.Find(new BsonDocument());
+            List<BsonDocument> docs = doc.ToList();
+            IndexSet<Tasks.TaskGroup> result = new IndexSet<Tasks.TaskGroup>();
+
+            for (int i = 0; i < docs.Count; i++)
+            {
+                BsonDocument bson = docs[i];
+
+                ObjectId _id = bson["_id"].AsObjectId;
+                string type = bson["Type"].AsString;
+                string clientName = bson["ClientName"].AsString;
+                string amlName = bson["AMLContactName"].AsString;
+                string colour = bson["Colour"].AsString;
+                string comment = bson["TaskComment"].AsString;
+                DateTime baseDate = bson["BaseDate"].AsString.ToDate();
+                int vatPeriod = bson["VATPeriod"].AsInt32;
+                int[] advCnt = BsonSerializer.Deserialize<int[]>(bson["AdvanceCounts"].ToJson());
+
+                Tasks.TaskGroup res = new Tasks.TaskGroup();
+                switch (type)
+                {
+                    case "APE":
+                        res = Tasks.TaskGroup.CreateAPE(clientName, baseDate);
+                        break;
+                    case "VATPE":
+                        res = Tasks.TaskGroup.CreateVATPE(clientName, baseDate, vatPeriod);
+                        break;
+                    case "CA":
+                        res = Tasks.TaskGroup.CreateCA(clientName, baseDate);
+                        break;
+                    case "AML":
+                        res = Tasks.TaskGroup.CreateAML(clientName, baseDate, amlName);
+                        break;
+                    case "Custom":
+                        res = Tasks.TaskGroup.CreateCustom(clientName, baseDate, colour, comment);
+                        break;
+                }
+                res._id = _id;
+                res.AdvanceTo(advCnt);
+                res.HasChanged = false;
+                result.Add(res);
+            }
+
+            return result;
         }
         public void Update<T>(string collectionName, ObjectId id, string attribute, T value)
         {
@@ -77,26 +151,45 @@ namespace Bookkeeping_manager.Scripts
                 Update(collectionName, value._id, pair.Key, pair.Value);
             }
         }
+        /// <summary>
+        /// returns the specifed collection will create if not found
+        /// </summary>
         public IMongoCollection<BsonDocument> GetCollection(string collectionName)
         {
             return GetDatabase().GetCollection<BsonDocument>(collectionName); ;
         }
+        /// <summary>
+        /// deltes item where the id matches DeleteOne
+        /// </summary>
         public bool Delete(string collectionName, ObjectId id)
         {
             var fillter = Builders<BsonDocument>.Filter.Eq("_id", id);
             var res = GetCollection(collectionName).DeleteOne(fillter);
             return res.IsAcknowledged && res.DeletedCount > 0;
         }
+        /// <summary>
+        /// deltes item where the property has the given value DeleteOne
+        /// </summary>
         public bool Delete(string collectionName, string property, object value)
         {
             var fillter = Builders<BsonDocument>.Filter.Eq(property, value);
             var res = GetCollection(collectionName).DeleteOne(fillter);
             return res.IsAcknowledged && res.DeletedCount > 0;
         }
+        /// <summary>
+        /// clears the document
+        /// </summary>
+        /// <param name="collectionName"></param>
         public void DeleteAll(string collectionName)
         {
             GetCollection(collectionName).DeleteMany(new BsonDocument());
         }
+        /// <summary>
+        /// attemtps the deserialise shows messagebox then throws error
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="doc"></param>
+        /// <returns></returns>
         public T Deserialize<T>(BsonDocument doc)
         {
             try

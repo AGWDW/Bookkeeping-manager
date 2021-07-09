@@ -1,20 +1,11 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.Windows.ClientPages;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
-using Bookkeeping_manager.Windows.ClientPages;
-using ClientPages = Bookkeeping_manager.Windows.ClientPages;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -35,12 +26,12 @@ namespace Bookkeeping_manager.Windows
                 Content = "Please Select a Category",
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0,0,0,22),
+                Margin = new Thickness(0, 0, 0, 22),
                 Background = Brushes.Transparent
             };
             CategoryFrame.Navigate(label);
 
-            foreach(string c in Client.Categories)
+            foreach (string c in Client.Categories)
             {
                 ListViewItem item = new ListViewItem()
                 {
@@ -49,7 +40,9 @@ namespace Bookkeeping_manager.Windows
                 ClientCategories.Items.Add(item);
             }
         }
-
+        /// <summary>
+        /// navigates the frame to the apropriate page
+        /// </summary>
         private void ClientCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (ClientCategories.SelectedIndex)
@@ -83,18 +76,37 @@ namespace Bookkeeping_manager.Windows
                     break;
             }
         }
-
+        /// <summary>
+        /// the scroll bar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CategoryFrame_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             CLientPageScroller.ScrollToVerticalOffset(CLientPageScroller.VerticalOffset - e.Delta);
         }
-        // removes client
+        /// <summary>
+        /// remove client button
+        /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
             if (MessageBoxResult.Yes == MessageBox.Show("Are you sure you want to delete this client", "", MessageBoxButton.YesNo))
             {
                 DataHandler.AllEvents.ForEach(ev => ev.Delete = ev.DisplayName.Contains($"({Client.Name})"));
+                List<Tasks.TaskGroup> deathNote = new List<Tasks.TaskGroup>();
+                for (int i = 0; i < DataHandler.AllTasks.Length; i++)
+                {
+                    string clientName = DataHandler.AllTasks[i].ClientName;
+                    if (clientName == Client.Name)
+                    {
+                        deathNote.Add(DataHandler.AllTasks[i]);
+                    }
+                }
+                foreach(Tasks.TaskGroup t in deathNote)
+                {
+                    DataHandler.RemoveTask(t);
+                }
+                deathNote.Clear();
                 Client.Delete = true;
                 NavigationService.Navigate(new ClientOverview());
                 return;

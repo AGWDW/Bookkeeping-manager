@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Bookkeeping_manager.Scripts;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
 
 namespace Bookkeeping_manager.Windows.UtilityWindows
 {
@@ -22,6 +13,15 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
     {
         private bool delete = true;
         public Event Event { get; set; }
+        public Tasks.Task Task
+        {
+            get => TaskGroup[TaskIndex];
+            set => TaskGroup[TaskIndex] = value;
+        }
+        public Tasks.TaskGroup TaskGroup { get; private set; }
+        public int TaskIndex { get; private set; }
+        private bool Creating { get; set; }
+        public bool ShouldCreate { get; private set; }
         public EventViewer(Event @event, bool creating = false)
         {
             Event = @event;
@@ -43,17 +43,45 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
             if (!creating)
                 EventDate.Text = Event.Date.GetString();
         }
+        public EventViewer(Tasks.TaskGroup taskGroup, Tasks.Task task, bool creating = false)
+        {
+            TaskGroup = taskGroup;
+            TaskIndex = task.Index;
+            DataContext = this;
+            InitializeComponent();
+            EventColour.SelectedColor = Task.Colour.Color;
+            EventColour.SelectedColorChanged += EventColour_SelectedColorChanged;
+            if (Task.CanAdvance)
+            {
+                AdvanceButton.Content = "Advance";
 
+                NameTB.Style = FindResource("ReadOnlyTB") as Style;
+                EventDate.Style = FindResource("ReadOnlyTB") as Style;
+                CommentBox.Style = FindResource("ReadOnlyLargeTB") as Style;
+                EventColour.Focusable = false;
+                EventColour.InputBindings.Clear();
+            }
+            Creating = creating;
+            delete = creating;
+
+            EventDate.Text = Task.Date.GetString();
+        }
+        /// <summary>
+        /// checks date feild and asignes to task when clicking off the date box never occours when in readonly mode
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EventDate_LostFocus(object sender, RoutedEventArgs e)
         {
-            var t = DataEnforce.Date(Event.Date.ToString("dd/MM/yyyy"), EventDate.Text.Trim(), false).ToDate();
-            if(t < DateTime.Now.Date)
+            DateTime t = DataEnforce.Date(Task.Date.GetString(), EventDate.Text.Trim(), false).ToDate();
+            if (t < DateTime.Today)
             {
                 MessageBox.Show("Event cannot occur in the past");
-                EventDate.Text = Event.Date.GetString();
+                EventDate.Text = Task.Date.GetString();
                 return;
             }
-            Event.Date = t;
+            Task.Date = t;
+            TaskGroup.BaseDate = t.GetString();
             EventDate.Text = t.GetString();
         }
 
@@ -63,33 +91,53 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
             Close();
         }
 
+        /// <summary>
+        /// both the advance and or delte button will delete it if it can then closes
+        /// </summary>
         private void AdvanceButtonClick(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show($"Are you sure you want to {(Event.CanBeEdited ? "remove" : "advance")} the Task", "", MessageBoxButton.YesNo);
-            if(result == MessageBoxResult.Yes)
+            MessageBoxResult result = MessageBox.Show($"Are you sure you want to {(Task.CanBeEdited ? "remove" : "advance")} the Task", "", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
             {
-                // Yes
-                delete = !Event.Advance(1);
+                if (Task.CanAdvance)
+                {
+                    TaskGroup.Advance(TaskIndex);
+                }
+                else if (Creating)
+                {
+                    // called delte on a new task
+                    ShouldCreate = false;
+                }
+                else
+                {
+                    // delte a pre existing custom task
+                    DataHandler.RemoveTask(TaskGroup);
+                }
                 Close();
             }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Event.Changed = true;
-            if(!Event.Delete)
-                Event.Delete = delete;
+            if (TaskGroup.Type == "Custom")
+            {
+                TaskGroup.ClientName = Task.Name;
+            }
+            TaskGroup.HasChanged = true;
         }
 
+        /// <summary>
+        /// if the task can be edited will set its colour to the new one otherwise it doesnt change the colour
+        /// </summary>
         private void EventColour_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
-            if (!Event.CanBeEdited)
+            if (Task.CanAdvance)
             {
-                EventColour.SelectedColor = Event.Colour.ToColour(true);
+                EventColour.SelectedColor = Task.Colour.Color;
             }
             else
             {
-                Event.ColourType = EventColour.SelectedColor.GetValueOrDefault().ToString("").ToLower();
+                Task.HexColour = EventColour.SelectedColor.GetValueOrDefault().ToString();
             }
         }
     }

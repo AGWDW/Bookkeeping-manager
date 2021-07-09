@@ -1,18 +1,11 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -21,8 +14,13 @@ namespace Bookkeeping_manager.Windows
     /// </summary>
     public partial class MonthView : Page
     {
-        string sDay, eDay;
+        private string sDay, eDay;
         private List<Event> Events { get; set; }
+        private IndexSet<Tasks.TaskGroup> Tasks
+        {
+            get => DataHandler.AllTasks;
+            set => DataHandler.AllTasks = value;
+        }
         public string StartDate
         {
             get => sDay;
@@ -95,11 +93,11 @@ namespace Bookkeeping_manager.Windows
                     nextMonth = true;
                 }
                 current = current.AddDays(1);
-                if(col % 7 == 0)
+                if (col % 7 == 0)
                 {
                     row++;
                     col = 0;
-                    if (row-1 >= 6)
+                    if (row - 1 >= 6)
                         break;
                 }
             }
@@ -111,7 +109,7 @@ namespace Bookkeeping_manager.Windows
         private void PopulateGrid()
         {
             string[] days = new string[7] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-            for(int i = 0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 TextBlock day = new TextBlock()
                 {
@@ -122,7 +120,53 @@ namespace Bookkeeping_manager.Windows
                 Grid.SetColumn(day, i);
                 MonthGrid.Children.Add(day);
             }
-            foreach (Event e in Events)
+            for (int i = 0; i < Tasks.Length; i++)
+            {
+                Tasks.TaskGroup group = Tasks[i];
+                for (int j = 0; j < group.Length; j++)
+                {
+                    DateTime date = group[j].Date;
+                    Tasks.Task task = group[j];
+                    int column = date.GetDayOfWeek(); // the day of the week or column + 1
+                    DateTime tempDay = StartDate.ToDate();
+                    if (date < tempDay)
+                    {
+                        continue;
+                    }
+                    int row = 0;
+                    while (tempDay != date)
+                    {
+                        tempDay = tempDay.AddDays(1);
+                        if (tempDay.GetDayOfWeek() == 1)
+                        {
+                            row++;
+                        }
+                    }
+                    if (row >= 6)
+                    {
+                        continue;
+                    }
+
+                    StackPanel stack = group.GetMonthStack(j, out Ellipse ellipse, out TextBlock textBlock);
+                    ellipse.MouseUp += (o, e_) =>
+                    {
+                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(group, task);
+                        viewer.ShowDialog();
+
+                        StartDate = StartDate;
+                    };
+                    textBlock.MouseUp += (o, e_) =>
+                    {
+                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(group, task);
+                        viewer.ShowDialog();
+
+                        StartDate = StartDate;
+                    };
+
+                    ((MonthGrid.GetAtGridPos(row + 1, column - 1) as ScrollViewer).Content as StackPanel).Children.Add(stack);
+                }
+            }
+            /*foreach (Event e in Events)
             {
                 DateTime date = e.Date.Date;
                 if (date < EndDate.ToDate() && date >= StartDate.ToDate() && !e.Delete)
@@ -185,10 +229,11 @@ namespace Bookkeeping_manager.Windows
 
                     stack.Children.Add(ellipse);
                     stack.Children.Add(text);
+
                     ((MonthGrid.GetAtGridPos(row + 1, column - 1) as ScrollViewer).Content as StackPanel).Children.Add(stack);
                 }
-            }
-        } 
+            }*/
+        }
 
         private void PrevMonth_Click(object sender, RoutedEventArgs e)
         {

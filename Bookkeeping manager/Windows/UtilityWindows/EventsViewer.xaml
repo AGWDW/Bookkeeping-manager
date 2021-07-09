@@ -6,12 +6,15 @@
         xmlns:local="clr-namespace:Bookkeeping_manager.Windows.UtilityWindows"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="EventsViewer" MaxHeight="380" MinHeight="380" MinWidth="400" Width="400" Closing="Window_Closing">
+        Title="EventsViewer" MaxHeight="430" MinHeight="430" MinWidth="400" Width="400" Closing="Window_Closing">
     <StackPanel Orientation="Vertical">
-        <TextBox x:Name="NameTB" Text="{Binding Event.DisplayName}" Style="{StaticResource RegularTB}" Margin="10"/>
-        <TextBox x:Name="EventDate" Style="{StaticResource RegularTB}" LostFocus="EventDate_LostFocus" Margin="10,0,10,10"/>
-        <TextBox x:Name="CommentBox" Text="{Binding Event.Comment}" Style="{StaticResource LargeTB}" Margin="10,0,10,10"/>
-        <xctk:ColorPicker x:Name="EventColour"  SelectedColor="White" HorizontalAlignment="Center" Margin="0,0,0,10" SelectedColorChanged="EventColour_SelectedColorChanged"/>
+        <TextBlock Margin="10,0,0,0" FontSize="18">Name:</TextBlock>
+        <TextBox x:Name="NameTB" Text="{Binding Task.Name}" Style="{StaticResource RegularTB}" Margin="10,0,10,0"/>
+        <TextBlock Margin="10,0,0,0" FontSize="18">Date:</TextBlock>
+        <TextBox x:Name="EventDate" Style="{StaticResource RegularTB}" LostFocus="EventDate_LostFocus" Margin="10,0,10,0"/>
+        <TextBlock Margin="10,0,0,0" FontSize="18">Comment:</TextBlock>
+        <TextBox x:Name="CommentBox" Text="{Binding Task.Comment}" Style="{StaticResource LargeTB}" Margin="10,0,10,10"/>
+        <xctk:ColorPicker x:Name="EventColour"  SelectedColor="White" HorizontalAlignment="Center" Margin="0,0,0,10"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Save" Style="{StaticResource ActionButton}" HorizontalAlignment="Center"/>
             <Button Content="Close" Style="{StaticResource ActionButton}" HorizontalAlignment="Center" Margin="5,0,5,0" Click="Button_Click"/>

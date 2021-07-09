@@ -1,21 +1,8 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
-using System.Diagnostics;
 using System.Windows.Threading;
-using System.Threading;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -51,7 +38,7 @@ namespace Bookkeeping_manager.Windows
             // Converter
             // AM_Converter.AM_To_BM.Convert();
             // Converter
-            
+
 
 
             DataContext = this;
@@ -74,7 +61,7 @@ namespace Bookkeeping_manager.Windows
         }
 
         private void ClientOverviewButton_Click(object sender, RoutedEventArgs e)
-        { 
+        {
             MainFrame.Navigate(new ClientOverview());
         }
 
@@ -89,6 +76,8 @@ namespace Bookkeeping_manager.Windows
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            DataHandler.UploadClients();
+            DataHandler.UploadTasks();
             //DataHandler.UploadToDatabase();
             // MessageBox.Show("Saved to database");
         }

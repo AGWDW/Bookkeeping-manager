@@ -1,11 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace Bookkeeping_manager.Scripts
 {
@@ -19,8 +15,8 @@ namespace Bookkeeping_manager.Scripts
         public bool CanBeEdited { get; set; }
         [BsonIgnore]
         public DateTime Date { get; internal set; }
-        public string DateRaw 
-        { 
+        public string DateRaw
+        {
             get
             {
                 return Date.GetString();
@@ -87,7 +83,7 @@ namespace Bookkeeping_manager.Scripts
                 Date += Intervals[CurrentInterval];
                 CurrentInterval = CurrentInterval++ % Intervals.Count;
             }
-            if(intervals >= 0)
+            if (intervals >= 0)
             {
                 for (int i = 0; i < intervals; i++)
                 {
@@ -96,7 +92,7 @@ namespace Bookkeeping_manager.Scripts
                 UpdateBindingBase();
                 return true;
             }
-            while(Date < DateTime.Today)
+            while (Date < DateTime.Today)
             {
                 adv();
             }
@@ -121,7 +117,7 @@ namespace Bookkeeping_manager.Scripts
         }
         public bool ShowLate()
         {
-            if(ShowPeriod == 0)
+            if (ShowPeriod == 0)
                 return true;
             return (DateTime.Today - Date).TotalDays > ShowPeriod;
         }
@@ -234,13 +230,13 @@ namespace Bookkeeping_manager.Scripts
             forceDay = "";
             forceDate = -1;
         }
-        public static DateTime operator+(DateTime a, Interval b)
+        public static DateTime operator +(DateTime a, Interval b)
         {
             DateTime res = a.Add(b.IntervalRaw);
             if (b.ForceDay != "")
             {
                 int increment = b.DayUp ? 1 : -1;
-                while(res.DayOfWeek.ToString() != b.ForceDay)
+                while (res.DayOfWeek.ToString() != b.ForceDay)
                 {
                     res.AddDays(increment);
                 }
@@ -264,7 +260,7 @@ namespace Bookkeeping_manager.Scripts
             else if (b.LastFriday)
             {
                 res = res.GetLastDay();
-                while(res.GetDayOfWeek() != 5)
+                while (res.GetDayOfWeek() != 5)
                 {
                     res = res.AddDays(-1);
                 }

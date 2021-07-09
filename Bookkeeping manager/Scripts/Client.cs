@@ -1,11 +1,10 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Bookkeeping_manager.Scripts
 {
@@ -17,7 +16,25 @@ namespace Bookkeeping_manager.Scripts
     }
     public class Client : MongoObject, INotifyPropertyChanged
     {
-
+        [BsonIgnore]
+        public Tasks.TaskGroup APETasks { get; set; }
+        [BsonIgnore]
+        public Tasks.TaskGroup VATPETasks { get; set; }
+        [BsonIgnore]
+        public Tasks.TaskGroup CATasks { get; set; }
+        [BsonIgnore]
+        public Dictionary<string, Tasks.TaskGroup> AMLTasks { get; set; }
+        // public Tasks.TaskGroup AMLTasks { get; set; }
+        [BsonIgnore]
+        public Tasks.TaskGroup SATasks { get; set; }
+        [BsonIgnore]
+        public Tasks.TaskGroup P11DTasks { get; set; }
+        [BsonIgnore]
+        public Tasks.TaskGroup CISWTasks { get; set; }
+        [BsonIgnore]
+        public Tasks.TaskGroup CISSTasks { get; set; }
+        [BsonIgnore]
+        public Dictionary<string, Tasks.TaskGroup> PayrollTasks { get; set; }
         private bool change = false;
         [BsonIgnore]
         public bool Changed
@@ -76,6 +93,11 @@ namespace Bookkeeping_manager.Scripts
                         e.DisplayName = e.DisplayName.Replace($"({Name})", $"({value})");
                     }
                 });
+                for(int i = 0; i < DataHandler.AllTasks.Length; i++)
+                {
+                    DataHandler.AllTasks[i].ClientName = value;
+                    DataHandler.AllTasks[i].HasChanged = true;
+                }
                 name = value;
                 SetNamesBasic();
                 OnPropertyChanged(n);
@@ -284,14 +306,14 @@ namespace Bookkeeping_manager.Scripts
         }
         public void SetNames()
         {
-            companyDetails.Client  = this;
-            contactDetails.Client  = this;
-            accountant.Client      = this;
-            services.Client        = this;
+            companyDetails.Client = this;
+            contactDetails.Client = this;
+            accountant.Client = this;
+            services.Client = this;
             accountsReturns.Client = this;
-            vATDetails.Client      = this;
-            cISDetails.Client      = this;
-            pAYEDetails.Client     = this;
+            vATDetails.Client = this;
+            cISDetails.Client = this;
+            pAYEDetails.Client = this;
             if (documents is null)
             {
                 documents = new List<Document>();
@@ -316,12 +338,12 @@ namespace Bookkeeping_manager.Scripts
     public class CompanyDetails : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        string companyNumber, charityNumber, incorpDate, condirStateDate, tradingAs, regAdress,
+        private string companyNumber, charityNumber, incorpDate, condirStateDate, tradingAs, regAdress,
            postalAdress, email, phone, sic, nature, utr, chAuth;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        bool confirmation;
+        private bool confirmation;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        string[] softwares;
+        private string[] softwares;
 
         public CompanyDetails(Client client)
         {
@@ -378,7 +400,7 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
         }
-        // has tasks
+        // has tasks & has no dependencys
         public bool ConfirmationEnabled
         {
             get => confirmation;
@@ -390,10 +412,10 @@ namespace Bookkeeping_manager.Scripts
                     confirmation = value;
                     if (!DataHandler.AllowSet) return;
                     string[] names = new string[2]
-                     {
+                    {
                         $"Confirmation statement due ({Client.Name})",
                         $"Submit Confirmation ({Client.Name})"
-                     };
+                    };
                     if (!DataHandler.AllowSet)
                         return;
                     if (confirmation && condirStateDate != "")
@@ -412,6 +434,12 @@ namespace Bookkeeping_manager.Scripts
                         e = DataHandler.AddEvent(new Event(name: names[1], colourType: "CA", initalDate: cs, showPeriod: 10));
                         interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
+
+                        #region Tasks -- New --
+                        Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateCA(Client.Name, cs);
+                        DataHandler.AddTask(taskGroup);
+                        Client.CATasks = taskGroup;
+                        #endregion
                     }
                     else
                     {
@@ -423,7 +451,19 @@ namespace Bookkeeping_manager.Scripts
         }
         public string ConfirmationStatementDate
         {
-            get => condirStateDate;
+            get
+            {
+                if (Client.CATasks != null)
+                {
+                    string d = Client.CATasks.Parent.Date.GetString();
+                    if (d != condirStateDate)
+                    {
+                        condirStateDate = d;
+                        // has no dependencys
+                    }
+                }
+                return condirStateDate;
+            }
             set
             {
                 if (condirStateDate != value)
@@ -572,7 +612,7 @@ namespace Bookkeeping_manager.Scripts
             {
                 1, 1, 1, 6, 1, 1,
                 2, 2, 1,
-                1, 1, 1, 1, 1, 
+                1, 1, 1, 1, 1,
                 7
             };
         }
@@ -591,17 +631,43 @@ namespace Bookkeeping_manager.Scripts
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string position, title, fName, mName, lName, dob, email, address, phone, niNum, utr, termsSigned,
-            aml, photo, adressVer, amlForm, amlRev ,married, nationality;
-        public string Name { get; set; }
-        private int index;
+            aml, photo, adressVer, amlForm, amlRev, married, nationality;
+        private string name;
+        // renames in the dictionary and the task 
+        public string Name
+        {
+            get => name;
+            set
+            {
+                if (Client is null || Client.AMLTasks is null)
+                {
+                    name = value;
+                    return;
+                }
+                if (name != value)
+                {
+                    if (Client.AMLTasks.ContainsKey(name))
+                    {
+                        var temp = Client.AMLTasks[name];
+                        temp.RenameAMLTask(value);
+                        Client.AMLTasks.Add(value, temp);
+                        Client.AMLTasks.Remove(name);
+                        string prev = name;
+                        OnPropertyChanged(prev);
+                    }
+                }
+                name = value;
+            }
+        }
+        private readonly int index;
         // has tasks
         public Contact(Client client, int index)
         {
             this.index = index;
             Client = client;
-            fName = mName = lName = dob = email = address = phone = niNum = utr = termsSigned =
+            position = title = fName = mName = lName = dob = email = address = phone = niNum = utr = termsSigned =
             aml = photo = adressVer = amlForm = amlRev = married = nationality = "";
-            Name = "Empty Contact";
+            name = "Empty Contact";
         }
 
         #region Properties
@@ -814,35 +880,70 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
         }
-        // has tasks
+        // has tasks & no dependencys
         public string AMLReviewDue
         {
-            get => amlRev;
+            get
+            {
+                if (Client.AMLTasks != null)
+                {
+                    if (!Client.AMLTasks.ContainsKey(Name))
+                    {
+                        return amlRev;
+                    }
+                    string d = Client.AMLTasks[Name].Parent.Date.GetString();
+                    if (d != amlRev)
+                    {
+                        amlRev = d;
+                    }
+                }
+                return amlRev;
+            }
             set
             {
                 if (amlRev != value)
                 {
                     string c = amlRev;
                     amlRev = DataEnforce.Date(amlRev, value, true);
-                    if(DataHandler.AllowSet && (amlRev == "" || amlRev != c))
+                    if (DataHandler.AllowSet && (amlRev == "" || amlRev != c))
                     {
                         string[] names = new string[]
                         {
                             $"AML review due for {Name} ({Client.Name})"
                         };
-                        if(amlRev == "")
+                        if (amlRev == "")
                         {
                             DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all ape tasks
+                            DataHandler.RemoveTask(Client.AMLTasks[Name]);
+                            Client.AMLTasks = null;
                         }
                         else
                         {
-                            Event e = DataHandler.AddEvent(new Event(name:names[0], colourType: "AML", initalDate: amlRev.ToDate()));
-                            e.SetIntervals(new Interval(1,0,0));
+                            Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "AML", initalDate: amlRev.ToDate()));
+                            e.SetIntervals(new Interval(1, 0, 0));
                             e.SetBinding(DataHandler.AllClients.Find(cl => cl.Name == Client.Name).ContactDetials, "AMLReviewDue", "Client", "ContactDetials");
                             e.UpdateBinding = () =>
                             {
                                 (e.Binding as ContactDetials)[index].AMLReviewDue = e.Date.GetString();
                             };
+
+
+                            #region Tasks -- New --
+                            Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateAML(Client.Name, amlRev.ToDate(), Name);
+                            DataHandler.AddTask(taskGroup);
+                            if (Client.AMLTasks is null)
+                            {
+                                Client.AMLTasks = new Dictionary<string, Tasks.TaskGroup>();
+                            }
+                            if (Client.AMLTasks.ContainsKey(Name))
+                            {
+                                Client.AMLTasks[Name] = taskGroup;
+                            }
+                            else
+                            {
+                                Client.AMLTasks.Add(Name, taskGroup);
+                            }
+                            #endregion
                         }
                     }
                     OnPropertyChanged(c);
@@ -900,7 +1001,7 @@ namespace Bookkeeping_manager.Scripts
     {
         private List<Contact> contacts;
 
-        public List<Contact> Contacts 
+        public List<Contact> Contacts
         {
             get
             {
@@ -910,7 +1011,7 @@ namespace Bookkeeping_manager.Scripts
                 }
                 return contacts;
             }
-            set => contacts = value; 
+            set => contacts = value;
         }
         public int Size { get => Contacts.Count; }
         public ContactDetials(Client client, params Contact[] contacts)
@@ -1011,9 +1112,9 @@ namespace Bookkeeping_manager.Scripts
     public class Services : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        string bookkeeping, vat, management, payroll, autoEnrol, cis, bill, invoicing,
+        private string bookkeeping, vat, management, payroll, autoEnrol, cis, bill, invoicing,
             accounts, ct600, selfAcc, confim, p11d, charaty, consultant, software, setup;
-        bool p11dEnabled, selfAsses;
+        private bool p11dEnabled, selfAsses;
         public Services(Client client)
         {
             Client = client;
@@ -1175,15 +1276,17 @@ namespace Bookkeeping_manager.Scripts
                     if (selfAsses)
                     {
                         DateTime sa = new DateTime(DateTime.Now.Year, 1, 31);
-                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "SA", initalDate: sa, canBeLate:false));
+                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "SA",
+                            initalDate: sa, canBeLate: false));
                         Interval interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
 
-                        e = DataHandler.AddEvent(new Event(name: names[1], colourType: "SA", initalDate: sa.SetDay(5)));
+                        e = DataHandler.AddEvent(new Event(name: names[1], colourType: "SA",
+                            initalDate: sa.SetDay(5)));
                         interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
 
-                        e = DataHandler.AddEvent(new Event(name: names[2], colourType: "SA", 
+                        e = DataHandler.AddEvent(new Event(name: names[2], colourType: "SA",
                             initalDate: new DateTime(DateTime.Now.Year - 1, 5, 15)));
                         interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
@@ -1192,10 +1295,17 @@ namespace Bookkeeping_manager.Scripts
                             initalDate: new DateTime(DateTime.Now.Year - 1, 9, 15)));
                         interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
+
+                        #region Tasks -- New --
+                        Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateSA(Client.Name);
+                        DataHandler.AddTask(taskGroup);
+                        Client.SATasks = taskGroup;
+                        #endregion
                     }
                     else
                     {
                         DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        DataHandler.RemoveTask(Client.SATasks);
                     }
                     OnPropertyChanged(c);
                 }
@@ -1214,7 +1324,6 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
         }
-        // has tasks
         public string ConfirmationStatement
         {
             get => confim;
@@ -1256,10 +1365,18 @@ namespace Bookkeeping_manager.Scripts
                         e = DataHandler.AddEvent(new Event(name: names[1], colourType: "P11D", initalDate: p11.AddMonths(-2)));
                         interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
+
+                        #region Tasks -- New --
+                        Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateP11D(Client.Name);
+                        DataHandler.AddTask(taskGroup);
+                        Client.P11DTasks = taskGroup;
+                        #endregion
+
                     }
                     else
                     {
                         DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        DataHandler.RemoveTask(Client.P11DTasks);
                     }
                     OnPropertyChanged(c);
                 }
@@ -1353,7 +1470,7 @@ namespace Bookkeeping_manager.Scripts
     // has tasks
     public class AccountsReturns : ClientDetailsBase, INotifyPropertyChanged
     {
-        string ape, chAND, ct600, tDHMRCYE, chAND_f, ct600_f, tDHMRCYE_f, ctPR, arr, aPN;
+        private string ape, chAND, ct600, tDHMRCYE, chAND_f, ct600_f, tDHMRCYE_f, ctPR, arr, aPN;
         public AccountsReturns(Client client)
         {
             Client = client;
@@ -1363,14 +1480,39 @@ namespace Bookkeeping_manager.Scripts
         // has tasks
         public string AccountsPeriodEnd
         {
-            get => ape;
+            get
+            {
+                if (Client.APETasks != null)
+                {
+                    string d = Client.APETasks.Parent.Date.GetString();
+                    if (d != ape)
+                    {
+                        ape = d;
+                        #region Dependents
+                        // Current
+                        DateTime APE = ape.ToDate();
+                        APE = APE.AddYears(-1);
+
+                        CH_0AccountsNextDue = APE.AddMonths(9).GetLastDay().GetString();
+                        CT600Due = APE.AddYears(1).GetLastDay().AddDays(-1).GetString();
+                        HMRCYearEnd = APE.AddMonths(10).GetFirstDay().GetString();
+                        // Future
+
+                        CH_0AccountsNextDue_ = CH_0AccountsNextDue.ToDate().AddYears(1).GetString();
+                        CT600Due_ = CT600Due.ToDate().AddYears(1).GetString();
+                        HMRCYearEnd_ = HMRCYearEnd.ToDate().AddYears(1).GetString();
+                        #endregion
+                    }
+                }
+                return ape;
+            }
             set
             {
                 if (ape != value)
                 {
                     string c = ape;
                     ape = DataEnforce.LastDay(c, DataEnforce.Date(c, value));
-                    if(DataHandler.AllowSet && (ape == "" || ape != c))
+                    if (DataHandler.AllowSet && (ape == "" || ape != c))
                     {
                         CH_0AccountsNextDue = CT600Due = HMRCYearEnd = "";
                         CH_0AccountsNextDue_ = CT600Due_ = HMRCYearEnd_ = "";
@@ -1386,13 +1528,13 @@ namespace Bookkeeping_manager.Scripts
                         {
                             DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all ape tasks
                         }
-                        if(ape != "")
+                        if (ape != "")
                         {
                             var APE = ape.ToDate();
                             #region Events
                             // Year end 
                             string name = $"Year end ({Client.Name})";
-                            Event rootEvent = DataHandler.AddEvent(new Event(name: name, initalDate: APE, colourType: "APE", canBeLate:true));
+                            Event rootEvent = DataHandler.AddEvent(new Event(name: name, initalDate: APE, colourType: "APE", canBeLate: true));
                             rootEvent.SetIntervals(new Interval(1, 0, 0)); // should be year interval
                             rootEvent.SetBinding(this, "AccountsPeriodEnd", "Client", "AccountsReturns");
 
@@ -1476,6 +1618,14 @@ namespace Bookkeeping_manager.Scripts
                             CT600Due_ = CT600Due.ToDate().AddYears(1).GetString();
                             HMRCYearEnd_ = HMRCYearEnd.ToDate().AddYears(1).GetString();
                             #endregion
+
+
+                            #region Tasks -- New --
+                            Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateAPE(Client.Name, ape.ToDate());
+                            DataHandler.AddTask(taskGroup);
+                            Client.APETasks = taskGroup;
+                            #endregion
+
                         }
                     }
                     OnPropertyChanged(c);
@@ -1562,7 +1712,7 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
         }
-        public string _ { get => ""; }
+        public string _ { get => ""; } // used for visuals
         public string CTPaymentReference
         {
             get => ctPR;
@@ -1623,12 +1773,12 @@ namespace Bookkeeping_manager.Scripts
     public class VATDetails : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        string[] vatFreq;
+        private string[] vatFreq;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        string vatPeriodEnd, nextReturnDate, reccordsRec, progNotes, vatNumber, vatAddress, dateOfReg, efectiveDate,
+        private string vatPeriodEnd, nextReturnDate, reccordsRec, progNotes, vatNumber, vatAddress, dateOfReg, efectiveDate,
             appliedMTD, flatCategory, notes;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        bool mtd, direct, stand, cashAcc, flat;
+        private bool mtd, direct, stand, cashAcc, flat;
         #region Properties
         public string[] VATFrequency
         {
@@ -1649,7 +1799,21 @@ namespace Bookkeeping_manager.Scripts
         // has tasks
         public string VATPeriodEnd
         {
-            get => vatPeriodEnd;
+            get
+            {
+                if (Client.VATPETasks != null)
+                {
+                    string d = Client.VATPETasks.Parent.Date.GetString();
+                    if (d != vatPeriodEnd)
+                    {
+                        vatPeriodEnd = d;
+                        #region Dependency
+                        NextReturnDate = vatPeriodEnd.ToDate().AddMonths(2).SetDay(7).GetString();
+                        #endregion
+                    }
+                }
+                return vatPeriodEnd;
+            }
             set
             {
                 if (vatPeriodEnd != value)
@@ -1659,11 +1823,11 @@ namespace Bookkeeping_manager.Scripts
                     if (DataHandler.AllowSet && (vatPeriodEnd == "" || vatPeriodEnd != c))
                     {
                         NextReturnDate = "";
-                        if(vatPeriodEnd == "")
+                        if (vatPeriodEnd == "")
                         {
                             string[] names = new string[]
                             {
-                                $"VAT period end ({Client.Name})", 
+                                $"VAT period end ({Client.Name})",
                                 $"Request VAT info ({Client.Name})",
                                 $"File VAT ({Client.Name})"
                             };
@@ -1705,6 +1869,12 @@ namespace Bookkeeping_manager.Scripts
 
                             #region Dependency
                             NextReturnDate = VAT.AddMonths(2).SetDay(7).GetString();
+                            #endregion
+
+                            #region Tasks -- New --
+                            Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateVATPE(Client.Name, VAT, period);
+                            DataHandler.AddTask(taskGroup);
+                            Client.VATPETasks = taskGroup;
                             #endregion
                         }
                     }
@@ -1935,12 +2105,12 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has taks
+    // has taks -- not yet done
     public class PayRoll : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        string type, numEmply, rtiDead, date;
-        string[] day;
+        private string type, numEmply, rtiDead, date;
+        private string[] day;
         #region Properties
         public string Type
         {
@@ -1971,6 +2141,7 @@ namespace Bookkeeping_manager.Scripts
                 Date = c1;
             }
         }
+        // has tasks
         public string Date
         {
             get => date;
@@ -1983,7 +2154,7 @@ namespace Bookkeeping_manager.Scripts
                     if (DataHandler.AllowSet && (date == "" || date != c))
                     {
                         Interval interval = new Interval();
-                        if(date != "")
+                        if (date != "")
                         {
                             switch (Type)
                             {
@@ -2022,15 +2193,16 @@ namespace Bookkeeping_manager.Scripts
                         };
                         if (date == "" || IntervalType[0] == "0" && Type != "Weekly")
                         {
-                            DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all ape tasks
+                            DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
                         }
                         else
                         {
-                            DateTime DATE = Date.ToDate();
+                            DateTime DATE = date.ToDate();
                             Event e = DataHandler.AddEvent(new Event(name: $"Payroll {Type} ({Client.Name})", colourType: "Payroll", initalDate: DATE, canBeLate: false));
                             e.SetIntervals(interval);
                             e.SetBinding(0, "", "", "");
-                            e.UpdateBinding = () => {
+                            e.UpdateBinding = () =>
+                            {
                                 DataHandler.AddEvent(new Event(name: $"Prepare Payroll {type} ({Client.Name})", colourType: "Payroll", initalDate: e.Date.AddDays(-2)));
                             };
                             e.UpdateBinding();
@@ -2097,7 +2269,7 @@ namespace Bookkeeping_manager.Scripts
     public class PAYEDetails : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        string emplRef, accOffRef, payeScheCeas, payeRecRec, notes, aerr, aepn, aes, postDate, penRegOOD, reEnDa, penProv, penID, decOfCompDue, decOfCompSub, np11dRD, p11dRR, p11dNotes;
+        private string emplRef, accOffRef, payeScheCeas, payeRecRec, notes, aerr, aepn, aes, postDate, penRegOOD, reEnDa, penProv, penID, decOfCompDue, decOfCompSub, np11dRD, p11dRR, p11dNotes;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private List<PayRoll> payRolls;
         #region Properties
@@ -2362,8 +2534,8 @@ namespace Bookkeeping_manager.Scripts
         {
             return new byte[]
             {
-                1, 1, 8, 1, 1, 2, 
-                3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 
+                1, 1, 8, 1, 1, 2,
+                3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1,
                 3, 4, 1, 2
             };
         }
@@ -2379,7 +2551,7 @@ namespace Bookkeeping_manager.Scripts
     public class CISDetails : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        bool withheld, suffered;
+        private bool withheld, suffered;
         public CISDetails(Client client)
         {
             Client = client;
@@ -2403,12 +2575,20 @@ namespace Bookkeeping_manager.Scripts
                     };
                     if (withheld)
                     {
-                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CISW", initalDate: DateTime.Today.SetDay(19), showPeriod:13));
+                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CISW", initalDate: DateTime.Today.SetDay(19), showPeriod: 13));
                         e.SetIntervals(new Interval(0, 1, 0));
+
+
+                        #region Tasks -- New --
+                        Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateCISW(Client.Name);
+                        DataHandler.AddTask(taskGroup);
+                        Client.CISWTasks = taskGroup;
+                        #endregion
                     }
                     else
                     {
                         DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        DataHandler.RemoveTask(Client.CISWTasks);
                     }
                 }
             }
@@ -2423,7 +2603,7 @@ namespace Bookkeeping_manager.Scripts
                 {
                     var c = suffered;
                     suffered = value;
-                    OnPropertyChanged(c); 
+                    OnPropertyChanged(c);
                     string[] names = new string[]
                     {
                        $"CIS Suffered ({Client.Name})"
@@ -2432,10 +2612,17 @@ namespace Bookkeeping_manager.Scripts
                     {
                         Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CISS", initalDate: DateTime.Today.SetDay(19), showPeriod: 13));
                         e.SetIntervals(new Interval(0, 1, 0));
+
+                        #region Tasks -- New --
+                        Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateCISS(Client.Name);
+                        DataHandler.AddTask(taskGroup);
+                        Client.CISSTasks = taskGroup;
+                        #endregion
                     }
                     else
                     {
                         DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        DataHandler.RemoveTask(Client.CISSTasks);
                     }
                 }
             }

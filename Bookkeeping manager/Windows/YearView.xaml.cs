@@ -1,18 +1,10 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -33,6 +25,11 @@ namespace Bookkeeping_manager.Windows
                 ReDraw();
             }
         }
+        private IndexSet<Tasks.TaskGroup> Tasks
+        {
+            get => DataHandler.AllTasks;
+            set => DataHandler.AllTasks = value;
+        }
         private List<Event> Events
         {
             get => DataHandler.AllEvents;
@@ -49,7 +46,7 @@ namespace Bookkeeping_manager.Windows
         }
         public void CreateGrid()
         {
-            for(byte i = 0; i < 12; i++)
+            for (byte i = 0; i < 12; i++)
             {
                 StackPanel stackV = new StackPanel()
                 {
@@ -77,7 +74,33 @@ namespace Bookkeeping_manager.Windows
         }
         public void PopulateGrid()
         {
-            foreach (Event e in Events)
+            for (int i = 0; i < Tasks.Length; i++)
+            {
+                Tasks.TaskGroup group = Tasks[i];
+                for (int j = 0; j < group.Length; j++)
+                {
+                    Tasks.Task task = group[j];
+                    if (task.Date.ToString("yyyy") != CurrentYear/* || e.Delete*/)
+                    {
+                        continue;
+                    }
+
+                    int column = task.Date.Month + 11;
+                    int row = task.Date.Day - 1;
+
+                    StackPanel stackH = (YearGrid.Children[column] as StackPanel).Children[row] as StackPanel;
+                    group.GetYearStack(j, out Ellipse ellipse);
+                    ellipse.MouseUp += (o, e_) =>
+                    {
+                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(group, task);
+                        viewer.ShowDialog();
+
+                        ReDraw();
+                    };
+                    stackH.Children.Add(ellipse);
+                }
+            }
+            /*foreach (Event e in Events)
             {
                 if (e.Date.ToString("yyyy") != CurrentYear || e.Delete)
                     continue;
@@ -99,7 +122,7 @@ namespace Bookkeeping_manager.Windows
                     ReDraw();
                 };
                 stackH.Children.Add(ellipse);
-            }
+            }*/
 
         }
         public void ReDraw()
