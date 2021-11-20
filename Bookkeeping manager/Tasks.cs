@@ -125,6 +125,8 @@ namespace Bookkeeping_manager.Tasks
             Type = "Unknown";
             VATPeriod = 0;
             AMLContactName = "";
+            PayRollPeriod = "";
+            PayRollInterval = "";
         }
         /// <summary>
         /// calls the parameter less constreuctor then sets the client name
@@ -254,7 +256,7 @@ namespace Bookkeeping_manager.Tasks
             };
             ellipse.ToolTip = new TextBlock()
             {
-                Text = task.Name,
+                Text = GetDisplayName(task),
                 FontSize = 18,
                 Background = Brushes.AliceBlue
             };
@@ -287,6 +289,12 @@ namespace Bookkeeping_manager.Tasks
                 Width = 20,
                 Height = 20,
                 Margin = new Thickness(0, 4, 5, 0)
+            };
+            ellipse .ToolTip = new TextBlock()
+            {
+                Text = GetDisplayName(task),
+                FontSize = 18,
+                Background = Brushes.AliceBlue
             };
         }
         /// <summary>
@@ -728,6 +736,73 @@ namespace Bookkeeping_manager.Tasks
                 new Task(group.Names[0], baseDate, 0, showPeriod: 13)
                 {
                     HexColour = "#FFFFAAFF"
+                }
+            };
+            return group;
+        }
+        public static TaskGroup CreatePayroll(string clientName, DateTime baseDate, string period, string interval)
+        {
+            Interval inter1 = new Interval();
+            Interval inter2 = new Interval();
+            switch (period)
+            {
+                case "Weekly":
+                    inter1 = new Interval(0, 0, 7);
+                    inter2 = new Interval(0, 0, 7);
+                    break;
+                case "2Weekly":
+                    inter1 = new Interval(0, 0, 14);
+                    inter2 = new Interval(0, 0, 14);
+                    break;
+                case "Monthly":
+                    inter1 = new Interval(0, 1, 0);
+                    inter2 = new Interval(0, 1, 0);
+                    break;
+            }
+            switch (interval)
+            {
+                case "1": // 28th
+                    inter1.ForceDate = 28;
+                    break;
+                case "2": // every other friday
+                    break;
+                case "3": // last day of month
+                    inter1.ForceLastDayOfMonth = true;
+                    break;
+                case "4": // last friday of month
+                    inter1.LastFriday = true;
+                    break;
+            }
+            TaskGroup group = new TaskGroup(clientName)
+            {
+                Type = "Payroll",
+                PayRollPeriod = period,
+                PayRollInterval = interval,
+                BaseDate = baseDate.GetString(),
+                Length = 2,
+                Names = new string[2]
+                {
+                    $"Payroll {period}", $"Prepare Payroll {period}"
+                },
+                Intervals = new Interval[2]
+                {
+                    inter1,
+                    inter2,
+                },
+                AdvanceCounts = new int[2]
+                {
+                    0, 0
+                },
+            };
+            group.Tasks = new Task[2]
+            {
+                new Task(group.Names[0], baseDate, 0, canBeLate: false)
+                {
+                    HexColour = "#FF00FF00"
+                },
+                new Task(group.Names[1], baseDate.AddDays(-2), 1)
+                {
+                    HexColour = "#FF00FF00"
                 }
             };
             return group;

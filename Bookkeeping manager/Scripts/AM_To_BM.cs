@@ -21,7 +21,6 @@ namespace AM_Converter
             DataHandler.AllowSet = true;
             foreach (AMScripts.ClientString client in AMClients)
             {
-
                 Client c = new Client(client.Name);
                 c.CompanyDetails  = Convert(client.CompanyDetatils, c);
                 c.ContactDetials  = Convert(client.Contacts, c);

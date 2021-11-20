@@ -18,7 +18,7 @@ namespace Bookkeeping_manager.Scripts
     internal static class DataHandler
     {
         public static List<Client> AllClients { get; set; }
-        public static List<Event> AllEvents { get; set; }
+        // public static List<Event> AllEvents { get; set; }
         public static IndexSet<Tasks.TaskGroup> AllTasks { get; set; }
         private static List<Tasks.TaskGroup> TaskDeathRow { get; set; }
         public static bool AllowSet { get; set; }
@@ -26,26 +26,27 @@ namespace Bookkeeping_manager.Scripts
         /// <summary>
         /// astablises connection init properties to deafult gets colours the clients and tasks then AllowSet = true;
         /// </summary>
-        public static void Init()
+        public static void Init(bool createTasks = false)
         {
             Handler = new MongoHandler(@"mongodb+srv://MainClient:M3YMhbTS63XT7yuK@maindata.7qgv2.mongodb.net/Data?retryWrites=true&w=majority");
             Handler.SetDatabase("Data");
             AllClients = new List<Client>();
-            AllEvents = new List<Event>();
+            // AllEvents = new List<Event>();
             AllTasks = new IndexSet<Tasks.TaskGroup>();
             TaskDeathRow = new List<Tasks.TaskGroup>();
 
             GetColours();
-            GetClientsFromDatabase();
+            GetClientsFromDatabase("Clients_", createTasks);
             // GetEventsFromDatabase();
-            // GetDocumentsFromDatabase();
+            GetDocumentsFromDatabase();
             // SetBindings();
             GetTasks();
             AllowSet = true;
         }
-        private static void GetClientsFromDatabase()
+        private static void GetClientsFromDatabase(string docName = "Clients_", bool createTasks = false)
         {
-            AllClients = Handler.GetAllDocuments<Client>("Clients_");
+            AllowSet = createTasks;
+            AllClients = Handler.GetAllDocuments<Client>(docName);
             foreach (Client client in AllClients)
             {
                 client.SetNames();
@@ -53,10 +54,10 @@ namespace Bookkeeping_manager.Scripts
             AllClients = AllClients.OrderBy(c => c.Name).ToList();
             AllowSet = true;
         }
-        private static void GetEventsFromDatabase()
+        /*private static void GetEventsFromDatabase()
         {
             AllEvents = Handler.GetAllDocuments<Event>("Events");
-        }
+        }*/
         private static void GetDocumentsFromDatabase()
         {
             string[] docNames = Handler.GetAllFileNames();
@@ -75,7 +76,7 @@ namespace Bookkeeping_manager.Scripts
                 AllClients.Find(c => c.Name == clientName).Documents.Add(document);
             }
         }
-        private static void SetBindings()
+        /*private static void SetBindings()
         {
             foreach (Event e in AllEvents)
             {
@@ -98,7 +99,7 @@ namespace Bookkeeping_manager.Scripts
                 }
             }
             AllClients.ForEach(c => c.Changed = false);
-        }
+        }*/
 
         /// <summary>
         /// populates AllTasks with the tasks found in the data base preserves object id and calls the taskgroup constructor then sets the task bindings
@@ -137,6 +138,18 @@ namespace Bookkeeping_manager.Scripts
                     case "CA":
                         c.CATasks = group;
                         break;
+                    case "SA":
+                        c.SATasks = group;
+                        break;
+                    case "P11D":
+                        c.P11DTasks = group;
+                        break;
+                    case "CISW":
+                        c.CISWTasks = group;
+                        break;
+                    case "CISS":
+                        c.CISSTasks = group;
+                        break;
                     case "AML":
                         if(c.AMLTasks is null)
                         {
@@ -149,6 +162,20 @@ namespace Bookkeeping_manager.Scripts
                         else
                         {
                             c.AMLTasks.Add(group.AMLContactName, group);
+                        }
+                        break;
+                    case "Payroll":
+                        if (c.PayrollTasks is null)
+                        {
+                            c.PayrollTasks = new Dictionary<string, Tasks.TaskGroup>();
+                        }
+                        if (c.PayrollTasks.ContainsKey(group.PayRollPeriod))
+                        {
+                            c.PayrollTasks[group.PayRollPeriod] = group;
+                        }
+                        else
+                        {
+                            c.PayrollTasks.Add(group.PayRollPeriod, group);
                         }
                         break;
                     default:
@@ -178,7 +205,7 @@ namespace Bookkeeping_manager.Scripts
             }
 
 
-            foreach (Event @event in AllEvents)
+            /*foreach (Event @event in AllEvents)
             {
                 if (@event.Changed || @event.Delete)
                 {
@@ -191,31 +218,56 @@ namespace Bookkeeping_manager.Scripts
                     {
                         MessageBox.Show("Failed to delete event");
                         throw new System.Exception();
-                    }*/
+                    }*
                     @event.Date = @event.Date.Date;
                     if (@event.Changed)
                         Handler.AddDocument("Events", @event);
                 }
                 @event._id = MongoDB.Bson.ObjectId.Empty;
-            }
+            }*/
         }
         /// <summary>
-        /// replaces clients in the database with there updated ones if aproriate compares the client name 
+        /// replaces clients in the database with there updated ones if aproriate compares the client name and the documents
         /// </summary>
-        public static void UploadClients()
+        public static void UploadClients(string docName = "Clients_")
         {
+            Handler.RemoveAllFiles();
             foreach (Client client in AllClients)
             {
                 if (client.Changed || client.Delete)
                 {
-                    Handler.Delete("Clients_", client._id);
+                    Handler.Delete(docName, client._id);
                     if (client.Changed && !client.Delete)
                     {
-                        Handler.AddDocument("Clients_", client);
+                        Handler.AddDocument(docName, client);
                     }
                 }
-                // client._id = MongoDB.Bson.ObjectId.Empty;
+                foreach (Document document in client.Documents)
+                {
+                    document._id = MongoDB.Bson.ObjectId.Empty;
+                    Handler.UploadFile(document.FilePath, document.FileName_Cloud);
+                    File.Delete(document.FilePath);
+                }
             }
+            /*
+            Handler.RemoveAllFiles();
+            foreach (Client client in AllClients)
+            {
+                if (client.Changed || client.Delete)
+                {
+                    Handler.Delete("Clients", "Name", client.Name);
+                    if (client.Changed)
+                        Handler.AddDocument("Clients", client);
+                }
+                client._id = MongoDB.Bson.ObjectId.Empty;
+                foreach (Document document in client.Documents)
+                {
+                    document._id = MongoDB.Bson.ObjectId.Empty;
+                    Handler.UploadFile(document.FilePath, document.FileName_Cloud);
+                    File.Delete(document.FilePath);
+                }
+            }
+            */
         }
         /// <summary>
         /// replaces where approriate compares object id and deltes the tasks found on death row
@@ -233,7 +285,7 @@ namespace Bookkeeping_manager.Scripts
                         MessageBox.Show("Failed to delete event");
                         throw new System.Exception();
                     }*/
-                    if (group.HasChanged)
+            if (group.HasChanged)
                     {
                         Handler.AddDocument("Tasks", group);
                     }
@@ -242,6 +294,10 @@ namespace Bookkeeping_manager.Scripts
             for (int i = 0; i < TaskDeathRow.Count; i++)
             {
                 Tasks.TaskGroup group = TaskDeathRow[i];
+                if(group is null)
+                {
+                    continue;
+                }
                 bool hasDeleted = Handler.Delete("Tasks", group._id);
                 /*if (!hasDeleted)
                 {
@@ -250,7 +306,7 @@ namespace Bookkeeping_manager.Scripts
                 }*/
             }
         }
-        public static void RemoveEvent(string name)
+        /*public static void RemoveEvent(string name)
         {
             for (int i = 0; i < AllEvents.Count; i++)
             {
@@ -260,12 +316,12 @@ namespace Bookkeeping_manager.Scripts
                     e.Delete = true;
                 }
             }
-        }
-        public static bool RemoveEventsContaining(string name)
+        }*/
+        /*public static bool RemoveEventsContaining(string name)
         {
             return AllEvents.RemoveAll(e => e.DisplayName.Contains(name)) > 0;
-        }
-        public static Event AddEvent(Event e)
+        }*/
+        /*public static Event AddEvent(Event e)
         {
             for (int i = 0; i < AllEvents.Count; i++)
             {
@@ -285,7 +341,7 @@ namespace Bookkeeping_manager.Scripts
             // RemoveEvent(e.DisplayName);
             AllEvents.Add(e);
             return AllEvents.Last();
-        }
+        }*/
 
         /// <summary>
         /// will replace ant found task and the replaced is added to death row 

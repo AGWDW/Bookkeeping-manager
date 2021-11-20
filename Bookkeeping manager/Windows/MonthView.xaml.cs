@@ -1,4 +1,5 @@
 ﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace Bookkeeping_manager.Windows
     public partial class MonthView : Page
     {
         private string sDay, eDay;
-        private List<Event> Events { get; set; }
+        //private List<Event> Events { get; set; }
         private IndexSet<Tasks.TaskGroup> Tasks
         {
             get => DataHandler.AllTasks;
@@ -39,11 +40,11 @@ namespace Bookkeeping_manager.Windows
                 CreateGrid();
             }
         }
-        public MonthView(List<Event> events)
+        public MonthView()
         {
             sDay = DateTime.Now.ToString("dd/MM/yyyy");
             eDay = DateTime.Now.AddMonths(1).ToString("dd/MM/yyyy");
-            Events = events;
+            // Events = events;
             InitializeComponent();
             DataContext = this;
             CreateGrid();
@@ -122,11 +123,17 @@ namespace Bookkeeping_manager.Windows
             }
             for (int i = 0; i < Tasks.Length; i++)
             {
-                Tasks.TaskGroup group = Tasks[i];
+                TaskGroup group = Tasks[i];
                 for (int j = 0; j < group.Length; j++)
                 {
                     DateTime date = group[j].Date;
-                    Tasks.Task task = group[j];
+                    Task task = group[j];
+
+                    if (date >= EndDate.ToDate() || date < StartDate.ToDate())
+                    {
+                        continue;
+                    }
+
                     int column = date.GetDayOfWeek(); // the day of the week or column + 1
                     DateTime tempDay = StartDate.ToDate();
                     if (date < tempDay)
@@ -260,16 +267,18 @@ namespace Bookkeeping_manager.Windows
         /// <summary>
         /// Adds new event
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Event @event = new Event(name: "", canBeEdited: true, initalDate: DateTime.Today);
+            TaskGroup task = TaskGroup.CreateCustom("", DateTime.Today, "#FF000000", "");
+            Tasks.Add(task);
+            UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(task, task[0], creating: true);
+            viewer.ShowDialog();
+            /*Event @event = new Event(name: "", canBeEdited: true, initalDate: DateTime.Today);
             UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(@event, true);
             viewer.ShowDialog();
             if (@event.Delete)
                 return;
-            Events.Add(@event);
+            Events.Add(@event);*/
 
             StartDate = sDay;
         }

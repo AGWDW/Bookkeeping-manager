@@ -1,12 +1,10 @@
 ﻿using Bookkeeping_manager.Scripts;
 using Bookkeeping_manager.Tasks;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace Bookkeeping_manager.Windows
@@ -16,25 +14,18 @@ namespace Bookkeeping_manager.Windows
     /// </summary>
     public partial class Home : Page
     {
-        public string Today
-        {
-            get
-            {
-                return DateTime.Now.ToString("dd/MM/yyyy");
-            }
-        }
+        public string Today => DateTime.Today.GetString();
         public string Next { get; set; }
-        private List<Event> Events { get; set; }
         private IndexSet<TaskGroup> Tasks
         {
             get => DataHandler.AllTasks;
             set => DataHandler.AllTasks = value;
         }
 
-        public Home(List<Event> events)
+        public Home()
         {
             Next = DateTime.Now.AddDays(2).ToString("dd/MM/yyyy");
-            Events = events;
+            // Events = events;
             InitializeComponent();
             DataContext = this;
             CreateTodaysTasks();
@@ -55,6 +46,10 @@ namespace Bookkeeping_manager.Windows
                 for (int j = 0; j < group.Length; j++)
                 {
                     Task task = group[j];
+                    if (task.Date > Today.ToDate())
+                    {
+                        continue;
+                    }
                     DockPanel dock = group.GetDockPanel(j, this, PrimaryGrid);
                     dock.MouseUp += (o, e) =>
                     {
@@ -87,8 +82,45 @@ namespace Bookkeeping_manager.Windows
         public void CreateNextTasks()
         {
             NextTasks.Children.Clear();
+            for (int i = 0; i < Tasks.Length; i++)
+            {
+                TaskGroup group = Tasks[i];
+                for (int j = 0; j < group.Length; j++)
+                {
+                    Task task = group[j];
+                    if (task.Date != Next.ToDate())
+                    {
+                        continue;
+                    }
+                    DockPanel dock = group.GetDockPanel(j, this, PrimaryGrid);
+                    dock.MouseUp += (o, e) =>
+                    {
+                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(group, task);
+                        viewer.ShowDialog();
 
-            foreach (Event e in Events)
+                        CreateTodaysTasks();
+                        CreateNextTasks();
+                    };
+                    Button button = dock.Children[2] as Button;
+                    button.Click += (o, e) =>
+                    {
+
+                        if (task.CanAdvance)
+                        {
+                            group.Advance(task);
+                        }
+                        else
+                        {
+                            DataHandler.RemoveTask(group);
+                        }
+
+                        CreateTodaysTasks();
+                        CreateNextTasks();
+                    };
+                    NextTasks.Children.Add(dock);
+                }
+            }
+            /*foreach (Event e in Events)
             {
                 if (e.Date != Next.ToDate() || e.Delete)
                 {
@@ -152,14 +184,12 @@ namespace Bookkeeping_manager.Windows
                 });
 
                 NextTasks.Children.Add(dockH);
-            }
+            }*/
         }
 
         /// <summary>
         /// used to update the task lists when u click away from the date box above the future tasks cant select past
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
         {
             DateTime t = DataEnforce.Date(Next, NextDate.Text.Trim(), false).ToDate();
@@ -180,8 +210,6 @@ namespace Bookkeeping_manager.Windows
         /// <summary>
         /// opens event vier cand creates the event updates lists adds the Events
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             /*Event @event = new Event(name: "", canBeEdited: true, initalDate: DateTime.Today);

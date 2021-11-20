@@ -12,11 +12,11 @@ namespace Bookkeeping_manager.Windows
     public partial class MainWindow : Window
     {
         private readonly DispatcherTimer clock;
-        private List<Event> Events
+        /*private List<Event> Events
         {
             get => DataHandler.AllEvents;
             set => DataHandler.AllEvents = value;
-        }
+        }*/
 
         public MainWindow()
         {
@@ -24,13 +24,13 @@ namespace Bookkeeping_manager.Windows
 
 
             // Login
-            /*UtilityWindows.LoginWindow login = new UtilityWindows.LoginWindow();
+            UtilityWindows.LoginWindow login = new UtilityWindows.LoginWindow();
             login.ShowDialog();
             if (!login.Successful)
             {
                 Close();
                 return;
-            }*/
+            }
 
             InitializeComponent();
             DataHandler.Init(); // allows the database to be accessed
@@ -57,7 +57,7 @@ namespace Bookkeeping_manager.Windows
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new Home(Events));
+            MainFrame.Navigate(new Home());
         }
 
         private void ClientOverviewButton_Click(object sender, RoutedEventArgs e)
@@ -67,19 +67,20 @@ namespace Bookkeeping_manager.Windows
 
         private void CalenderViewMonth_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new MonthView(Events));
+            MainFrame.Navigate(new MonthView());
         }
 
         private void CalenderViewYear_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new YearView(Events));
+            MainFrame.Navigate(new YearView());
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            DataHandler.UploadClients();
+            MessageBox.Show("Starting to save");
+            DataHandler.UploadClients("Clients_");
             DataHandler.UploadTasks();
-            //DataHandler.UploadToDatabase();
-            // MessageBox.Show("Saved to database");
+            //DataHandler.UploadToDatabase(); old code
+            MessageBox.Show("Saved to database");
         }
 
         private void ReportsViewButton_Click(object sender, RoutedEventArgs e)

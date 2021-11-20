@@ -90,9 +90,9 @@ namespace Bookkeeping_manager.Windows
         /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBoxResult.Yes == MessageBox.Show("Are you sure you want to delete this client", "", MessageBoxButton.YesNo))
+            if (MessageBoxResult.Yes == MessageBox.Show("Are you sure you want to delete this client", "Confirmation", MessageBoxButton.YesNo))
             {
-                DataHandler.AllEvents.ForEach(ev => ev.Delete = ev.DisplayName.Contains($"({Client.Name})"));
+                // DataHandler.AllEvents.ForEach(ev => ev.Delete = ev.DisplayName.Contains($"({Client.Name})"));
                 List<Tasks.TaskGroup> deathNote = new List<Tasks.TaskGroup>();
                 for (int i = 0; i < DataHandler.AllTasks.Length; i++)
                 {
@@ -102,7 +102,7 @@ namespace Bookkeeping_manager.Windows
                         deathNote.Add(DataHandler.AllTasks[i]);
                     }
                 }
-                foreach(Tasks.TaskGroup t in deathNote)
+                foreach (Tasks.TaskGroup t in deathNote)
                 {
                     DataHandler.RemoveTask(t);
                 }

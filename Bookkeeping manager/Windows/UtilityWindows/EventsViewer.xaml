@@ -9,7 +9,7 @@
         Title="EventsViewer" MaxHeight="430" MinHeight="430" MinWidth="400" Width="400" Closing="Window_Closing">
     <StackPanel Orientation="Vertical">
         <TextBlock Margin="10,0,0,0" FontSize="18">Name:</TextBlock>
-        <TextBox x:Name="NameTB" Text="{Binding Task.Name}" Style="{StaticResource RegularTB}" Margin="10,0,10,0"/>
+        <TextBox x:Name="NameTB" Style="{StaticResource RegularTB}" Margin="10,0,10,0" TextChanged="NameTB_TextChanged"/>
         <TextBlock Margin="10,0,0,0" FontSize="18">Date:</TextBlock>
         <TextBox x:Name="EventDate" Style="{StaticResource RegularTB}" LostFocus="EventDate_LostFocus" Margin="10,0,10,0"/>
         <TextBlock Margin="10,0,0,0" FontSize="18">Comment:</TextBlock>

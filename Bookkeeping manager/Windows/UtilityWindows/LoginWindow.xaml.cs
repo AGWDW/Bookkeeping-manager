@@ -76,5 +76,13 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
                 Close();
             }
         }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                Button_Click(null, null);
+            }
+        }
     }
 }

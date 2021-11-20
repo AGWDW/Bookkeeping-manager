@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Bookkeeping_manager.Scripts
@@ -86,17 +85,21 @@ namespace Bookkeeping_manager.Scripts
                 if (value == name)
                     return;
                 string n = name;
-                DataHandler.AllEvents.ForEach(e =>
+                /*DataHandler.AllEvents.ForEach(e =>
                 {
                     if (e.DisplayName.Contains($"({Name})"))
                     {
                         e.DisplayName = e.DisplayName.Replace($"({Name})", $"({value})");
                     }
-                });
-                for(int i = 0; i < DataHandler.AllTasks.Length; i++)
+                });*/
+                // the renaming of tasks
+                for (int i = 0; i < DataHandler.AllTasks.Length; i++)
                 {
-                    DataHandler.AllTasks[i].ClientName = value;
-                    DataHandler.AllTasks[i].HasChanged = true;
+                    if (DataHandler.AllTasks[i].ClientName == name)
+                    {
+                        DataHandler.AllTasks[i].ClientName = value;
+                        DataHandler.AllTasks[i].HasChanged = true;
+                    }
                 }
                 name = value;
                 SetNamesBasic();
@@ -109,7 +112,10 @@ namespace Bookkeeping_manager.Scripts
             set
             {
                 if (value == comments)
+                {
                     return;
+                }
+
                 string c = comments;
                 comments = value;
                 OnPropertyChanged(c);
@@ -410,18 +416,21 @@ namespace Bookkeeping_manager.Scripts
                 {
                     bool c = confirmation;
                     confirmation = value;
-                    if (!DataHandler.AllowSet) return;
-                    string[] names = new string[2]
-                    {
-                        $"Confirmation statement due ({Client.Name})",
-                        $"Submit Confirmation ({Client.Name})"
-                    };
                     if (!DataHandler.AllowSet)
+                    {
                         return;
-                    if (confirmation && condirStateDate != "")
+                    }
+                    //string[] names = new string[2]
+                    //{
+                    //    $"Confirmation statement due ({Client.Name})",
+                    //    $"Submit Confirmation ({Client.Name})"
+                    //};
+                    //if (!DataHandler.AllowSet)
+                    //    return;
+                    if (confirmation && condirStateDate != "" && condirStateDate != null)
                     {
                         DateTime cs = condirStateDate.ToDate();
-                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CA", initalDate: cs, canBeLate: false));
+                        /*Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CA", initalDate: cs, canBeLate: false));
                         Interval interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
                         e.SetBinding(this, "ConfirmationStatementDate", "Client", "CompanyDetails");
@@ -433,7 +442,7 @@ namespace Bookkeeping_manager.Scripts
                         // should apear for 10 days
                         e = DataHandler.AddEvent(new Event(name: names[1], colourType: "CA", initalDate: cs, showPeriod: 10));
                         interval = new Interval(1, 0, 0);
-                        e.SetIntervals(interval);
+                        e.SetIntervals(interval);*/
 
                         #region Tasks -- New --
                         Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateCA(Client.Name, cs);
@@ -443,7 +452,7 @@ namespace Bookkeeping_manager.Scripts
                     }
                     else
                     {
-                        DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
                     }
                     OnPropertyChanged(c);
                 }
@@ -913,19 +922,19 @@ namespace Bookkeeping_manager.Scripts
                         };
                         if (amlRev == "")
                         {
-                            DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all ape tasks
+                            //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all ape tasks
                             DataHandler.RemoveTask(Client.AMLTasks[Name]);
                             Client.AMLTasks = null;
                         }
                         else
                         {
-                            Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "AML", initalDate: amlRev.ToDate()));
+                            /*Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "AML", initalDate: amlRev.ToDate()));
                             e.SetIntervals(new Interval(1, 0, 0));
                             e.SetBinding(DataHandler.AllClients.Find(cl => cl.Name == Client.Name).ContactDetials, "AMLReviewDue", "Client", "ContactDetials");
                             e.UpdateBinding = () =>
                             {
                                 (e.Binding as ContactDetials)[index].AMLReviewDue = e.Date.GetString();
-                            };
+                            };*/
 
 
                             #region Tasks -- New --
@@ -1276,7 +1285,7 @@ namespace Bookkeeping_manager.Scripts
                     if (selfAsses)
                     {
                         DateTime sa = new DateTime(DateTime.Now.Year, 1, 31);
-                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "SA",
+                        /*Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "SA",
                             initalDate: sa, canBeLate: false));
                         Interval interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
@@ -1294,7 +1303,7 @@ namespace Bookkeeping_manager.Scripts
                         e = DataHandler.AddEvent(new Event(name: names[3], colourType: "SA",
                             initalDate: new DateTime(DateTime.Now.Year - 1, 9, 15)));
                         interval = new Interval(1, 0, 0);
-                        e.SetIntervals(interval);
+                        e.SetIntervals(interval);*/
 
                         #region Tasks -- New --
                         Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateSA(Client.Name);
@@ -1304,7 +1313,7 @@ namespace Bookkeeping_manager.Scripts
                     }
                     else
                     {
-                        DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
                         DataHandler.RemoveTask(Client.SATasks);
                     }
                     OnPropertyChanged(c);
@@ -1357,14 +1366,14 @@ namespace Bookkeeping_manager.Scripts
                     if (p11dEnabled)
                     {
                         DateTime p11 = new DateTime(DateTime.Now.Year, 7, 6);
-                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "P11D", initalDate: p11, canBeLate: false));
+                        /*Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "P11D", initalDate: p11, canBeLate: false));
                         Interval interval = new Interval(1, 0, 0);
                         e.SetIntervals(interval);
 
                         p11 = new DateTime(DateTime.Now.Year, 5, 6);
                         e = DataHandler.AddEvent(new Event(name: names[1], colourType: "P11D", initalDate: p11.AddMonths(-2)));
                         interval = new Interval(1, 0, 0);
-                        e.SetIntervals(interval);
+                        e.SetIntervals(interval);*/
 
                         #region Tasks -- New --
                         Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateP11D(Client.Name);
@@ -1375,7 +1384,7 @@ namespace Bookkeeping_manager.Scripts
                     }
                     else
                     {
-                        DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
                         DataHandler.RemoveTask(Client.P11DTasks);
                     }
                     OnPropertyChanged(c);
@@ -1526,83 +1535,83 @@ namespace Bookkeeping_manager.Scripts
                         };
                         if (ape == "")
                         {
-                            DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all ape tasks
+                            //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all ape tasks
                         }
                         if (ape != "")
                         {
                             var APE = ape.ToDate();
-                            #region Events
-                            // Year end 
-                            string name = $"Year end ({Client.Name})";
-                            Event rootEvent = DataHandler.AddEvent(new Event(name: name, initalDate: APE, colourType: "APE", canBeLate: true));
-                            rootEvent.SetIntervals(new Interval(1, 0, 0)); // should be year interval
-                            rootEvent.SetBinding(this, "AccountsPeriodEnd", "Client", "AccountsReturns");
+                            //#region Events
+                            //// Year end 
+                            //string name = $"Year end ({Client.Name})";
+                            //Event rootEvent = DataHandler.AddEvent(new Event(name: name, initalDate: APE, colourType: "APE", canBeLate: true));
+                            //rootEvent.SetIntervals(new Interval(1, 0, 0)); // should be year interval
+                            //rootEvent.SetBinding(this, "AccountsPeriodEnd", "Client", "AccountsReturns");
 
 
-                            // Request Accounts  ------ doesnt work
-                            name = $"Request accounts info ({Client.Name})";
-                            Event e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(1).GetLastDay(), colourType: "APE"));
-                            Interval interval = new Interval(1, 0, 0) // should be year interval
-                            {
-                                ForceLastDayOfMonth = true
-                            };
-                            e.SetIntervals(interval);
+                            //// Request Accounts  ------ doesnt work
+                            //name = $"Request accounts info ({Client.Name})";
+                            //Event e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(1).GetLastDay(), colourType: "APE"));
+                            //Interval interval = new Interval(1, 0, 0) // should be year interval
+                            //{
+                            //    ForceLastDayOfMonth = true
+                            //};
+                            //e.SetIntervals(interval);
 
 
-                            // Start to prepare accounts
-                            name = $"Start to prepare accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(4).SetDay(14), colourType: "APE"));
-                            interval = new Interval(1, 0, 0) // should be year interval
-                            {
-                                ForceDate = 14
-                            };
-                            e.SetIntervals(interval);
+                            //// Start to prepare accounts
+                            //name = $"Start to prepare accounts ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(4).SetDay(14), colourType: "APE"));
+                            //interval = new Interval(1, 0, 0) // should be year interval
+                            //{
+                            //    ForceDate = 14
+                            //};
+                            //e.SetIntervals(interval);
 
-                            // Urgent to prepare accounts
-                            name = $"Urgent prepare accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(7).GetLastDay(), colourType: "APE"));
-                            interval = new Interval(1, 0, 0) // should be year interval
-                            {
-                                ForceLastDayOfMonth = true
-                            };
-                            e.SetIntervals(interval);
+                            //// Urgent to prepare accounts
+                            //name = $"Urgent prepare accounts ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(7).GetLastDay(), colourType: "APE"));
+                            //interval = new Interval(1, 0, 0) // should be year interval
+                            //{
+                            //    ForceLastDayOfMonth = true
+                            //};
+                            //e.SetIntervals(interval);
 
-                            // VERY Urgent to prepare accounts
-                            name = $"VERY urgent prepare accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(8).GetLastDay(), colourType: "APE"));
-                            interval = new Interval(1, 0, 0) // should be year interval
-                            {
-                                ForceLastDayOfMonth = true
-                            };
-                            e.SetIntervals(interval);
+                            //// VERY Urgent to prepare accounts
+                            //name = $"VERY urgent prepare accounts ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(8).GetLastDay(), colourType: "APE"));
+                            //interval = new Interval(1, 0, 0) // should be year interval
+                            //{
+                            //    ForceLastDayOfMonth = true
+                            //};
+                            //e.SetIntervals(interval);
 
-                            // CT600 due
-                            name = $"CT600 due ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.GetLastDay().AddDays(-1), colourType: "APE"));
-                            interval = new Interval(1, 0, 0); // should be year interval
-                            e.SetIntervals(interval);
-                            e.Advance(APE);
+                            //// CT600 due
+                            //name = $"CT600 due ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.GetLastDay().AddDays(-1), colourType: "APE"));
+                            //interval = new Interval(1, 0, 0); // should be year interval
+                            //e.SetIntervals(interval);
+                            //e.Advance(APE);
 
-                            // Last filling date
-                            name = $"Last date for filing accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).GetLastDay(), colourType: "APE"));
-                            interval = new Interval(1, 0, 0) // should be year interval
-                            {
-                                ForceLastDayOfMonth = true
-                            };
-                            e.SetIntervals(interval);
-                            e.Advance(APE);
+                            //// Last filling date
+                            //name = $"Last date for filing accounts ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).GetLastDay(), colourType: "APE"));
+                            //interval = new Interval(1, 0, 0) // should be year interval
+                            //{
+                            //    ForceLastDayOfMonth = true
+                            //};
+                            //e.SetIntervals(interval);
+                            //e.Advance(APE);
 
-                            // Tax due HMRC
-                            name = $"Tax due HMRC ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddMonths(10).GetFirstDay(), colourType: "APE"));
-                            interval = new Interval(1, 0, 0) // should be year interval
-                            {
-                                ForceFirstDayOfMonth = true
-                            };
-                            e.SetIntervals(interval);
-                            e.Advance(APE);
-                            #endregion
+                            //// Tax due HMRC
+                            //name = $"Tax due HMRC ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddMonths(10).GetFirstDay(), colourType: "APE"));
+                            //interval = new Interval(1, 0, 0) // should be year interval
+                            //{
+                            //    ForceFirstDayOfMonth = true
+                            //};
+                            //e.SetIntervals(interval);
+                            //e.Advance(APE);
+                            //#endregion
 
                             #region Dependents
                             // Current
@@ -1819,6 +1828,15 @@ namespace Bookkeeping_manager.Scripts
                 if (vatPeriodEnd != value)
                 {
                     string c = vatPeriodEnd;
+                    if (value == "" && Client != null)
+                    {
+                        vatPeriodEnd = value;
+                        NextReturnDate = "";
+                        DataHandler.RemoveTask(Client.VATPETasks);
+                        Client.VATPETasks = null;
+                        OnPropertyChanged(c);
+                        return;
+                    }
                     vatPeriodEnd = DataEnforce.LastDay(c, DataEnforce.Date(c, value));
                     if (DataHandler.AllowSet && (vatPeriodEnd == "" || vatPeriodEnd != c))
                     {
@@ -1831,40 +1849,40 @@ namespace Bookkeeping_manager.Scripts
                                 $"Request VAT info ({Client.Name})",
                                 $"File VAT ({Client.Name})"
                             };
-                            DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all vat tasks
+                            //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName)); // removes all vat tasks
                         }
                         else
                         {
                             DateTime VAT = vatPeriodEnd.ToDate();
-                            #region Events
                             int period = vatFreq[0] == "0" ? 3 : 1;
-                            string name = $"VAT period end ({Client.Name})";
-                            // VAT period end
-                            Event e = DataHandler.AddEvent(new Event(name: name, initalDate: VAT, colourType: "VATPerEnd", canBeLate: false));
-                            e.SetBinding(this, "VATPeriodEnd", "Client", "VATDetails");
-                            Interval interval = new Interval(0, period, 0)
-                            {
-                                ForceLastDayOfMonth = true
-                            };
-                            e.SetIntervals(interval);
+                            #region Events
+                            //string name = $"VAT period end ({Client.Name})";
+                            //// VAT period end
+                            //Event e = DataHandler.AddEvent(new Event(name: name, initalDate: VAT, colourType: "VATPerEnd", canBeLate: false));
+                            //e.SetBinding(this, "VATPeriodEnd", "Client", "VATDetails");
+                            //Interval interval = new Interval(0, period, 0)
+                            //{
+                            //    ForceLastDayOfMonth = true
+                            //};
+                            //e.SetIntervals(interval);
 
-                            // Request VAT info
-                            name = $"Request VAT info ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: VAT.AddMonths(1).SetDay(5), colourType: "VATReq"));
-                            interval = new Interval(0, period, 0)
-                            {
-                                ForceDate = 5
-                            };
-                            e.SetIntervals(interval);
+                            //// Request VAT info
+                            //name = $"Request VAT info ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: VAT.AddMonths(1).SetDay(5), colourType: "VATReq"));
+                            //interval = new Interval(0, period, 0)
+                            //{
+                            //    ForceDate = 5
+                            //};
+                            //e.SetIntervals(interval);
 
-                            // File VAT
-                            name = $"File VAT ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: VAT.AddMonths(2).SetDay(7), colourType: "VATFile"));
-                            interval = new Interval(0, period, 0)
-                            {
-                                ForceDate = 7
-                            };
-                            e.SetIntervals(interval);
+                            //// File VAT
+                            //name = $"File VAT ({Client.Name})";
+                            //e = DataHandler.AddEvent(new Event(name: name, initalDate: VAT.AddMonths(2).SetDay(7), colourType: "VATFile"));
+                            //interval = new Interval(0, period, 0)
+                            //{
+                            //    ForceDate = 7
+                            //};
+                            //e.SetIntervals(interval);
                             #endregion
 
                             #region Dependency
@@ -2105,7 +2123,7 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has taks -- not yet done
+    // has taks
     public class PayRoll : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -2144,7 +2162,22 @@ namespace Bookkeeping_manager.Scripts
         // has tasks
         public string Date
         {
-            get => date;
+            get
+            {
+                if (Client.PayrollTasks != null)
+                {
+                    if (!Client.PayrollTasks.ContainsKey(Type))
+                    {
+                        return date;
+                    }
+                    string d = Client.PayrollTasks[Type].Parent.Date.GetString();
+                    if (d != date)
+                    {
+                        date = d;
+                    }
+                }
+                return date;
+            }
             set
             {
                 if (date != value)
@@ -2153,37 +2186,22 @@ namespace Bookkeeping_manager.Scripts
                     date = DataEnforce.Date(date, value);
                     if (DataHandler.AllowSet && (date == "" || date != c))
                     {
-                        Interval interval = new Interval();
+                        //Interval interval = new Interval();
                         if (date != "")
                         {
-                            switch (Type)
-                            {
-                                case "Weekly":
-                                    interval = new Interval(0, 0, 7);
-                                    break;
-                                case "2Weekly":
-                                    interval = new Interval(0, 0, 14);
-                                    break;
-                                case "Monthly":
-                                    interval = new Interval(0, 1, 0);
-                                    break;
-                            }
                             switch (IntervalType[0])
                             {
                                 case "1": // 28th
                                     date = DataEnforce.Day(date, 28);
-                                    interval.ForceDate = 28;
                                     break;
                                 case "2": // every other friday
                                     date = DataEnforce.Friday(date);
                                     break;
                                 case "3": // last day of month
                                     date = DataEnforce.LastDay(c, date);
-                                    interval.ForceLastDayOfMonth = true;
                                     break;
                                 case "4": // last friday of month
                                     date = DataEnforce.LastFriday(date);
-                                    interval.LastFriday = true;
                                     break;
                             }
                         }
@@ -2193,19 +2211,37 @@ namespace Bookkeeping_manager.Scripts
                         };
                         if (date == "" || IntervalType[0] == "0" && Type != "Weekly")
                         {
-                            DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                            //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                            DataHandler.RemoveTask(Client.PayrollTasks[Type]);
                         }
                         else
                         {
                             DateTime DATE = date.ToDate();
-                            Event e = DataHandler.AddEvent(new Event(name: $"Payroll {Type} ({Client.Name})", colourType: "Payroll", initalDate: DATE, canBeLate: false));
+                            /*Event e = DataHandler.AddEvent(new Event(name: $"Payroll {Type} ({Client.Name})", colourType: "Payroll", initalDate: DATE, canBeLate: false));
                             e.SetIntervals(interval);
                             e.SetBinding(0, "", "", "");
                             e.UpdateBinding = () =>
                             {
                                 DataHandler.AddEvent(new Event(name: $"Prepare Payroll {type} ({Client.Name})", colourType: "Payroll", initalDate: e.Date.AddDays(-2)));
                             };
-                            e.UpdateBinding();
+                            e.UpdateBinding();*/
+
+                            #region Tasks -- New --
+                            Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreatePayroll(Client.Name, DATE, Type, IntervalType[0]);
+                            DataHandler.AddTask(taskGroup);
+                            if (Client.PayrollTasks is null)
+                            {
+                                Client.PayrollTasks = new Dictionary<string, Tasks.TaskGroup>();
+                            }
+                            if (Client.PayrollTasks.ContainsKey(Type))
+                            {
+                                Client.PayrollTasks[Type] = taskGroup;
+                            }
+                            else
+                            {
+                                Client.PayrollTasks.Add(Type, taskGroup);
+                            }
+                            #endregion
                         }
                     }
 
@@ -2575,8 +2611,8 @@ namespace Bookkeeping_manager.Scripts
                     };
                     if (withheld)
                     {
-                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CISW", initalDate: DateTime.Today.SetDay(19), showPeriod: 13));
-                        e.SetIntervals(new Interval(0, 1, 0));
+                        /*Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CISW", initalDate: DateTime.Today.SetDay(19), showPeriod: 13));
+                        e.SetIntervals(new Interval(0, 1, 0));*/
 
 
                         #region Tasks -- New --
@@ -2587,7 +2623,7 @@ namespace Bookkeeping_manager.Scripts
                     }
                     else
                     {
-                        DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
                         DataHandler.RemoveTask(Client.CISWTasks);
                     }
                 }
@@ -2610,8 +2646,8 @@ namespace Bookkeeping_manager.Scripts
                     };
                     if (suffered)
                     {
-                        Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CISS", initalDate: DateTime.Today.SetDay(19), showPeriod: 13));
-                        e.SetIntervals(new Interval(0, 1, 0));
+                        /*Event e = DataHandler.AddEvent(new Event(name: names[0], colourType: "CISS", initalDate: DateTime.Today.SetDay(19), showPeriod: 13));
+                        e.SetIntervals(new Interval(0, 1, 0));*/
 
                         #region Tasks -- New --
                         Tasks.TaskGroup taskGroup = Tasks.TaskGroup.CreateCISS(Client.Name);
@@ -2621,7 +2657,7 @@ namespace Bookkeeping_manager.Scripts
                     }
                     else
                     {
-                        DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
+                        //DataHandler.AllEvents.RemoveAll(e => names.Contains(e.DisplayName));
                         DataHandler.RemoveTask(Client.CISSTasks);
                     }
                 }

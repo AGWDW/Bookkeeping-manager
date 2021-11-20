@@ -302,7 +302,28 @@ namespace Bookkeeping_manager.Scripts
         /// </summary>
         public static DateTime SetMonth(this DateTime obj, int month)
         {
-            return new DateTime(obj.Year, month, obj.Day);
+            try
+            {
+                return new DateTime(obj.Year, month, obj.Day);
+            }
+            catch
+            {
+                try
+                {
+                    return new DateTime(obj.Year, month, obj.Day - 1);
+                }
+                catch
+                {
+                    try
+                    {
+                        return new DateTime(obj.Year, month, obj.Day - 2);
+                    }
+                    catch
+                    {
+                        return new DateTime(obj.Year, month, obj.Day - 3);
+                    }
+                }
+            }
         }
     }
 }

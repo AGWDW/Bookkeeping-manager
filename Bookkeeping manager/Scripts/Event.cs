@@ -5,187 +5,187 @@ using System.Linq;
 
 namespace Bookkeeping_manager.Scripts
 {
-    public class Event : MongoObject
-    {
-        [BsonIgnore]
-        public object Binding;
-        public string BindingProperty { get; set; }
-        public string BindingName { get; set; }
-        public string BindingType { get; set; }
-        public bool CanBeEdited { get; set; }
-        [BsonIgnore]
-        public DateTime Date { get; internal set; }
-        public string DateRaw
-        {
-            get
-            {
-                return Date.GetString();
-            }
-            set
-            {
-                Date = DateTime.Parse(value);
-            }
-        }
-        public string DisplayName { get; set; }
-        public string Comment { get; set; }
-        public string ColourType { get; set; }
-        [BsonIgnore]
-        public string Colour
-        {
-            get
-            {
-                if (!ColourType.IsHex())
-                {
-                    return DataHandler.EventColours[ColourType];
-                }
-                return ColourType;
-            }
-        }
-        /// <summary>
-        /// The period of time that a late task wont show as late
-        /// </summary>
-        public int ShowPeriod { get; set; }
-        public bool CanBeLate { get; set; }
-        private int lifeSpan;
-        public int LifeSpan
-        {
-            get => lifeSpan;
-            set
-            {
-                UpdateBinding = () =>
-                {
-                    Binding.SetProperty(BindingProperty, Date.GetString());
-                };
-                lifeSpan = value;
-            }
-        }
-        public bool IsLate()
-        {
-            bool res = Date < DateTime.Now.Date;
-            if (!CanBeLate || (DateTime.Today - Date).TotalDays > LifeSpan)
-            {
-                Advance(-1);
-                return false;
-            }
-            return res;
-        }
-        public List<Interval> Intervals { get; set; }
-        /// <summary>
-        /// The next interval to be added
-        /// </summary>
-        private int CurrentInterval { get; set; }
-        public bool Advance(int intervals = -1)
-        {
-            if (Intervals.Count == 0)
-                return false;
-            void adv()
-            {
-                Date += Intervals[CurrentInterval];
-                CurrentInterval = CurrentInterval++ % Intervals.Count;
-            }
-            if (intervals >= 0)
-            {
-                for (int i = 0; i < intervals; i++)
-                {
-                    adv();
-                }
-                UpdateBindingBase();
-                return true;
-            }
-            while (Date < DateTime.Today)
-            {
-                adv();
-            }
-            UpdateBindingBase();
-            return true;
-        }
-        public bool Advance(DateTime date)
-        {
-            if (Intervals.Count == 0)
-                return false;
-            void adv()
-            {
-                Date += Intervals[CurrentInterval];
-                CurrentInterval = CurrentInterval++ % Intervals.Count;
-            }
-            while (Date < date)
-            {
-                adv();
-            }
-            UpdateBindingBase();
-            return true;
-        }
-        public bool ShowLate()
-        {
-            if (ShowPeriod == 0)
-                return true;
-            return (DateTime.Today - Date).TotalDays > ShowPeriod;
-        }
-        public bool Delete { get; set; }
-        private bool changed = false;
-        [BsonIgnore]
-        public bool Changed
-        {
-            get => changed;
-            set
-            {
-                if (value)
-                {
-                    _ = 0;
-                }
-                else
-                {
-                    _ = 0;
-                }
-                changed = value;
-            }
-        }
-        public Event(DateTime initalDate, string name = "NULL", string comment = "", bool canBeLate = true, bool canBeEdited = false, string colourType = "NULL", int life = 365, int showPeriod = 0)
-        {
-            Date = initalDate.Date;
-            DisplayName = name;
-            Comment = comment;
-            CanBeLate = canBeLate;
-            Intervals = new List<Interval>();
-            CurrentInterval = 0;
-            CanBeEdited = canBeEdited;
-            ColourType = colourType;
-            UpdateBinding = () =>
-            {
-                Binding.SetProperty(BindingProperty, Date.ToString("dd/MM/yyyy"));
-            };
-            LifeSpan = life;
-            ShowPeriod = showPeriod;
-            Changed = true;
-            Delete = false;
-        }
-        public void SetIntervals(params Interval[] intervals)
-        {
-            Intervals = intervals.OfType<Interval>().ToList();
-        }
-        private void UpdateBindingBase()
-        {
-            Changed = true;
-            if (Binding is null) return;
-            if (UpdateBinding is null)
-                return;
-            UpdateBinding();
-        }
-        [BsonIgnore]
-        public Action UpdateBinding;
+    //public class Event : MongoObject
+    //{
+    //    [BsonIgnore]
+    //    public object Binding;
+    //    public string BindingProperty { get; set; }
+    //    public string BindingName { get; set; }
+    //    public string BindingType { get; set; }
+    //    public bool CanBeEdited { get; set; }
+    //    [BsonIgnore]
+    //    public DateTime Date { get; internal set; }
+    //    public string DateRaw
+    //    {
+    //        get
+    //        {
+    //            return Date.GetString();
+    //        }
+    //        set
+    //        {
+    //            Date = DateTime.Parse(value);
+    //        }
+    //    }
+    //    public string DisplayName { get; set; }
+    //    public string Comment { get; set; }
+    //    public string ColourType { get; set; }
+    //    [BsonIgnore]
+    //    public string Colour
+    //    {
+    //        get
+    //        {
+    //            if (!ColourType.IsHex())
+    //            {
+    //                return DataHandler.EventColours[ColourType];
+    //            }
+    //            return ColourType;
+    //        }
+    //    }
+    //    /// <summary>
+    //    /// The period of time that a late task wont show as late
+    //    /// </summary>
+    //    public int ShowPeriod { get; set; }
+    //    public bool CanBeLate { get; set; }
+    //    private int lifeSpan;
+    //    public int LifeSpan
+    //    {
+    //        get => lifeSpan;
+    //        set
+    //        {
+    //            UpdateBinding = () =>
+    //            {
+    //                Binding.SetProperty(BindingProperty, Date.GetString());
+    //            };
+    //            lifeSpan = value;
+    //        }
+    //    }
+    //    public bool IsLate()
+    //    {
+    //        bool res = Date < DateTime.Now.Date;
+    //        if (!CanBeLate || (DateTime.Today - Date).TotalDays > LifeSpan)
+    //        {
+    //            Advance(-1);
+    //            return false;
+    //        }
+    //        return res;
+    //    }
+    //    public List<Interval> Intervals { get; set; }
+    //    /// <summary>
+    //    /// The next interval to be added
+    //    /// </summary>
+    //    private int CurrentInterval { get; set; }
+    //    public bool Advance(int intervals = -1)
+    //    {
+    //        if (Intervals.Count == 0)
+    //            return false;
+    //        void adv()
+    //        {
+    //            Date += Intervals[CurrentInterval];
+    //            CurrentInterval = CurrentInterval++ % Intervals.Count;
+    //        }
+    //        if (intervals >= 0)
+    //        {
+    //            for (int i = 0; i < intervals; i++)
+    //            {
+    //                adv();
+    //            }
+    //            UpdateBindingBase();
+    //            return true;
+    //        }
+    //        while (Date < DateTime.Today)
+    //        {
+    //            adv();
+    //        }
+    //        UpdateBindingBase();
+    //        return true;
+    //    }
+    //    public bool Advance(DateTime date)
+    //    {
+    //        if (Intervals.Count == 0)
+    //            return false;
+    //        void adv()
+    //        {
+    //            Date += Intervals[CurrentInterval];
+    //            CurrentInterval = CurrentInterval++ % Intervals.Count;
+    //        }
+    //        while (Date < date)
+    //        {
+    //            adv();
+    //        }
+    //        UpdateBindingBase();
+    //        return true;
+    //    }
+    //    public bool ShowLate()
+    //    {
+    //        if (ShowPeriod == 0)
+    //            return true;
+    //        return (DateTime.Today - Date).TotalDays > ShowPeriod;
+    //    }
+    //    public bool Delete { get; set; }
+    //    private bool changed = false;
+    //    [BsonIgnore]
+    //    public bool Changed
+    //    {
+    //        get => changed;
+    //        set
+    //        {
+    //            if (value)
+    //            {
+    //                _ = 0;
+    //            }
+    //            else
+    //            {
+    //                _ = 0;
+    //            }
+    //            changed = value;
+    //        }
+    //    }
+    //    public Event(DateTime initalDate, string name = "NULL", string comment = "", bool canBeLate = true, bool canBeEdited = false, string colourType = "NULL", int life = 365, int showPeriod = 0)
+    //    {
+    //        Date = initalDate.Date;
+    //        DisplayName = name;
+    //        Comment = comment;
+    //        CanBeLate = canBeLate;
+    //        Intervals = new List<Interval>();
+    //        CurrentInterval = 0;
+    //        CanBeEdited = canBeEdited;
+    //        ColourType = colourType;
+    //        UpdateBinding = () =>
+    //        {
+    //            Binding.SetProperty(BindingProperty, Date.ToString("dd/MM/yyyy"));
+    //        };
+    //        LifeSpan = life;
+    //        ShowPeriod = showPeriod;
+    //        Changed = true;
+    //        Delete = false;
+    //    }
+    //    public void SetIntervals(params Interval[] intervals)
+    //    {
+    //        Intervals = intervals.OfType<Interval>().ToList();
+    //    }
+    //    private void UpdateBindingBase()
+    //    {
+    //        Changed = true;
+    //        if (Binding is null) return;
+    //        if (UpdateBinding is null)
+    //            return;
+    //        UpdateBinding();
+    //    }
+    //    [BsonIgnore]
+    //    public Action UpdateBinding;
 
-        public void SetBinding(object binding, string property, string type, string name)
-        {
-            Binding = binding;
-            BindingProperty = property;
-            BindingType = type;
-            BindingName = name;
-        }
-        public override string ToString()
-        {
-            return DisplayName + " : " + Delete.ToString() + " : " + Changed.ToString();
-        }
-    }
+    //    public void SetBinding(object binding, string property, string type, string name)
+    //    {
+    //        Binding = binding;
+    //        BindingProperty = property;
+    //        BindingType = type;
+    //        BindingName = name;
+    //    }
+    //    public override string ToString()
+    //    {
+    //        return DisplayName + " : " + Delete.ToString() + " : " + Changed.ToString();
+    //    }
+    //}
     public class Interval
     {
         public DateTimeInterval IntervalRaw { get; set; }
@@ -238,7 +238,7 @@ namespace Bookkeeping_manager.Scripts
                 int increment = b.DayUp ? 1 : -1;
                 while (res.DayOfWeek.ToString() != b.ForceDay)
                 {
-                    res.AddDays(increment);
+                    res = res.AddDays(increment);
                 }
             }
             else if (b.ForceDate != -1)
@@ -246,7 +246,7 @@ namespace Bookkeeping_manager.Scripts
                 int increment = b.DateUp ? 1 : -1;
                 while (res.Day != b.ForceDate)
                 {
-                    res.AddDays(increment);
+                    res = res.AddDays(increment);
                 }
             }
             else if (b.ForceLastDayOfMonth)

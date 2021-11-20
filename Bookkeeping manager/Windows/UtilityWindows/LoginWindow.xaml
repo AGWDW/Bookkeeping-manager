@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Bookkeeping_manager.Windows.UtilityWindows"
         mc:Ignorable="d"
-        Title="LoginWindow" Height="225" Width="300" ResizeMode="NoResize">
+        Title="LoginWindow" Height="225" Width="300" ResizeMode="NoResize" KeyUp="Window_KeyUp">
     <StackPanel>
         <TextBlock Text="Username" Margin="10,0,0,0"/>
         <TextBox x:Name="UserNameBox" Margin="10,0,10,0" Height="35"/>

@@ -11,18 +11,13 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
     /// </summary>
     public partial class EventViewer : Window
     {
-        private bool delete = true;
-        public Event Event { get; set; }
-        public Tasks.Task Task
-        {
-            get => TaskGroup[TaskIndex];
-            set => TaskGroup[TaskIndex] = value;
-        }
+        //public Event Event { get; set; }
+        public Tasks.Task Task => TaskGroup[TaskIndex];
         public Tasks.TaskGroup TaskGroup { get; private set; }
         public int TaskIndex { get; private set; }
         private bool Creating { get; set; }
         public bool ShouldCreate { get; private set; }
-        public EventViewer(Event @event, bool creating = false)
+        /* public EventViewer(Event @event, bool creating = false)
         {
             Event = @event;
             Color c = Event.Colour.ToColour(true);
@@ -42,7 +37,7 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
             delete = creating;
             if (!creating)
                 EventDate.Text = Event.Date.GetString();
-        }
+        } */
         public EventViewer(Tasks.TaskGroup taskGroup, Tasks.Task task, bool creating = false)
         {
             TaskGroup = taskGroup;
@@ -60,9 +55,13 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
                 CommentBox.Style = FindResource("ReadOnlyLargeTB") as Style;
                 EventColour.Focusable = false;
                 EventColour.InputBindings.Clear();
+                NameTB.Text = TaskGroup.GetDisplayName(Task);
+            }
+            else
+            {
+                NameTB.Text = Task.Name;
             }
             Creating = creating;
-            delete = creating;
 
             EventDate.Text = Task.Date.GetString();
         }
@@ -87,7 +86,6 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            delete = false;
             Close();
         }
 
@@ -138,6 +136,14 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
             else
             {
                 Task.HexColour = EventColour.SelectedColor.GetValueOrDefault().ToString();
+            }
+        }
+
+        private void NameTB_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (Task.CanBeEdited)
+            {
+                Task.Name = NameTB.Text;
             }
         }
     }

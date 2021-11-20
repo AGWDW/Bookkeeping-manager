@@ -107,6 +107,8 @@ namespace Bookkeeping_manager.Scripts
                 string amlName = bson["AMLContactName"].AsString;
                 string colour = bson["Colour"].AsString;
                 string comment = bson["TaskComment"].AsString;
+                string period = bson["PayRollPeriod"].AsString;
+                string interval = bson["PayRollInterval"].AsString;
                 DateTime baseDate = bson["BaseDate"].AsString.ToDate();
                 int vatPeriod = bson["VATPeriod"].AsInt32;
                 int[] advCnt = BsonSerializer.Deserialize<int[]>(bson["AdvanceCounts"].ToJson());
@@ -128,6 +130,21 @@ namespace Bookkeeping_manager.Scripts
                         break;
                     case "Custom":
                         res = Tasks.TaskGroup.CreateCustom(clientName, baseDate, colour, comment);
+                        break;
+                    case "Payroll":
+                        res = Tasks.TaskGroup.CreatePayroll(clientName, baseDate, period, interval);
+                        break;
+                    case "SA":
+                        res = Tasks.TaskGroup.CreateSA(clientName);
+                        break;
+                    case "P11D":
+                        res = Tasks.TaskGroup.CreateP11D(clientName);
+                        break;
+                    case "CISW":
+                        res = Tasks.TaskGroup.CreateCISW(clientName);
+                        break;
+                    case "CISS":
+                        res = Tasks.TaskGroup.CreateCISS(clientName);
                         break;
                 }
                 res._id = _id;

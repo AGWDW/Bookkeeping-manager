@@ -1,4 +1,5 @@
 ﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -30,15 +31,15 @@ namespace Bookkeeping_manager.Windows
             get => DataHandler.AllTasks;
             set => DataHandler.AllTasks = value;
         }
-        private List<Event> Events
+        /*private List<Event> Events
         {
             get => DataHandler.AllEvents;
             set => DataHandler.AllEvents = value;
-        }
-        public YearView(List<Event> events)
+        }*/
+        public YearView()
         {
             year = DateTime.Now.ToString("yyyy");
-            Events = events;
+            //Events = events;
             DataContext = this;
             InitializeComponent();
             CreateGrid();
@@ -138,11 +139,16 @@ namespace Bookkeeping_manager.Windows
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Event @event = new Event(name: "", canBeEdited: true, initalDate: DateTime.Today);
+
+            TaskGroup task = TaskGroup.CreateCustom("", DateTime.Today, "#FF000000", "");
+            Tasks.Add(task);
+            UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(task, task[0], creating: true);
+            viewer.ShowDialog();
+            /*Event @event = new Event(name: "", canBeEdited: true, initalDate: DateTime.Today);
             UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(@event, true);
             viewer.ShowDialog();
             if (!@event.Delete)
-                Events.Add(@event);
+                Events.Add(@event);*/
 
             ReDraw();
         }
