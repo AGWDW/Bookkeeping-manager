@@ -52,6 +52,7 @@ namespace Bookkeeping_manager.Scripts
         }
         private static void GetDocumentsFromDatabase()
         {
+            return;
             string[] docNames = Handler.GetAllFileNames();
             string tempPath = Path.GetTempPath();
             foreach (string docName in docNames)
