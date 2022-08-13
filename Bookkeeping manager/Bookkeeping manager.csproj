@@ -53,18 +53,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>4A5EEA11412A300778721CA7B9BB6F0F84008EFC</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>Bookkeeping manager_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>1618295-200-removebg-preview.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
@@ -183,14 +171,34 @@
     <Compile Include="Scripts\Extensions.cs" />
     <Compile Include="Scripts\MongoHandler.cs" />
     <Compile Include="Scripts\Passwords.cs" />
+    <Compile Include="src\Clients\Client.cs" />
+    <Compile Include="src\Clients\ClientInfomation_Data.cs" />
+    <Compile Include="src\Clients\ClientManager.cs" />
+    <Compile Include="src\Clients\ContactInfomation_Data.cs" />
+    <Compile Include="src\Rules\AlphaNumericRule.cs" />
+    <Compile Include="src\Rules\AlphaRule.cs" />
+    <Compile Include="src\Rules\DateRule.cs" />
+    <Compile Include="src\Rules\NumericRule.cs" />
+    <Compile Include="src\Rules\PhoneNumberRule.cs" />
+    <Compile Include="src\Tasks\ReacuringTask.cs" />
+    <Compile Include="src\Tasks\StaticTask.cs" />
+    <Compile Include="src\Tasks\Task.cs" />
+    <Compile Include="src\Tasks\TaskManager.cs" />
+    <Compile Include="src\Tasks\TaskState.cs" />
+    <Compile Include="wigits\TB.xaml.cs">
+      <DependentUpon>TB.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ClientPages\AccountDetails_Page.xaml.cs">
+      <DependentUpon>AccountDetails_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClientPages\ClientFiles.xaml.cs">
       <DependentUpon>ClientFiles.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ClientPages\ClientInfoViewer.xaml.cs">
-      <DependentUpon>ClientInfoViewer.xaml</DependentUpon>
+    <Compile Include="Windows\ClientPages\CompnayDetails_Page.xaml.cs">
+      <DependentUpon>CompnayDetails_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClientPages\ContactDetails.xaml.cs">
       <DependentUpon>ContactDetails.xaml</DependentUpon>
@@ -225,6 +233,10 @@
     <Compile Include="Windows\YearView.xaml.cs">
       <DependentUpon>YearView.xaml</DependentUpon>
     </Compile>
+    <Page Include="wigits\TB.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\ClientOverview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -233,11 +245,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\ClientPages\AccountDetails_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\ClientPages\ClientFiles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ClientPages\ClientInfoViewer.xaml">
+    <Page Include="Windows\ClientPages\CompnayDetails_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -359,6 +375,7 @@
     <Content Include="Core\Compression\Snappy\lib\win\snappy64.dll" />
     <Content Include="Core\Compression\Zstandard\lib\win\libzstd.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets" Condition="Exists('..\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

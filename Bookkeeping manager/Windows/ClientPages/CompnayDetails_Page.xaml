@@ -1,0 +1,188 @@
+﻿<Page x:Class="Bookkeeping_manager.Windows.ClientPages.CompnayDetails_Page"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Bookkeeping_manager.Windows.ClientPages"
+      xmlns:rules="clr-namespace:Bookkeeping_manager.src.Rules"
+      xmlns:wigits="clr-namespace:Bookkeeping_manager.wigits" xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+      mc:Ignorable="d" 
+      d:DesignHeight="500" d:DesignWidth="400"
+      Title="ClientInfoViewer" Unloaded="Page_Unloaded">
+
+    <Grid x:Name="DetailsGrid" Background="Red" ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!--Company Number-->
+        <TextBlock Grid.Row="0" Grid.Column="0">Company Number</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="CompanyNumber">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0">Charity Number</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="CharityNumber">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="2" Grid.Column="0">Incorporation Date</TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="IncorporationDate">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="3" Grid.Column="0">Confirmation Enabled</TextBlock>
+        <toggleswitch:HorizontalToggleSwitch Grid.Row="3" Grid.Column="1" 
+            Checked="ConfirEnableToggle" Unchecked="ConfirEnableToggle"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0">Confirmation Statement Date</TextBlock>
+        <TextBox x:Name="ConfirDateBox" Grid.Row="4" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="ConfirmationStatementDate">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="5" Grid.Column="0">Trading As</TextBlock>
+        <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource RegularTB}" 
+                 Text="{Binding TradingAs}"/>
+        
+        <TextBlock Grid.Row="6" Grid.Column="0">Registered Address</TextBlock>
+        <TextBox Grid.Row="6" Grid.Column="1" Style="{StaticResource LargeTB}">
+            <TextBox.Text>
+                <Binding Path="RegistaredAddress">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="7" Grid.Column="0">Postal Address</TextBlock>
+        <TextBox Grid.Row="7" Grid.Column="1" Style="{StaticResource LargeTB}">
+            <TextBox.Text>
+                <Binding Path="PostalAddress">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="8" Grid.Column="0">Email Address</TextBlock>
+        <TextBox Grid.Row="8" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="EmailAddress">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="9" Grid.Column="0">Phone Number</TextBlock>
+        <TextBox Grid.Row="9" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="PhoneNumber">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="10" Grid.Column="0">SIC Code</TextBlock>
+        <TextBox Grid.Row="10" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="SIC_Code">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="11" Grid.Column="0">Nature of the Business</TextBlock>
+        <TextBox Grid.Row="11" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="Nature_of_the_Business">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="12" Grid.Column="0">UTR</TextBlock>
+        <TextBox Grid.Row="12" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="UTR">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="13" Grid.Column="0">Company's House Auth Code</TextBlock>
+        <TextBox Grid.Row="13" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="CompanysHouseAuthCode">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Row="14" Grid.Column="0">Software</TextBlock>
+        <TextBox Grid.Row="14" Grid.Column="1" Style="{StaticResource RegularTB}">
+            <TextBox.Text>
+                <Binding Path="Software">
+                    <Binding.ValidationRules>
+                        <rules:NumericRule Length="3"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+    </Grid>
+</Page>

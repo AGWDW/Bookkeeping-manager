@@ -52,7 +52,7 @@ namespace Bookkeeping_manager.Scripts
         }
         private static void GetDocumentsFromDatabase()
         {
-            string[] docNames = Handler.GetAllFileNames();
+            /*string[] docNames = Handler.GetAllFileNames();
             string tempPath = Path.GetTempPath();
             foreach (string docName in docNames)
             {
@@ -66,7 +66,7 @@ namespace Bookkeeping_manager.Scripts
                 };
                 string clientName = document.GetClientName();
                 AllClients.Find(c => c.Name == clientName).Documents.Add(document);
-            }
+            }*/
         }
         private static void SetBindings()
         {

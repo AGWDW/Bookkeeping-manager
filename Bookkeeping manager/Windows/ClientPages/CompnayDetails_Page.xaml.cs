@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src.Clients;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using Bookkeeping_manager.Scripts;
 using ToggleSwitch;
 
 namespace Bookkeeping_manager.Windows.ClientPages
@@ -12,15 +12,17 @@ namespace Bookkeeping_manager.Windows.ClientPages
     /// <summary>
     /// Interaction logic for ClientInfoViewer.xaml
     /// </summary>
-    public partial class ClientInfoViewer : Page
+    public partial class CompnayDetails_Page : Page
     {
+        public ClientInfomation_Data ClientInfomation { get; set; }
         private Scripts.ClientDetailsBase Details { get; set; }
-        public ClientInfoViewer(ClientDetailsBase details)
+        public CompnayDetails_Page(ClientDetailsBase details)
         {
             InitializeComponent();
-            DataContext = this;
+            ClientInfomation.Initalize(ConfirDateBox, FindResource("ReadOnlyTB") as Style, FindResource("RegularTB") as Style);
+            DataContext = ClientInfomation;
             Details = details;
-            PopulateGrid();
+            //PopulateGrid();
         }
         private void PopulateGrid()
         {
@@ -106,7 +108,7 @@ namespace Bookkeeping_manager.Windows.ClientPages
                     control.SetBinding(WidthProperty, widthBinding);
                     control.SetBinding(TextBox.TextProperty, textBinding);
                 }
-                DetailsGrid.RowDefinitions.Add(new RowDefinition() 
+                DetailsGrid.RowDefinitions.Add(new RowDefinition()
                 {
                     Height = GridLength.Auto
                 });
@@ -115,7 +117,7 @@ namespace Bookkeeping_manager.Windows.ClientPages
                     Source = control
                 };
                 //if(style != "Switch")
-                    //DetailsGrid.RowDefinitions.Last().SetBinding(RowDefinition.HeightProperty, rowHeight);
+                //DetailsGrid.RowDefinitions.Last().SetBinding(RowDefinition.HeightProperty, rowHeight);
 
                 Grid.SetRow(label, i);
                 Grid.SetRow(control, i++);
@@ -134,6 +136,11 @@ namespace Bookkeeping_manager.Windows.ClientPages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             _ = 0;
+        }
+
+        private void ConfirEnableToggle(object sender, RoutedEventArgs e)
+        {
+            ClientInfomation.ConfirmationEnabled = !ClientInfomation.ConfirmationEnabled;
         }
     }
 }

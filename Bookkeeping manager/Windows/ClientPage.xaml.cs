@@ -55,25 +55,25 @@ namespace Bookkeeping_manager.Windows
             switch (ClientCategories.SelectedIndex)
             {
                 case 0: // compnay detatils
-                    CategoryFrame.Navigate(new ClientInfoViewer(Client.CompanyDetails));
+                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.CompanyDetails));
                     break;
                 case 1: // contact details
-                    CategoryFrame.Navigate(new ContactDetails(Client.ContactDetials));
+                    CategoryFrame.Navigate(new ContactDetails_Page(Client.ContactDetials));
                     break;
                 case 2: // accountant
-                    CategoryFrame.Navigate(new ClientInfoViewer(Client.Accountant));
+                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.Accountant));
                     break;
                 case 3: // services
-                    CategoryFrame.Navigate(new ClientInfoViewer(Client.Services));
+                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.Services));
                     break;
                 case 4: // accounts and returns
-                    CategoryFrame.Navigate(new ClientInfoViewer(Client.AccountsReturns));
+                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.AccountsReturns));
                     break;
                 case 5: // vat details
-                    CategoryFrame.Navigate(new ClientInfoViewer(Client.VATDetails));
+                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.VATDetails));
                     break;
                 case 6: // CIS details
-                    CategoryFrame.Navigate(new ClientInfoViewer(Client.CISDetails));
+                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.CISDetails));
                     break;
                 case 7: // paye detials
                     CategoryFrame.Navigate(new ClientPages.PAYEDetails(Client.PAYEDetails));
