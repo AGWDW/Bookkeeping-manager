@@ -215,6 +215,9 @@
     <Compile Include="Windows\ClientPages\Services.xaml.cs">
       <DependentUpon>Services.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ClientPages\ServicesInfomation_Page.xaml.cs">
+      <DependentUpon>ServicesInfomation_Page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MonthView.xaml.cs">
       <DependentUpon>MonthView.xaml</DependentUpon>
     </Compile>
@@ -274,6 +277,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\ClientPages\Services.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ClientPages\ServicesInfomation_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

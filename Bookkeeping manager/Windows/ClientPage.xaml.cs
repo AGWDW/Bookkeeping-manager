@@ -64,7 +64,7 @@ namespace Bookkeeping_manager.Windows
                     CategoryFrame.Navigate(new AccountantDetails_Page());
                     break;
                 case 3: // services
-                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.Services));
+                    CategoryFrame.Navigate(new ServicesInfomation_Page());
                     break;
                 case 4: // accounts and returns
                     CategoryFrame.Navigate(new CompnayDetails_Page(Client.AccountsReturns));
