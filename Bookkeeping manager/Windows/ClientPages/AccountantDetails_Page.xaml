@@ -17,6 +17,7 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0">Name</TextBlock>
@@ -44,7 +45,7 @@
             </TextBox.Text>
         </TextBox>
 
-        <TextBlock Grid.Row="3" Grid.Column="0">Name</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="0">Notes</TextBlock>
         <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource LargeTB}" Text="{Binding Notes}"/>
 
     </Grid>

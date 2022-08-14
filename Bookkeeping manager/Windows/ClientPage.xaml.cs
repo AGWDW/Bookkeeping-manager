@@ -67,7 +67,7 @@ namespace Bookkeeping_manager.Windows
                     CategoryFrame.Navigate(new ServicesInfomation_Page());
                     break;
                 case 4: // accounts and returns
-                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.AccountsReturns));
+                    CategoryFrame.Navigate(new AccountsAndReturns_Page());
                     break;
                 case 5: // vat details
                     CategoryFrame.Navigate(new CompnayDetails_Page(Client.VATDetails));

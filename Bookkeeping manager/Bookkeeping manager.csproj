@@ -162,6 +162,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AccountsAndReturns_Page.xaml.cs">
+      <DependentUpon>AccountsAndReturns_Page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AM\MongoDataStructures.cs" />
     <Compile Include="Scripts\AM_To_BM.cs" />
     <Compile Include="Scripts\Client.cs" />
@@ -236,6 +239,10 @@
     <Compile Include="Windows\YearView.xaml.cs">
       <DependentUpon>YearView.xaml</DependentUpon>
     </Compile>
+    <Page Include="AccountsAndReturns_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="wigits\TB.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
