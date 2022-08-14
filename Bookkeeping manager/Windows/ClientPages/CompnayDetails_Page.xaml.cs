@@ -18,6 +18,7 @@ namespace Bookkeeping_manager.Windows.ClientPages
         private Scripts.ClientDetailsBase Details { get; set; }
         public CompnayDetails_Page(ClientDetailsBase details)
         {
+            ClientInfomation = new ClientInfomation_Data("jimbob");
             InitializeComponent();
             ClientInfomation.Initalize(ConfirDateBox, FindResource("ReadOnlyTB") as Style, FindResource("RegularTB") as Style);
             DataContext = ClientInfomation;

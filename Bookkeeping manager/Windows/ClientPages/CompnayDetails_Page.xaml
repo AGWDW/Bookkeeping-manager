@@ -7,30 +7,30 @@
       xmlns:rules="clr-namespace:Bookkeeping_manager.src.Rules"
       xmlns:wigits="clr-namespace:Bookkeeping_manager.wigits" xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
       mc:Ignorable="d" 
-      d:DesignHeight="500" d:DesignWidth="400"
+      d:DesignHeight="600" d:DesignWidth="400"
       Title="ClientInfoViewer" Unloaded="Page_Unloaded">
 
-    <Grid x:Name="DetailsGrid" Background="Red" ShowGridLines="True">
+    <Grid x:Name="DetailsGrid" Background="Red" ShowGridLines="True" Height="Auto">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!--Company Number-->

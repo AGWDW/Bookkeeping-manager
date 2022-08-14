@@ -13,7 +13,7 @@ namespace Bookkeeping_manager.src.Tasks
         /// <summary>
         /// all tasks including the children
         /// </summary>
-        static List<Task> allTasks;
+        static readonly List<Task> allTasks = new List<Task>();
         /// <summary>
         /// Deletes the given task from allTasks doenst effect any parents (eg if it is a child it will remain one but not be listed in allTasks)
         /// </summary>

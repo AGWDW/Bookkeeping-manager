@@ -191,8 +191,8 @@
     <Compile Include="Windows\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ClientPages\AccountDetails_Page.xaml.cs">
-      <DependentUpon>AccountDetails_Page.xaml</DependentUpon>
+    <Compile Include="Windows\ClientPages\AccountantDetails_Page.xaml.cs">
+      <DependentUpon>AccountantDetails_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClientPages\ClientFiles.xaml.cs">
       <DependentUpon>ClientFiles.xaml</DependentUpon>
@@ -245,7 +245,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ClientPages\AccountDetails_Page.xaml">
+    <Page Include="Windows\ClientPages\AccountantDetails_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

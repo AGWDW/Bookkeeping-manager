@@ -61,7 +61,7 @@ namespace Bookkeeping_manager.Windows
                     CategoryFrame.Navigate(new ContactDetails_Page(Client.ContactDetials));
                     break;
                 case 2: // accountant
-                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.Accountant));
+                    CategoryFrame.Navigate(new AccountantDetails_Page());
                     break;
                 case 3: // services
                     CategoryFrame.Navigate(new CompnayDetails_Page(Client.Services));
@@ -100,6 +100,11 @@ namespace Bookkeeping_manager.Windows
                 return;
             }
             Client.Delete = false;
+        }
+
+        private void CategoryFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+
         }
     }
 }

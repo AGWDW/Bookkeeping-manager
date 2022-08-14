@@ -38,7 +38,7 @@
                 </DockPanel>
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="1">
                     <Frame x:Name="CategoryFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Style="{StaticResource mainFrameStyle}" 
-                           VerticalAlignment="Stretch" MouseWheel="CategoryFrame_MouseWheel"/>
+                           VerticalAlignment="Stretch" MouseWheel="CategoryFrame_MouseWheel" Navigated="CategoryFrame_Navigated"/>
                 </ScrollViewer>
             </Grid>
         </StackPanel>
