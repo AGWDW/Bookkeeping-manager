@@ -1,18 +1,11 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src.Tasks;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -33,23 +26,23 @@ namespace Bookkeeping_manager.Windows
                 ReDraw();
             }
         }
-        private List<Event> Events
+        private List<Task> Tasks
         {
-            get => DataHandler.AllEvents;
-            set => DataHandler.AllEvents = value;
+            get => TaskManager.AllTasks;
         }
-        public YearView(List<Event> events)
+        public YearView()
         {
             year = DateTime.Now.ToString("yyyy");
-            Events = events;
             DataContext = this;
             InitializeComponent();
+
+
             CreateGrid();
             PopulateGrid();
         }
         public void CreateGrid()
         {
-            for(byte i = 0; i < 12; i++)
+            for (byte i = 0; i < 12; i++)
             {
                 StackPanel stackV = new StackPanel()
                 {
@@ -77,23 +70,26 @@ namespace Bookkeeping_manager.Windows
         }
         public void PopulateGrid()
         {
-            foreach (Event e in Events)
+            foreach (Task t in Tasks)
             {
-                if (e.Date.ToString("yyyy") != CurrentYear || e.Delete)
+                DateTime date = t.GetDate().Replace("Due: ", "").ToDate();
+                if (date.ToString("yyyy") != CurrentYear)
+                {
                     continue;
-                int column = e.Date.Month + 11;
-                int row = e.Date.Day - 1;
+                }
+                int column = date.Month + 11;
+                int row = date.Day - 1;
                 StackPanel stackH = (YearGrid.Children[column] as StackPanel).Children[row] as StackPanel;
                 Ellipse ellipse = new Ellipse()
                 {
-                    Fill = e.Colour.ToColour(),
+                    Fill = new SolidColorBrush(Colors.Red),
                     Width = 20,
                     Height = 20,
                     Margin = new Thickness(0, 4, 5, 0)
                 };
                 ellipse.MouseUp += (o, e_) =>
                 {
-                    UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(e);
+                    UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(t, false);
                     viewer.ShowDialog();
 
                     ReDraw();
@@ -113,13 +109,10 @@ namespace Bookkeeping_manager.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddNewTask(object sender, RoutedEventArgs e)
         {
-            Event @event = new Event(name: "", canBeEdited: true, initalDate: DateTime.Today);
-            UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(@event, true);
+            UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(null, true);
             viewer.ShowDialog();
-            if (!@event.Delete)
-                Events.Add(@event);
 
             ReDraw();
         }

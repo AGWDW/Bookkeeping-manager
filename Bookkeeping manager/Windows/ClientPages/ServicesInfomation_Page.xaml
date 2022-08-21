@@ -147,7 +147,7 @@
         </TextBox>
 
         <TextBlock Grid.Row="10" Grid.Column="0">Self Assessment Enabled</TextBlock>
-        <toggle:HorizontalToggleSwitch x:Name="SAToggle" Grid.Row="10" Grid.Column="1" Checked="Toggle_Checked" Unchecked="Toggle_Checked"/>
+        <toggle:HorizontalToggleSwitch x:Name="SAToggle" Grid.Row="10" Grid.Column="1" Checked="Toggle_Checked_On" Unchecked="Toggle_Checked_Off"/>
 
         <TextBlock Grid.Row="11" Grid.Column="0">Self Assessment</TextBlock>
         <TextBox x:Name="SelfAssess_TB" Grid.Row="11" Grid.Column="1" Style="{StaticResource RegularTB}">
@@ -172,7 +172,7 @@
         </TextBox>
 
         <TextBlock Grid.Row="13" Grid.Column="0">P11D Enabled</TextBlock>
-        <toggle:HorizontalToggleSwitch x:Name="P11DToggle" Grid.Row="13" Grid.Column="1" Checked="Toggle_Checked" Unchecked="Toggle_Checked"/>
+        <toggle:HorizontalToggleSwitch x:Name="P11DToggle" Grid.Row="13" Grid.Column="1" Checked="Toggle_Checked_On" Unchecked="Toggle_Checked_Off"/>
 
         <TextBlock Grid.Row="14" Grid.Column="0">P11D</TextBlock>
         <TextBox x:Name="P11D_TB" Grid.Row="14" Grid.Column="1" Style="{StaticResource RegularTB}">

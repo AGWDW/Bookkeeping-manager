@@ -22,8 +22,8 @@
 
             <Separator Style="{StaticResource HorizontalDividingLine}" Grid.ColumnSpan="2" VerticalAlignment="Bottom"/>
             <TextBlock Text="{Binding Today, FallbackValue=Today}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,0,0,15"/>
-            <TextBox x:Name="NextDate" Text="Next" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Style="{StaticResource SmallTB}" Background="Transparent"/>
-            <Button Content="Add Task" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Margin="0,1,10,12" Style="{StaticResource ActionButton}" Click="Button_Click"/>
+            <TextBlock Text="Comming Up" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Background="Transparent"/>
+            <Button Content="Add Task" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Margin="0,1,10,12" Style="{StaticResource ActionButton}" Click="CreateTaskClick"/>
 
             <StackPanel x:Name="TodaysTasks" Orientation="Vertical" Grid.Row="1"/>
             <StackPanel x:Name="NextTasks" Orientation="Vertical" Grid.Row="1" Grid.Column="1"/>

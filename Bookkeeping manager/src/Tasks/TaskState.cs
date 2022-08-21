@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bookkeeping_manager.src.Tasks
 {
-    internal enum TaskState
+    public enum TaskState
     {
         /// <summary>
         /// Due on a previouse day

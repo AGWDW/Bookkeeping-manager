@@ -6,20 +6,23 @@ using System.Threading.Tasks;
 
 namespace Bookkeeping_manager.src.Tasks
 {
-    internal abstract class Task
+    public abstract class Task
     {
         public int UID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        protected TaskState state;
+        public TaskState State { get; protected set; }
         protected DateTime date;
         protected List<Task> children;
 
         public Task()
         {
             UID = -1;
-            state = TaskState.Due;
+            State = TaskState.Due;
             children = new List<Task>();
+            Name = "";
+            Description = "";
+            date = DateTime.Today;
         }
 
         public Task(DateTime date) : this()
@@ -40,24 +43,30 @@ namespace Bookkeeping_manager.src.Tasks
             }
         }
 
-        protected void UpdateState()
+        public virtual void UpdateState()
         {
             if (date < DateTime.Today)
             {
-                state = TaskState.Future;
+                State = TaskState.Late;
             }
             else if (date > DateTime.Today)
             {
-                state = TaskState.Late;
+                State = TaskState.Future;
             }
             else
             {
-                state = TaskState.Due;
+                State = TaskState.Due;
             }
         }
         public void SetDate(DateTime date)
         {
             this.date = date;
+            UpdateState();
+        }
+
+        public string GetDate()
+        {
+            return $"Due: {date:dd/MM/yyyy}";
         }
     }
 }

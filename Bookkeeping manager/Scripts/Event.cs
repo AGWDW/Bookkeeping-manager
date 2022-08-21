@@ -292,5 +292,6 @@ namespace Bookkeeping_manager.Scripts
         {
             return new DateTime(Year, Month, Day);
         }
+        public override string ToString() => $"{Year}:{Month}:{Day}";
     }
 }

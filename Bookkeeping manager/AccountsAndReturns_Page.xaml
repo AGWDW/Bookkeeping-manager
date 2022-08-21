@@ -32,7 +32,7 @@
         <TextBlock Grid.Row="0" Grid.Column="0">Account Period End</TextBlock>
         <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource RegularTB}">
             <TextBox.Text>
-                <Binding Path="CH_AccountsNextDue">
+                <Binding Path="AccountPeriodEnd">
                     <Binding.ValidationRules>
 
                     </Binding.ValidationRules>
@@ -43,13 +43,13 @@
         <TextBlock Grid.Row="1" Grid.Column="1">Current Work</TextBlock>
 
         <TextBlock Grid.Row="2" Grid.Column="0">CH Accounts Next Due</TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="CH_Accounts_Current_TB" Style="{StaticResource ReadOnlyTB}"/>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="CH_Accounts_Current_TB" Style="{StaticResource ReadOnlyTBRed}"/>
 
         <TextBlock Grid.Row="3" Grid.Column="0">CT600 Due</TextBlock>
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="CT600_Current_TB" Style="{StaticResource ReadOnlyTB}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="CT600_Current_TB" Style="{StaticResource ReadOnlyTBRed}"/>
 
         <TextBlock Grid.Row="4" Grid.Column="0">HMRC Year End</TextBlock>
-        <TextBox Grid.Row="4" Grid.Column="1" x:Name="HMRC_YearEnd_Current_TB" Style="{StaticResource ReadOnlyTB}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" x:Name="HMRC_YearEnd_Current_TB" Style="{StaticResource ReadOnlyTBRed}"/>
 
         <TextBlock Grid.Row="5" Grid.Column="1">Furture Work</TextBlock>
 

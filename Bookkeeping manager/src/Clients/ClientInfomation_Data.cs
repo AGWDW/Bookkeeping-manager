@@ -10,23 +10,35 @@ using System.Windows.Controls;
 
 namespace Bookkeeping_manager.src.Clients
 {
-    public class ClientInfomation_Data
+    public class ClientInfomation_Data : ClientData
     {
-        string parentName;
         TextBox confirDateBox;
         Style readOnly, regular;
-        int confirmationDate_UID;
-        public ClientInfomation_Data(string parentName)
+        int confirmationDate_UID, submitConfirmation_UID;
+        public ClientInfomation_Data(string parentName) : base(parentName)
         {
-            this.parentName = parentName;
         }
         public void Initalize(TextBox confirDateBox, Style readOnly, Style regular)
         {
             this.confirDateBox = confirDateBox;
             this.readOnly = readOnly;
             this.regular = regular;
-            ConfirmationEnabled = true;
-            ConfirmationEnabled = false;
+            ConfirmationEnabled = !ConfirmationEnabled;
+            ConfirmationEnabled = !ConfirmationEnabled;
+        }
+        public override void ReName(string name)
+        {
+            var t = TaskManager.GetTask(confirmationDate_UID);
+            if(t != null)
+            {
+                t.Name = t.Name.Replace(parentName, name);
+            }
+            t = TaskManager.GetTask(submitConfirmation_UID);
+            if (t != null)
+            {
+                t.Name = t.Name.Replace(parentName, name);
+            }
+            base.ReName(name);
         }
         public string CompanyNumber { get; set; }
         public string CharityNumber { get; set; }
@@ -44,11 +56,15 @@ namespace Bookkeeping_manager.src.Clients
                     if (value)
                     {
                         confirDateBox.Style = regular;
+                        string t = confirmationStatementDate;
+                        ConfirmationStatementDate = "";
+                        ConfirmationStatementDate = t;
                     }
                     else
                     {
                         confirDateBox.Style = readOnly;
                         TaskManager.DeleteTask(confirmationDate_UID);
+                        TaskManager.DeleteTask(submitConfirmation_UID);
                     }
                 }
             }
@@ -63,13 +79,24 @@ namespace Bookkeeping_manager.src.Clients
                 if (value != confirmationStatementDate)
                 {
                     confirmationStatementDate = value;
-                    ReacuringTask task = (ReacuringTask)TaskManager.GetTask(confirmationDate_UID);
-                    if (task is null)
+                    if (value == "" || value == null)
                     {
-                        task = new ReacuringTask(value.ToDate());
-                        task.Name = $"Confirmation Statement Due for {parentName}";
+                        TaskManager.DeleteTask(confirmationDate_UID);
+                        TaskManager.DeleteTask(submitConfirmation_UID);
+                        return;
                     }
-                    task.SetDate(value.ToDate());
+
+                    ReacuringTask task = (ReacuringTask)
+                        TaskManager.GetOrCreate(confirmationDate_UID, TaskType.Reacuring, out confirmationDate_UID);
+
+                    task.Name = $"Confirmation Statement Due for {parentName}";
+                    task.SetDate(value.ToDateNew());
+                    task.Offset = Constants.YEAR;
+
+                    /*TimeLimitedTask task2 = (TimeLimitedTask)
+                        TaskManager.GetOrCreate(submitConfirmation_UID, TaskType.TimeLimited, out submitConfirmation_UID);
+                    task2.Name = $"Submit Confirmation for {parentName}";
+                    task2.Offset = Constants.YEAR;*/
                 }
             }
         }
@@ -82,6 +109,6 @@ namespace Bookkeeping_manager.src.Clients
         public string Nature_of_the_Business { get; set; }
         public string UTR { get; set; }
         public string CompanysHouseAuthCode { get; set; }
-        public string Software { get; set; }
+        public int Software { get; set; }
     }
 }

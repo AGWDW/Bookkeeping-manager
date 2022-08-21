@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace Bookkeeping_manager.src.Rules
 {
-    internal class PhoneNumberRule : ValidationRule
+    internal class AlphaNumeric_Rule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            throw new NotImplementedException();
+            if (Regex.IsMatch(value.ToString(), @"^/\w$"))
+            {
+                return ValidationResult.ValidResult;
+            }
+            return new ValidationResult(false, "Texts Contains Invalid Characters");
         }
     }
 }

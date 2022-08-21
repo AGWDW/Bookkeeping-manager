@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Bookkeeping_manager.src.Clients;
+using Bookkeeping_manager.Windows.ClientPages;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
-using Bookkeeping_manager.Windows.ClientPages;
-using ClientPages = Bookkeeping_manager.Windows.ClientPages;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -35,19 +25,10 @@ namespace Bookkeeping_manager.Windows
                 Content = "Please Select a Category",
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0,0,0,22),
+                Margin = new Thickness(0, 0, 0, 22),
                 Background = Brushes.Transparent
             };
             CategoryFrame.Navigate(label);
-
-            foreach(string c in Client.Categories)
-            {
-                ListViewItem item = new ListViewItem()
-                {
-                    Content = " \u2022 " + c
-                };
-                ClientCategories.Items.Add(item);
-            }
         }
 
         private void ClientCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -55,31 +36,31 @@ namespace Bookkeeping_manager.Windows
             switch (ClientCategories.SelectedIndex)
             {
                 case 0: // compnay detatils
-                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.CompanyDetails));
+                    CategoryFrame.Navigate(new CompnayDetails_Page(Client));
                     break;
                 case 1: // contact details
-                    CategoryFrame.Navigate(new ContactDetails_Page(Client.ContactDetials));
+                    CategoryFrame.Navigate(new ContactDetails_Page(Client));
                     break;
                 case 2: // accountant
-                    CategoryFrame.Navigate(new AccountantDetails_Page());
+                    CategoryFrame.Navigate(new AccountantDetails_Page(Client));
                     break;
                 case 3: // services
-                    CategoryFrame.Navigate(new ServicesInfomation_Page());
+                    CategoryFrame.Navigate(new ServicesInfomation_Page(Client));
                     break;
                 case 4: // accounts and returns
-                    CategoryFrame.Navigate(new AccountsAndReturns_Page());
+                    CategoryFrame.Navigate(new AccountsAndReturns_Page(Client));
                     break;
                 case 5: // vat details
-                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.VATDetails));
+                    CategoryFrame.Navigate(new VAT_Details_Page(Client));
                     break;
                 case 6: // CIS details
-                    CategoryFrame.Navigate(new CompnayDetails_Page(Client.CISDetails));
+                    CategoryFrame.Navigate(new CIS_Page(Client));
                     break;
                 case 7: // paye detials
-                    CategoryFrame.Navigate(new ClientPages.PAYEDetails(Client.PAYEDetails));
+                    CategoryFrame.Navigate(new PAYE_Details_Page(Client));
                     break;
                 case 8: // files
-                    CategoryFrame.Navigate(new ClientPages.Documents(Client.Documents, Client.Name));
+                    // CategoryFrame.Navigate(new Documents(Client.Documents, Client.Name));
                     break;
             }
         }
@@ -89,17 +70,15 @@ namespace Bookkeeping_manager.Windows
             CLientPageScroller.ScrollToVerticalOffset(CLientPageScroller.VerticalOffset - e.Delta);
         }
         // removes client
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void RemoveClient_Click(object sender, RoutedEventArgs e)
         {
 
             if (MessageBoxResult.Yes == MessageBox.Show("Are you sure you want to delete this client", "", MessageBoxButton.YesNo))
             {
-                DataHandler.AllEvents.ForEach(ev => ev.Delete = ev.DisplayName.Contains($"({Client.Name})"));
-                Client.Delete = true;
+                ClientManager.Delete(Client.UID);
                 NavigationService.Navigate(new ClientOverview());
                 return;
             }
-            Client.Delete = false;
         }
 
         private void CategoryFrame_Navigated(object sender, NavigationEventArgs e)

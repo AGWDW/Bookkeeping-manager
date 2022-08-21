@@ -174,28 +174,38 @@
     <Compile Include="Scripts\Extensions.cs" />
     <Compile Include="Scripts\MongoHandler.cs" />
     <Compile Include="Scripts\Passwords.cs" />
+    <Compile Include="src\Clients\AccountantInfomation_Data.cs" />
+    <Compile Include="src\Clients\AccountsAndReturns_Data.cs" />
+    <Compile Include="src\Clients\CIS_Infomation_Data.cs" />
     <Compile Include="src\Clients\Client.cs" />
     <Compile Include="src\Clients\ClientInfomation_Data.cs" />
     <Compile Include="src\Clients\ClientManager.cs" />
     <Compile Include="src\Clients\ContactInfomation_Data.cs" />
-    <Compile Include="src\Rules\AlphaNumericRule.cs" />
-    <Compile Include="src\Rules\AlphaRule.cs" />
-    <Compile Include="src\Rules\DateRule.cs" />
-    <Compile Include="src\Rules\NumericRule.cs" />
-    <Compile Include="src\Rules\PhoneNumberRule.cs" />
+    <Compile Include="src\Clients\PAYE_Details_Data.cs" />
+    <Compile Include="src\Clients\ServicesInfomation_Data.cs" />
+    <Compile Include="src\Clients\VAT_Details_Data.cs" />
+    <Compile Include="src\Constants.cs" />
+    <Compile Include="src\Rules\AlphaNumeric_Rule.cs" />
+    <Compile Include="src\Rules\Alpha_Rule.cs" />
+    <Compile Include="src\Rules\CompanyNumber_Rule.cs" />
+    <Compile Include="src\Rules\Date_Rule.cs" />
+    <Compile Include="src\Rules\Length_Rule.cs" />
+    <Compile Include="src\Rules\Numeric_Rule.cs" />
+    <Compile Include="src\Rules\PhoneNumber_Rule.cs" />
     <Compile Include="src\Tasks\ReacuringTask.cs" />
     <Compile Include="src\Tasks\StaticTask.cs" />
     <Compile Include="src\Tasks\Task.cs" />
     <Compile Include="src\Tasks\TaskManager.cs" />
     <Compile Include="src\Tasks\TaskState.cs" />
-    <Compile Include="wigits\TB.xaml.cs">
-      <DependentUpon>TB.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="src\Tasks\TimeLimitedTask.cs" />
     <Compile Include="Windows\ClientPage.xaml.cs">
       <DependentUpon>ClientPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClientPages\AccountantDetails_Page.xaml.cs">
       <DependentUpon>AccountantDetails_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ClientPages\CIS_Page.xaml.cs">
+      <DependentUpon>CIS_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClientPages\ClientFiles.xaml.cs">
       <DependentUpon>ClientFiles.xaml</DependentUpon>
@@ -203,23 +213,20 @@
     <Compile Include="Windows\ClientPages\CompnayDetails_Page.xaml.cs">
       <DependentUpon>CompnayDetails_Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ClientPages\ContactDetails.xaml.cs">
-      <DependentUpon>ContactDetails.xaml</DependentUpon>
+    <Compile Include="Windows\ClientPages\ContactDetails_Page.xaml.cs">
+      <DependentUpon>ContactDetails_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClientPages\Documents.xaml.cs">
       <DependentUpon>Documents.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ClientPages\PAYEDetails.xaml.cs">
-      <DependentUpon>PAYEDetails.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\ClientPages\PayRollPage.xaml.cs">
-      <DependentUpon>PayRollPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\ClientPages\Services.xaml.cs">
-      <DependentUpon>Services.xaml</DependentUpon>
+    <Compile Include="Windows\ClientPages\PAYE_Details_Page.xaml.cs">
+      <DependentUpon>PAYE_Details_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ClientPages\ServicesInfomation_Page.xaml.cs">
       <DependentUpon>ServicesInfomation_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ClientPages\VAT_Details_Page.xaml.cs">
+      <DependentUpon>VAT_Details_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MonthView.xaml.cs">
       <DependentUpon>MonthView.xaml</DependentUpon>
@@ -233,19 +240,12 @@
     <Compile Include="Windows\UtilityWindows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\UtilityWindows\PayrollTypeSelector.xaml.cs">
-      <DependentUpon>PayrollTypeSelector.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\YearView.xaml.cs">
       <DependentUpon>YearView.xaml</DependentUpon>
     </Compile>
     <Page Include="AccountsAndReturns_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="wigits\TB.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\ClientOverview.xaml">
       <SubType>Designer</SubType>
@@ -259,6 +259,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\ClientPages\CIS_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\ClientPages\ClientFiles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -267,7 +271,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ClientPages\ContactDetails.xaml">
+    <Page Include="Windows\ClientPages\ContactDetails_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -275,19 +279,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ClientPages\PAYEDetails.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\ClientPages\PayRollPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\ClientPages\Services.xaml">
+    <Page Include="Windows\ClientPages\PAYE_Details_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\ClientPages\ServicesInfomation_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ClientPages\VAT_Details_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -330,10 +330,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\UtilityWindows\LoginWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\UtilityWindows\PayrollTypeSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

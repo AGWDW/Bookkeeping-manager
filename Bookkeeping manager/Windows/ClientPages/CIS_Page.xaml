@@ -1,0 +1,53 @@
+﻿<Page x:Class="Bookkeeping_manager.Windows.ClientPages.CIS_Page"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Bookkeeping_manager.Windows.ClientPages"
+      xmlns:toggle="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+      mc:Ignorable="d" 
+      d:DesignHeight="500" d:DesignWidth="400"
+      Title="CIS_Page">
+
+    <Grid VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <TextBlock>Enabled</TextBlock>
+        <toggle:HorizontalToggleSwitch Grid.Column="1" x:Name="Withheld_Toggle" Checked="EnabledToggle_On" Unchecked="EnabledToggle_Off"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0">CIS Withheld</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource RegularTB}" x:Name="Withheld_TB">
+            <TextBox.Text>
+                <Binding Path="CIS_Withheld">
+                    <Binding.ValidationRules>
+                        
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        
+        <TextBlock Grid.Row="3">Enabled</TextBlock>
+        <toggle:HorizontalToggleSwitch Grid.Row="3" Grid.Column="1" x:Name="Suffered_Toggle" Checked="EnabledToggle_On" Unchecked="EnabledToggle_Off"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0">CIS Suffered</TextBlock>
+        <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource RegularTB}" x:Name="Suffered_TB">
+            <TextBox.Text>
+                <Binding Path="CIS_Suffered">
+                    <Binding.ValidationRules>
+
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+    </Grid>
+</Page>

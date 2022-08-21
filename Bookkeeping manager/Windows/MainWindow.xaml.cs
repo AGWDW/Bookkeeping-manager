@@ -66,6 +66,8 @@ namespace Bookkeeping_manager.Windows
                 Clock.Content = $"{t:dddd dd/MM/yy} : {t:t}";
             };
             clock.Start();
+
+            HomeButton_Click(null, null);
         }
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
@@ -80,12 +82,12 @@ namespace Bookkeeping_manager.Windows
 
         private void CalenderViewMonth_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new MonthView(Events));
+            MainFrame.Navigate(new MonthView());
         }
 
         private void CalenderViewYear_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new YearView(Events));
+            MainFrame.Navigate(new YearView());
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

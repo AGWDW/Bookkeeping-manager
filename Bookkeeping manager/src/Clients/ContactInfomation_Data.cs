@@ -1,10 +1,16 @@
 ﻿using Bookkeeping_manager.Scripts;
 using Bookkeeping_manager.src.Tasks;
+using System;
 
 namespace Bookkeeping_manager.src.Clients
 {
-    internal class ContactInfomation_Data
+    public class ContactInfomation_Data : ClientData
     {
+
+        public ContactInfomation_Data(string name) : base(name)
+        {
+        }
+
         private int amlReview_UID;
         public string Position { get; set; }
         public string Title { get; set; }
@@ -31,13 +37,15 @@ namespace Bookkeeping_manager.src.Clients
                 if (value != aml_ReviewDue)
                 {
                     aml_ReviewDue = value;
-                    ReacuringTask task = (ReacuringTask)TaskManager.GetTask(amlReview_UID);
-                    if (task is null)
+                    if(value == "")
                     {
-                        task = new ReacuringTask(value.ToDate());
-                        task.Name = $"AML Review due for {FirstName} {LastName}";
+                        TaskManager.DeleteTask(amlReview_UID);
                     }
-                    task.SetDate(value.ToDate());
+                    ReacuringTask task = (ReacuringTask)TaskManager.GetOrCreate(amlReview_UID, TaskType.Reacuring, out amlReview_UID);
+
+                    task.Name = $"AML Review due for {FirstName} ({parentName})";
+                    task.Offset = Constants.YEAR;
+                    task.SetDate(value.ToDateNew());
                 }
             }
         }

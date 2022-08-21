@@ -14,7 +14,7 @@
                 <Label Content="Client Name: "  Style="{StaticResource LableTitle}" DockPanel.Dock="Left"/>
                 <TextBox Text="{Binding Client.Name}" DockPanel.Dock="Left" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
                 <Button Content="Save" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0"/>
-                <Button Content="Remove" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0" Click="Button_Click"/>
+                <Button Content="Remove" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0" Click="RemoveClient_Click"/>
             </DockPanel>
             <Separator Style="{StaticResource HorizontalDividingLine}"/>
             <Grid VerticalAlignment="Stretch">
@@ -30,6 +30,14 @@
                                 <Setter Property="Margin" Value="0,10,0,0"/>
                             </Style>
                         </ListView.ItemContainerStyle>
+                        <ListViewItem>&#8226; Company Details</ListViewItem>
+                        <ListViewItem>&#8226; Contacts Details</ListViewItem>
+                        <ListViewItem>&#8226; Accountant</ListViewItem>
+                        <ListViewItem>&#8226; Setvices</ListViewItem>
+                        <ListViewItem>&#8226; Accounts and Returns</ListViewItem>
+                        <ListViewItem>&#8226; VAT Details</ListViewItem>
+                        <ListViewItem>&#8226; CIS Details</ListViewItem>
+                        <ListViewItem>&#8226; PAYE Details</ListViewItem>
                     </ListView>
                     <Border CornerRadius="7" BorderThickness="5" BorderBrush="RoyalBlue" Margin="10,100,10,0" Height="250" VerticalAlignment="Top">
                         <TextBox Text="{Binding Client.Comments}" HorizontalAlignment="Stretch" Height="250" DockPanel.Dock="Bottom" BorderThickness="0"

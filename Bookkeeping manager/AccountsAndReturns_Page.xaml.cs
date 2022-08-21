@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using Bookkeeping_manager.src.Clients;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Bookkeeping_manager
 {
@@ -20,9 +8,12 @@ namespace Bookkeeping_manager
     /// </summary>
     public partial class AccountsAndReturns_Page : Page
     {
-        public AccountsAndReturns_Page()
+        private AccountsAndReturns_Data AccountsAndReturns { get; set; }
+        public AccountsAndReturns_Page(Client client)
         {
+            AccountsAndReturns = client.AccountsAndReturns;
             InitializeComponent();
+            DataContext = AccountsAndReturns;
         }
     }
 }

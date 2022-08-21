@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Bookkeeping_manager.src.Rules
 {
-    internal class AlphaNumericRule : ValidationRule
+    internal class PhoneNumber_Rule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {

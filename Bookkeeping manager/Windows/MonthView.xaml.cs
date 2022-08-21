@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src.Tasks;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -22,7 +16,10 @@ namespace Bookkeeping_manager.Windows
     public partial class MonthView : Page
     {
         string sDay, eDay;
-        private List<Event> Events { get; set; }
+        private List<Task> Tasks
+        {
+            get => TaskManager.AllTasks;
+        }
         public string StartDate
         {
             get => sDay;
@@ -41,11 +38,10 @@ namespace Bookkeeping_manager.Windows
                 CreateGrid();
             }
         }
-        public MonthView(List<Event> events)
+        public MonthView()
         {
-            sDay = DateTime.Now.ToString("dd/MM/yyyy");
-            eDay = DateTime.Now.AddMonths(1).ToString("dd/MM/yyyy");
-            Events = events;
+            sDay = DateTime.Today.ToString("dd/MM/yyyy");
+            eDay = DateTime.Today.AddMonths(1).ToString("dd/MM/yyyy");
             InitializeComponent();
             DataContext = this;
             CreateGrid();
@@ -122,10 +118,10 @@ namespace Bookkeeping_manager.Windows
                 Grid.SetColumn(day, i);
                 MonthGrid.Children.Add(day);
             }
-            foreach (Event e in Events)
+            foreach (Task t in Tasks)
             {
-                DateTime date = e.Date.Date;
-                if (date < EndDate.ToDate() && date >= StartDate.ToDate() && !e.Delete)
+                DateTime date = t.GetDate().Replace("Due: ", "").ToDate();
+                if (date < EndDate.ToDate() && date >= StartDate.ToDate())
                 {
                     int column = date.GetDayOfWeek(); // the day of the week or column + 1
                     DateTime tempDay = StartDate.ToDate();
@@ -140,7 +136,7 @@ namespace Bookkeeping_manager.Windows
                     }
                     if (row >= 6)
                         continue;
-                    // the controles asociated controls with the event
+                    // the controles asociated with the event
                     StackPanel stack = new StackPanel()
                     {
                         Orientation = Orientation.Horizontal,
@@ -149,14 +145,14 @@ namespace Bookkeeping_manager.Windows
 
                     Ellipse ellipse = new Ellipse()
                     {
-                        Fill = e.Colour.ToColour(),
+                        Fill = new SolidColorBrush(Colors.Red),
                         Width = 20,
                         Height = 20,
                         Margin = new Thickness(0, 4, 5, 0),
                     };
                     ellipse.MouseUp += (o, e_) =>
                     {
-                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(e);
+                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(t, false);
                         viewer.ShowDialog();
 
                         StartDate = StartDate;
@@ -164,24 +160,28 @@ namespace Bookkeeping_manager.Windows
 
                     TextBlock text = new TextBlock()
                     {
-                        Text = e.DisplayName,
+                        Text = t.Name,
                     };
                     text.MouseUp += (o, e_) =>
                     {
-                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(e);
+                        UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(t, false);
                         viewer.ShowDialog();
 
                         StartDate = StartDate;
                     };
-                    if (e.Comment != "")
+                    if(t is StaticTask)
                     {
-                        text.ToolTip = new TextBlock()
+                        if ((t as StaticTask).Comment != "")
                         {
-                            Text = e.Comment,
-                            FontSize = 18,
-                            Background = Brushes.AliceBlue
-                        };
+                            text.ToolTip = new TextBlock()
+                            {
+                                Text = (t as StaticTask).Comment,
+                                FontSize = 18,
+                                Background = Brushes.AliceBlue
+                            };
+                        }
                     }
+                    
 
                     stack.Children.Add(ellipse);
                     stack.Children.Add(text);
@@ -217,16 +217,14 @@ namespace Bookkeeping_manager.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddTask_Click(object sender, RoutedEventArgs e)
         {
-            Event @event = new Event(name: "", canBeEdited: true, initalDate: DateTime.Today);
-            UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(@event, true);
-            viewer.ShowDialog();
-            if (@event.Delete)
-                return;
-            Events.Add(@event);
 
-            StartDate = sDay;
+            UtilityWindows.EventViewer viewer = new UtilityWindows.EventViewer(null, true);
+            viewer.ShowDialog();
+
+
+            CreateGrid();
         }
 
         private void NextMonth_Click(object sender, RoutedEventArgs e)

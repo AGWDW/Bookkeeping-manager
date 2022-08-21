@@ -21,7 +21,7 @@
             <Label Content="->" HorizontalAlignment="Center" Grid.ColumnSpan="2" VerticalAlignment="Center" Padding="0,0,0,10"/>
             <TextBox x:Name="EndDay" Text="{Binding EndDate}" HorizontalAlignment="Left" Grid.Column="1" Margin="20,0,0,0" Background="Transparent" BorderThickness="0"/>
             <Button x:Name="PrintButton" Content="Print" Click="PrintButton_Click" HorizontalAlignment="Right" Grid.Column="1"  Style="{StaticResource ActionButton}" Margin="0,5,50,5" VerticalAlignment="Center"/>
-            <Button Content="Add Task" HorizontalAlignment="Right" Grid.Column="1"  Style="{StaticResource ActionButton}" Margin="0,5,125,5" VerticalAlignment="Center" Click="Button_Click"/>
+            <Button Content="Add Task" HorizontalAlignment="Right" Grid.Column="1"  Style="{StaticResource ActionButton}" Margin="0,5,125,5" VerticalAlignment="Center" Click="AddTask_Click"/>
             <Button x:Name="NextMonth" Style="{StaticResource LeftRightArrow}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,0" Click="NextMonth_Click" Grid.Column="1">
                 <Path  Fill="Black" Data="M 0 0 L 10 10 L 0 20 Z"/>
             </Button>

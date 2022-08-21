@@ -8,7 +8,11 @@ namespace Bookkeeping_manager.src.Tasks
 {
     internal class StaticTask : Task
     {
-        string comment;
+        public string Comment { get; set; }
+        public StaticTask() : base()
+        {
+            Comment = "";
+        }
         public override void Advance()
         {
             base.Advance();

@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Bookkeeping_manager.src.Clients;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -21,16 +14,11 @@ namespace Bookkeeping_manager.Windows
     /// </summary>
     public partial class ClientOverview : Page
     {
-        public List<Client> Clients
-        {
-            get => DataHandler.AllClients;
-            set => DataHandler.AllClients = value;
-        }
         public ClientOverview()
         {
             InitializeComponent();
             DataContext = this;
-            PopulateFullGrid(Clients);
+            PopulateWithClients();
         }
 
         private void AddClientToGrid(Client client, int rowIndex)
@@ -67,7 +55,8 @@ namespace Bookkeeping_manager.Windows
                 Padding = new Thickness(5, 0, 5, 0),
                 Style = FindResource("ActionButton") as Style
             };
-            vistitClient.Click += (o, e) => {
+            vistitClient.Click += (o, e) =>
+            {
                 NavigationService.Navigate(new ClientPage(client));
             };
 
@@ -104,7 +93,7 @@ namespace Bookkeeping_manager.Windows
 
             nameBox.TextChanged += (o, e) =>
             {
-                client.Changed = true;
+                // client.Changed = true;
             };
 
             stack.Children.Add(rectangle);
@@ -127,38 +116,48 @@ namespace Bookkeeping_manager.Windows
             ClientsViewGrid.RowDefinitions.Clear();
             ClientsViewGrid.Children.Clear();
         }
-        private void PopulateFullGrid(List<Client> clients)
+        private void PopulateWithClients()
         {
             int i = 0;
-            foreach(Client client in clients)
+            foreach (Client client in ClientManager.AllClients)
             {
-                if (client.Delete)
-                    continue;
                 AddClientToGrid(client, i++);
             }
         }
 
         private void NewClientButton_Click(object sender, RoutedEventArgs e)
         {
-            Clients.Add(new Client("Empty Client"));
+            Client c = new Client()
+            {
+                Name = "Default Name"
+            };
+            ClientManager.AddClient(c, out int _);
+            
+            ClearGrid();
+            PopulateWithClients();
+
             if (ToggleAlphabetical.IsChecked.GetValueOrDefault())
+            {
                 ToggleAlphabetical_Checked(null, null);
+            }
             else
+            {
                 ToggleAlphabetical_Unchecked(null, null);
+            }
         }
 
         private void ToggleAlphabetical_Unchecked(object sender, RoutedEventArgs e)
         {
-            Clients = Clients.OrderBy(o => o.Name).ToList();
+            ClientManager.AllClients = ClientManager.AllClients.OrderBy(o => o.Name).ToList();
             ClearGrid();
-            PopulateFullGrid(Clients);
+            PopulateWithClients();
         }
 
         private void ToggleAlphabetical_Checked(object sender, RoutedEventArgs e)
         {
-            Clients = Clients.OrderByDescending(o => o.Name).ToList();
+            ClientManager.AllClients = ClientManager.AllClients.OrderByDescending(o => o.Name).ToList();
             ClearGrid();
-            PopulateFullGrid(Clients);
+            PopulateWithClients();
         }
     }
 }

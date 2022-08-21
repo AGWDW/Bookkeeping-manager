@@ -7,13 +7,17 @@ using System.Threading.Tasks;
 
 namespace Bookkeeping_manager.src.Tasks
 {
+    public enum TaskType
+    {
+        Static, Reacuring, TimeLimited
+    }
     internal static class TaskManager
     {
-        static int uid_counter;
+        static int uid_counter = 1;
         /// <summary>
         /// all tasks including the children
         /// </summary>
-        static readonly List<Task> allTasks = new List<Task>();
+        public static List<Task> AllTasks { get; set; } =  new List<Task>();
         /// <summary>
         /// Deletes the given task from allTasks doenst effect any parents (eg if it is a child it will remain one but not be listed in allTasks)
         /// </summary>
@@ -21,7 +25,7 @@ namespace Bookkeeping_manager.src.Tasks
         /// <returns>true if deleted false otherwise</returns>
         public static bool DeleteTask(int uid)
         {
-            int deleted = allTasks.RemoveAll((Task t) => t.UID == uid);
+            int deleted = AllTasks.RemoveAll((Task t) => t.UID == uid);
             Debug.Assert(deleted <= 1);
             return deleted > 0;
         }
@@ -36,7 +40,7 @@ namespace Bookkeeping_manager.src.Tasks
         {
             uid = uid_counter++;
             task.UID = uid;
-            allTasks.Add(task);
+            AllTasks.Add(task);
             return true;
         }
 
@@ -47,7 +51,7 @@ namespace Bookkeeping_manager.src.Tasks
         /// <returns>true if success false otherwise</returns>
         public static Task GetTask(int uid)
         {
-            foreach (Task t in allTasks)
+            foreach (Task t in AllTasks)
             {
                 if(t.UID == uid)
                 {
@@ -55,6 +59,33 @@ namespace Bookkeeping_manager.src.Tasks
                 }
             }
             return null;
+        }
+
+        public static Task GetOrCreate(int uid, TaskType type, out int actualUID)
+        {
+            actualUID = -1;
+            Task t = GetTask(uid);
+            if(t is null)
+            {
+                switch (type)
+                {
+                    case TaskType.Static:
+                        t = new StaticTask();
+                        break;
+                    case TaskType.Reacuring:
+                        t = new ReacuringTask();
+                        break;
+                    case TaskType.TimeLimited:
+                        t = new TimeLimitedTask();
+                        break;
+                }
+                AddTask(t, out actualUID);
+            }
+            else
+            {
+                actualUID = uid;
+            }
+            return t;
         }
     }
 }

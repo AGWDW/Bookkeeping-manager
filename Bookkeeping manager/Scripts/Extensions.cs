@@ -140,6 +140,30 @@ namespace Bookkeeping_manager.Scripts
             var split = obj.SplitDate();
             return new DateTime(split[2], split[1], split[0]);
         }
+        public static DateTime ToDateNew(this string obj)
+        {
+            if(obj.Length < 4 || obj.Length > 6)
+            {
+                return DateTime.Today;
+            }
+            if(obj.Length == 4)
+            {
+                obj += DateTime.Today.ToString("yyyy");
+            }
+            int d = int.Parse(obj.Substring(0, 2));
+            int m = int.Parse(obj.Substring(2, 2));
+            int y = int.Parse(obj.Substring(4, 4));
+            if(m > 12)
+            {
+                m = 12;
+            }
+            if(d > DateTime.DaysInMonth(y, m))
+            {
+                d = DateTime.DaysInMonth(y, m);
+            }
+            return new DateTime(y, m, d);
+        }
+
         public static UIElement GetAtGridPos(this Grid obj, int row, int column)
         {
             foreach (UIElement child in obj.Children)
@@ -219,6 +243,12 @@ namespace Bookkeeping_manager.Scripts
         public static DateTime SetDay(this DateTime obj, int day)
         {
             return new DateTime(obj.Year, obj.Month, day);
+        }
+        public static DateTime AddOffset(this DateTime obj, DateTimeInterval offset)
+        {
+            DateTime res = obj.AddDays(offset.Day);
+            res = res.AddMonths(offset.Month);
+            return res.AddYears(offset.Year);
         }
     }
 }

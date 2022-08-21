@@ -115,10 +115,10 @@
         <TextBox Grid.Row="13" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding AML_Signed}"/>
 
         <TextBlock Grid.Row="14" Grid.Column="0">Last Name</TextBlock>
-        <togglge:HorizontalToggleSwitch x:Name="PhotoID_Switch" Grid.Row="14" Grid.Column="1" Checked="SwitchToggle" Unchecked="SwitchToggle"/>
+        <togglge:HorizontalToggleSwitch x:Name="PhotoID_Switch" Grid.Row="14" Grid.Column="1" Checked="SwitchToggle_On" Unchecked="SwitchToggle_Off"/>
 
         <TextBlock Grid.Row="15" Grid.Column="0">Address Recived</TextBlock>
-        <togglge:HorizontalToggleSwitch x:Name="Address_Switch" Grid.Row="15" Grid.Column="1" Checked="SwitchToggle" Unchecked="SwitchToggle"/>
+        <togglge:HorizontalToggleSwitch x:Name="Address_Switch" Grid.Row="15" Grid.Column="1" Checked="SwitchToggle_On" Unchecked="SwitchToggle_Off"/>
 
         <TextBlock Grid.Row="16" Grid.Column="0">AML Form Checked</TextBlock>
         <TextBox Grid.Row="16" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding NI_Number}"/>

@@ -16,7 +16,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <TextBox Text="{Binding CurrentYear, FallbackValue=2021}" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" Background="Transparent" Style="{StaticResource SmallTB}"/>
-                <Button Content="Add Task" Style="{StaticResource ActionButton}" HorizontalAlignment="Right" DockPanel.Dock="Right" Grid.Column="1" VerticalAlignment="Center" Margin="0,2,0,0" Click="Button_Click"/>
+                <Button Content="Add Task" Style="{StaticResource ActionButton}" HorizontalAlignment="Right" DockPanel.Dock="Right" Grid.Column="1" VerticalAlignment="Center" Margin="0,2,0,0" Click="AddNewTask"/>
             </Grid>
         <Separator Style="{StaticResource HorizontalDividingLine}"/>
             <Grid x:Name="YearGrid">
