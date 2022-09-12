@@ -1350,7 +1350,7 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has tasks
+    // has tasks - needs forcing last day and first day
     public class AccountsReturns : ClientDetailsBase, INotifyPropertyChanged
     {
         string ape, chAND, ct600, tDHMRCYE, chAND_f, ct600_f, tDHMRCYE_f, ctPR, arr, aPN;
@@ -1399,7 +1399,8 @@ namespace Bookkeeping_manager.Scripts
 
                             // Request Accounts  ------ doesnt work
                             name = $"Request accounts info ({Client.Name})";
-                            Event e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(1).GetLastDay(), colourType: "APE"));
+                            Event e = DataHandler.AddEvent(new Event(name: name, 
+                                initalDate: APE.AddYears(-1).AddMonths(1).GetLastDay(), colourType: "APE"));
                             Interval interval = new Interval(1, 0, 0) // should be year interval
                             {
                                 ForceLastDayOfMonth = true
@@ -1409,7 +1410,8 @@ namespace Bookkeeping_manager.Scripts
 
                             // Start to prepare accounts
                             name = $"Start to prepare accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(4).SetDay(14), colourType: "APE"));
+                            e = DataHandler.AddEvent(new Event(name: name,
+                                initalDate: APE.AddYears(-1).AddMonths(4).SetDay(14), colourType: "APE"));
                             interval = new Interval(1, 0, 0) // should be year interval
                             {
                                 ForceDate = 14
@@ -1418,7 +1420,8 @@ namespace Bookkeeping_manager.Scripts
 
                             // Urgent to prepare accounts
                             name = $"Urgent prepare accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(7).GetLastDay(), colourType: "APE"));
+                            e = DataHandler.AddEvent(new Event(name: name,
+                                initalDate: APE.AddYears(-1).AddMonths(7).GetLastDay(), colourType: "APE"));
                             interval = new Interval(1, 0, 0) // should be year interval
                             {
                                 ForceLastDayOfMonth = true
@@ -1427,7 +1430,8 @@ namespace Bookkeeping_manager.Scripts
 
                             // VERY Urgent to prepare accounts
                             name = $"VERY urgent prepare accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).AddMonths(8).GetLastDay(), colourType: "APE"));
+                            e = DataHandler.AddEvent(new Event(name: name,
+                                initalDate: APE.AddYears(-1).AddMonths(8).GetLastDay(), colourType: "APE"));
                             interval = new Interval(1, 0, 0) // should be year interval
                             {
                                 ForceLastDayOfMonth = true
@@ -1436,14 +1440,16 @@ namespace Bookkeeping_manager.Scripts
 
                             // CT600 due
                             name = $"CT600 due ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.GetLastDay().AddDays(-1), colourType: "APE"));
+                            e = DataHandler.AddEvent(new Event(name: name,
+                                initalDate: APE.GetLastDay().AddDays(-1), colourType: "APE"));
                             interval = new Interval(1, 0, 0); // should be year interval
                             e.SetIntervals(interval);
                             e.Advance(APE);
 
                             // Last filling date
                             name = $"Last date for filing accounts ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddYears(-1).GetLastDay(), colourType: "APE"));
+                            e = DataHandler.AddEvent(new Event(name: name,
+                                initalDate: APE.AddYears(-1).GetLastDay(), colourType: "APE"));
                             interval = new Interval(1, 0, 0) // should be year interval
                             {
                                 ForceLastDayOfMonth = true
@@ -1453,7 +1459,8 @@ namespace Bookkeeping_manager.Scripts
 
                             // Tax due HMRC
                             name = $"Tax due HMRC ({Client.Name})";
-                            e = DataHandler.AddEvent(new Event(name: name, initalDate: APE.AddMonths(10).GetFirstDay(), colourType: "APE"));
+                            e = DataHandler.AddEvent(new Event(name: name,
+                                initalDate: APE.AddMonths(10).GetFirstDay(), colourType: "APE"));
                             interval = new Interval(1, 0, 0) // should be year interval
                             {
                                 ForceFirstDayOfMonth = true
@@ -1619,7 +1626,7 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has tasks
+    // has tasks - not done
     public class VATDetails : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -1935,7 +1942,7 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has taks
+    // has taks - needs the special month advance like ned of month or first friday
     public class PayRoll : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

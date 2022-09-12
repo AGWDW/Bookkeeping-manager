@@ -11,7 +11,7 @@ namespace Bookkeeping_manager.src.Clients
         public VAT_Details_Data(string name) : base(name)
         {
         }
-        public string VAT_Frequency { get; set; }
+        public object VAT_Frequency { get; set; }
         public string VAT_PeriodEnd { get; set; }
         public string NextReturnDate { get; set; }
         public string ReccordsRecieved { get; set; }

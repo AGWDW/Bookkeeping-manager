@@ -5,11 +5,6 @@ using ToggleSwitch;
 
 namespace Bookkeeping_manager.Windows.ClientPages
 {
-    internal class Payroll_Data
-    {
-
-    }
-
     /// <summary>
     /// Interaction logic for PAYE_Details_Page.xaml
     /// </summary>

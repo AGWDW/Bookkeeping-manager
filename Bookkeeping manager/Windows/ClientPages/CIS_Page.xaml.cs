@@ -30,7 +30,7 @@ namespace Bookkeeping_manager.Windows.ClientPages
             Withheld_Toggle.IsChecked = cisInfo.WithheldEnabled;
             Suffered_Toggle.IsChecked = cisInfo.SufferedEnabled;
 
-            cisInfo.Initalize(Withheld_TB, Suffered_TB, (Style)FindResource("RegularTB"), (Style)FindResource("ReadOnlyTB"));
+            cisInfo.Initalize();
             DataContext = cisInfo;
             
         }

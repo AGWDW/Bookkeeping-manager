@@ -1,22 +1,17 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src.Clients;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
 
 namespace Bookkeeping_manager.Windows
 {
     using AMLS = Tuple<List<DateTime>, string>;
+    using Client = src.Clients.Client;
+
     /// <summary>
     /// Interaction logic for Reports.xaml
     /// </summary>
@@ -25,19 +20,20 @@ namespace Bookkeeping_manager.Windows
         private readonly string[] Reports_ = new string[]
         {
             "Anti Money Laundring",
-            "Services provided"
+            //"Services provided"
         };
-        private bool[] ReportsToCreate, CreateForClients;
+        private readonly bool[] ReportsToCreate, CreateForClients;
+        // used if all is clicked
         public bool Selected_L { get; set; }
         public bool Selected_R { get; set; }
         public Reports()
         {
             ReportsToCreate = new bool[Reports_.Length];
-            for(int i = 0; i < ReportsToCreate.Length; i++)
+            for (int i = 0; i < ReportsToCreate.Length; i++)
             {
                 ReportsToCreate[i] = false;
             }
-            CreateForClients = new bool[DataHandler.AllClients.Count];
+            CreateForClients = new bool[ClientManager.AllClients.Count];
             for (int i = 0; i < CreateForClients.Length; i++)
             {
                 CreateForClients[i] = false;
@@ -68,9 +64,7 @@ namespace Bookkeeping_manager.Windows
             };
             for (int i = 0; i < CreateForClients.Length; i++)
             {
-                if (DataHandler.AllClients[i].Delete)
-                    continue;
-                string client = DataHandler.AllClients[i].Name;
+                string client = ClientManager.AllClients[i].Name;
                 stackR.Children.Add(CreateRow(client, CreateForClients, i));
             }
             Grid.SetColumn(stackR, 1);
@@ -114,13 +108,13 @@ namespace Bookkeeping_manager.Windows
             List<Client> clients = new List<Client>();
             for (int i = 0; i < CreateForClients.Length; i++)
             {
-                if (!CreateForClients[i] || DataHandler.AllClients[i].Delete)
+                if (!CreateForClients[i])
                     continue;
-                clients.Add(DataHandler.AllClients[i]);
+                clients.Add(ClientManager.AllClients[i]);
             }
             if (clients.Count == 0)
                 return;
-            for (int i = 0; i < Reports_.Length; i++) 
+            for (int i = 0; i < Reports_.Length; i++)
             {
                 if (!ReportsToCreate[i])
                     continue;
@@ -130,7 +124,7 @@ namespace Bookkeeping_manager.Windows
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
-            for(int i = 0; i < ReportsToCreate.Length; i++)
+            for (int i = 0; i < ReportsToCreate.Length; i++)
             {
                 ReportsToCreate[i] = Selected_L;
             }
@@ -168,11 +162,11 @@ namespace Bookkeeping_manager.Windows
                     foreach (Client client in clients)
                     {
                         amls.Add(new AMLS(new List<DateTime>(), client.Name));
-                        foreach (Contact contact in client.ContactDetials.Contacts)
+                        foreach (ContactInfomation_Data contact in client.Contacts)
                         {
-                            if (contact.AMLReviewDue != "")
+                            if (contact.AML_ReviewDue != "")
                             {
-                                DateTime aml = contact.AMLReviewDue.ToDate();
+                                DateTime aml = contact.AML_ReviewDue.ToDate();
                                 amls.Last().Item1.Add(aml);
                             }
                             else
@@ -195,8 +189,8 @@ namespace Bookkeeping_manager.Windows
                     }
                     break;
                 case 1:
-                    text = "Services\nClient Name";
-                    foreach (KeyValuePair<string, object> pair in DataHandler.AllClients[0].Services.ToDictionary())
+                    /*text = "Services\nClient Name";
+                    foreach (KeyValuePair<string, object> pair in ClientManager.AllClients[0].ServiceInfomation.ToDictionary())
                     {
                         if (pair.Key.Contains("Enabled"))
                             continue;
@@ -207,14 +201,14 @@ namespace Bookkeeping_manager.Windows
                     {
                         string msg = $"{client.Name}";
                         Dictionary<string, object> services = client.Services.ToDictionary();
-                        foreach(KeyValuePair<string, object> pair in services)
+                        foreach (KeyValuePair<string, object> pair in services)
                         {
                             if (pair.Value as string is null)
                                 continue;
                             msg += $",{(pair.Value as string == "" ? "NAN" : pair.Value)}";
                         }
                         text += msg + "\n";
-                    }
+                    }*/
                     break;
             }
 

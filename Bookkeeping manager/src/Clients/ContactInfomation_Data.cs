@@ -10,6 +10,11 @@ namespace Bookkeeping_manager.src.Clients
         public ContactInfomation_Data(string name) : base(name)
         {
         }
+        public override void ReName(string name)
+        {
+            TaskManager.RenameTask(amlReview_UID, parentName, name);
+            base.ReName(name);
+        }
 
         private int amlReview_UID;
         public string Position { get; set; }
@@ -40,12 +45,16 @@ namespace Bookkeeping_manager.src.Clients
                     if(value == "")
                     {
                         TaskManager.DeleteTask(amlReview_UID);
+                        return;
                     }
-                    ReacuringTask task = (ReacuringTask)TaskManager.GetOrCreate(amlReview_UID, TaskType.Reacuring, out amlReview_UID);
+                    ReacuringTask task = (ReacuringTask)
+                        TaskManager.GetOrCreate(amlReview_UID, TaskType.Reacuring, out amlReview_UID);
 
                     task.Name = $"AML Review due for {FirstName} ({parentName})";
                     task.Offset = Constants.YEAR;
-                    task.SetDate(value.ToDateNew());
+                    DateTime date = value.ToDate();
+                    task.SetDate(date);
+                    aml_ReviewDue = date.ToString("dd/MM/yyyy");
                 }
             }
         }

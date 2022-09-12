@@ -28,16 +28,9 @@ namespace Bookkeeping_manager.src.Clients
         }
         public override void ReName(string name)
         {
-            var t = TaskManager.GetTask(confirmationDate_UID);
-            if(t != null)
-            {
-                t.Name = t.Name.Replace(parentName, name);
-            }
-            t = TaskManager.GetTask(submitConfirmation_UID);
-            if (t != null)
-            {
-                t.Name = t.Name.Replace(parentName, name);
-            }
+            TaskManager.RenameTask(confirmationDate_UID, parentName, name);
+            TaskManager.RenameTask(submitConfirmation_UID, parentName, name);
+
             base.ReName(name);
         }
         public string CompanyNumber { get; set; }
@@ -90,7 +83,7 @@ namespace Bookkeeping_manager.src.Clients
                         TaskManager.GetOrCreate(confirmationDate_UID, TaskType.Reacuring, out confirmationDate_UID);
 
                     task.Name = $"Confirmation Statement Due for {parentName}";
-                    task.SetDate(value.ToDateNew());
+                    task.SetDate(value.ToDate());
                     task.Offset = Constants.YEAR;
 
                     /*TimeLimitedTask task2 = (TimeLimitedTask)

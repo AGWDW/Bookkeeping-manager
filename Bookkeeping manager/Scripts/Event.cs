@@ -293,5 +293,16 @@ namespace Bookkeeping_manager.Scripts
             return new DateTime(Year, Month, Day);
         }
         public override string ToString() => $"{Year}:{Month}:{Day}";
+
+        /// <summary>
+        /// Multiplys all propitys by the mult
+        /// </summary>
+        /// <param name="mult"></param>
+        /// <returns></returns>
+        public static DateTimeInterval operator *(DateTimeInterval obj, int mult)
+        {
+            DateTimeInterval res = new DateTimeInterval(obj.Year * 2, obj.Month * 2, obj.Day * 2);
+            return res;
+        }
     }
 }

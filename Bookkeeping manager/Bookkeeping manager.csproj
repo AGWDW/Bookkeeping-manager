@@ -291,7 +291,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Home.xaml">
+    <Page Include="Windows\TaskOverview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -306,8 +306,8 @@
     <Compile Include="Windows\ClientOverview.xaml.cs">
       <DependentUpon>ClientOverview.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Home.xaml.cs">
-      <DependentUpon>Home.xaml</DependentUpon>
+    <Compile Include="Windows\TaskOverview.xaml.cs">
+      <DependentUpon>TaskOverview.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

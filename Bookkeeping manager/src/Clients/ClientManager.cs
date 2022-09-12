@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Bookkeeping_manager.src.Tasks;
+using System.Collections.Generic;
 
 namespace Bookkeeping_manager.src.Clients
 {
@@ -32,8 +33,19 @@ namespace Bookkeeping_manager.src.Clients
             c.Name = name;
             return true;
         }
+        /// <summary>
+        /// Removes the client with the specified UID and deleted all taskes with there name in the name
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
         public static bool Delete(int uid)
         {
+            Client client = GetClient(uid);
+            if(client is null)
+            {
+                return false;
+            }
+            TaskManager.DeleteTasksWhere((t) => t.Name.Contains(client.Name));
             return AllClients.RemoveAll((c) => c.UID == uid) == 1;
         }
 

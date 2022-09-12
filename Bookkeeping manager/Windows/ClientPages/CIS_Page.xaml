@@ -22,32 +22,10 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock>Enabled</TextBlock>
+        <TextBlock>CIS Withheld Enabled</TextBlock>
         <toggle:HorizontalToggleSwitch Grid.Column="1" x:Name="Withheld_Toggle" Checked="EnabledToggle_On" Unchecked="EnabledToggle_Off"/>
 
-        <TextBlock Grid.Row="1" Grid.Column="0">CIS Withheld</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource RegularTB}" x:Name="Withheld_TB">
-            <TextBox.Text>
-                <Binding Path="CIS_Withheld">
-                    <Binding.ValidationRules>
-                        
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
-        
-        <TextBlock Grid.Row="3">Enabled</TextBlock>
+        <TextBlock Grid.Row="3">CIS SufferedEnabled</TextBlock>
         <toggle:HorizontalToggleSwitch Grid.Row="3" Grid.Column="1" x:Name="Suffered_Toggle" Checked="EnabledToggle_On" Unchecked="EnabledToggle_Off"/>
-
-        <TextBlock Grid.Row="4" Grid.Column="0">CIS Suffered</TextBlock>
-        <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource RegularTB}" x:Name="Suffered_TB">
-            <TextBox.Text>
-                <Binding Path="CIS_Suffered">
-                    <Binding.ValidationRules>
-
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
     </Grid>
 </Page>

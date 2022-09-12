@@ -35,7 +35,10 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0">VAT Frequency</TextBlock>
-        <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <ComboBox SelectedValue="{Binding VAT_Frequency}">
+            <ComboBoxItem>Monthly</ComboBoxItem>
+            <ComboBoxItem>Quartly</ComboBoxItem>
+        </ComboBox>
 
         <TextBlock Grid.Row="1" Grid.Column="0">VAT Period End</TextBlock>
         <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource RegularTB}"/>

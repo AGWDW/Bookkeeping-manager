@@ -1,52 +1,58 @@
-﻿using System.Windows;
+﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src.Tasks;
+using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Bookkeeping_manager.src.Clients
 {
     public class CIS_Infomation_Data : ClientData
     {
-        private readonly string parentName;
-        private TextBox withheld_TB, suffered_TB;
-        private Style normal, readonly_;
-
-        public void Initalize(TextBox withheld, TextBox suffered, Style norm, Style ro)
+        public void Initalize()
         {
-            withheld_TB = withheld;
-            suffered_TB = suffered;
-            normal = norm;
-            readonly_ = ro;
-
             WithheldEnabled = !WithheldEnabled;
             WithheldEnabled = !WithheldEnabled;
 
             SufferedEnabled = !SufferedEnabled;
-            SufferedEnabled= !SufferedEnabled;
+            SufferedEnabled = !SufferedEnabled;
         }
 
         public CIS_Infomation_Data(string name) : base(name)
         {
         }
+        public override void ReName(string name)
+        {
+            TaskManager.RenameTask(withheld_UID, parentName, name);
+            TaskManager.RenameTask(suffered_UID, parentName, name);
+            base.ReName(name);
+        }
+
+        private int withheld_UID, suffered_UID;
         private bool withheldEnabled;
         public bool WithheldEnabled
         {
             get => withheldEnabled;
             set
             {
-                if(withheldEnabled != value)
+                if (withheldEnabled != value)
                 {
                     withheldEnabled = value;
                     if (value)
                     {
-                        withheld_TB.Style = normal;
+
+                        ReacuringTask task = (ReacuringTask)
+                            TaskManager.GetOrCreate(withheld_UID, TaskType.Reacuring, out withheld_UID);
+                        task.Name = $"CIS Withheld for {parentName}";
+                        task.Offset = Constants.MONTH;
+                        task.SetDate(DateTime.Today.SetDay(19));
                     }
                     else
                     {
-                        withheld_TB.Style = readonly_;
+                        TaskManager.DeleteTask(withheld_UID);
                     }
                 }
             }
         }
-        public string CIS_Withheld { get; set; }
         private bool sufferedEnabled;
         public bool SufferedEnabled
         {
@@ -58,15 +64,18 @@ namespace Bookkeeping_manager.src.Clients
                     sufferedEnabled = value;
                     if (value)
                     {
-                        suffered_TB.Style = normal;
+                        ReacuringTask task = (ReacuringTask)
+                            TaskManager.GetOrCreate(suffered_UID, TaskType.Reacuring, out suffered_UID);
+                        task.Name = $"CIS Suffered for {parentName}";
+                        task.Offset = Constants.MONTH;
+                        task.SetDate(DateTime.Today.SetDay(19));
                     }
                     else
                     {
-                        suffered_TB.Style = readonly_;
+                        TaskManager.DeleteTask(suffered_UID);
                     }
                 }
             }
         }
-        public string CIS_Suffered { get; set; }
     }
 }

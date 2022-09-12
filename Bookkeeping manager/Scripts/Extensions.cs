@@ -1,5 +1,4 @@
-﻿using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -135,33 +134,51 @@ namespace Bookkeeping_manager.Scripts
             }
             return res;
         }
-        public static DateTime ToDate(this string obj)
+        /// <summary>
+        /// Converts the string to date format asums at least 2 digits for day month and year
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns>the converted string or new date time</returns>
+        public static DateTime ToDate(this string str)
         {
-            var split = obj.SplitDate();
-            return new DateTime(split[2], split[1], split[0]);
-        }
-        public static DateTime ToDateNew(this string obj)
-        {
-            if(obj.Length < 4 || obj.Length > 6)
+            str = str.Trim();
+            str = str.ToLower();
+            string[] invalidChars = {
+                "/", "-", ".", ",", " ", "\\", ":", ";", "|"
+            };
+            foreach (string invalid in invalidChars)
             {
+                str = str.Replace(invalid, "");
+            }
+            if(!int.TryParse(str, out _)){
                 return DateTime.Today;
             }
-            if(obj.Length == 4)
+            int day, month, year;
+            string d, m, y = DateTime.Today.ToString("yyyy");
+            switch (str.Length)
             {
-                obj += DateTime.Today.ToString("yyyy");
+                case 4:
+                    d = str.Substring(0, 2);
+                    m = str.Substring(2, 2);
+                    break;
+                case 6:
+                    d = str.Substring(0, 2);
+                    m = str.Substring(2, 2);
+                    y = str.Substring(4, 2);
+                    break;
+                case 8:
+                    d = str.Substring(0, 2);
+                    m = str.Substring(2, 2);
+                    y = str.Substring(4, 4);
+                    break;
+                default:
+                    return DateTime.Today;
             }
-            int d = int.Parse(obj.Substring(0, 2));
-            int m = int.Parse(obj.Substring(2, 2));
-            int y = int.Parse(obj.Substring(4, 4));
-            if(m > 12)
-            {
-                m = 12;
-            }
-            if(d > DateTime.DaysInMonth(y, m))
-            {
-                d = DateTime.DaysInMonth(y, m);
-            }
-            return new DateTime(y, m, d);
+            day = int.Parse(d);
+            month = int.Parse(m);
+            year = int.Parse(y);
+
+            return new DateTime(year, month, day);
         }
 
         public static UIElement GetAtGridPos(this Grid obj, int row, int column)

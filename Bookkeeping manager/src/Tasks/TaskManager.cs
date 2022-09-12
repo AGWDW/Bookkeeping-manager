@@ -17,7 +17,7 @@ namespace Bookkeeping_manager.src.Tasks
         /// <summary>
         /// all tasks including the children
         /// </summary>
-        public static List<Task> AllTasks { get; set; } =  new List<Task>();
+        public static List<Task> AllTasks { get; private set; } =  new List<Task>();
         /// <summary>
         /// Deletes the given task from allTasks doenst effect any parents (eg if it is a child it will remain one but not be listed in allTasks)
         /// </summary>
@@ -28,6 +28,29 @@ namespace Bookkeeping_manager.src.Tasks
             int deleted = AllTasks.RemoveAll((Task t) => t.UID == uid);
             Debug.Assert(deleted <= 1);
             return deleted > 0;
+        }
+
+        /// <summary>
+        /// calls delete task on all tasks that match the mask
+        /// </summary>
+        /// <param name="mask"></param>
+        /// <returns>true if all found are deleted false otherwise</returns>
+        public static bool DeleteTasksWhere(Predicate<Task> mask)
+        {
+            List<int> uids = new List<int>();
+            foreach(Task t in AllTasks)
+            {
+                if (mask(t))
+                {
+                    uids.Add(t.UID);
+                }
+            }
+            bool res = true;
+            foreach(int uid in uids)
+            {
+                res &= DeleteTask(uid);
+            }
+            return res;
         }
 
         /// <summary>
@@ -61,6 +84,13 @@ namespace Bookkeeping_manager.src.Tasks
             return null;
         }
 
+        /// <summary>
+        /// will return the task found or create and add it to all tasks
+        /// </summary>
+        /// <param name="uid">the uid of the task to find</param>
+        /// <param name="type">the type of the task to create</param>
+        /// <param name="actualUID">the resulting uid</param>
+        /// <returns>the task found or created</returns>
         public static Task GetOrCreate(int uid, TaskType type, out int actualUID)
         {
             actualUID = -1;
@@ -86,6 +116,24 @@ namespace Bookkeeping_manager.src.Tasks
                 actualUID = uid;
             }
             return t;
+        }
+
+        /// <summary>
+        /// will replace the prevName with newName in the Name property
+        /// </summary>
+        /// <param name="uid">uid of the task to find</param>
+        /// <param name="prevName">the name to replace</param>
+        /// <param name="newName">the new name</param>
+        /// <returns>true if task found false otherwise</returns>
+        public static bool RenameTask(int uid, string prevName, string newName)
+        {
+            Task t = GetTask(uid);
+            if(t is null)
+            {
+                return false;
+            }
+            t.Name = t.Name.Replace(prevName, newName);
+            return true;
         }
     }
 }

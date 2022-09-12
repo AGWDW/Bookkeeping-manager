@@ -121,15 +121,15 @@
         <togglge:HorizontalToggleSwitch x:Name="Address_Switch" Grid.Row="15" Grid.Column="1" Checked="SwitchToggle_On" Unchecked="SwitchToggle_Off"/>
 
         <TextBlock Grid.Row="16" Grid.Column="0">AML Form Checked</TextBlock>
-        <TextBox Grid.Row="16" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding NI_Number}"/>
+        <TextBox Grid.Row="16" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding AML_FormChecked}"/>
 
         <TextBlock Grid.Row="17" Grid.Column="0">AML_ReviewDue</TextBlock>
-        <TextBox Grid.Row="17" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding UTR_Number}"/>
+        <TextBox Grid.Row="17" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding AML_ReviewDue}"/>
 
         <TextBlock Grid.Row="18" Grid.Column="0">Marital Status</TextBlock>
-        <TextBox Grid.Row="18" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding TermsSigned}"/>
+        <TextBox Grid.Row="18" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding MaritalStatus}"/>
 
         <TextBlock Grid.Row="19" Grid.Column="0">Nationality</TextBlock>
-        <TextBox Grid.Row="19" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding AML_Signed}"/>
+        <TextBox Grid.Row="19" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding Nationality}"/>
     </Grid>
 </Page>

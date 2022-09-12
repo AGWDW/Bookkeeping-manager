@@ -13,6 +13,12 @@ namespace Bookkeeping_manager
         {
             AccountsAndReturns = client.AccountsAndReturns;
             InitializeComponent();
+            AccountsAndReturns.Initialize(CH_Accounts_Current_TB, CT600_Current_TB, 
+                HMRC_YearEnd_Current_TB, CH_Accounts_Future_TB, 
+                CT600_Future_TB, HMRC_YearEnd_Future_TB);
+
+            AccountsAndReturns.SetAPE_Dependents();
+
             DataContext = AccountsAndReturns;
         }
     }
