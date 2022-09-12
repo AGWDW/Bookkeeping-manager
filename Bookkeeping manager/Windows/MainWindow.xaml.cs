@@ -37,13 +37,13 @@ namespace Bookkeeping_manager.Windows
 
 
             // Login
-            /*UtilityWindows.LoginWindow login = new UtilityWindows.LoginWindow();
+            UtilityWindows.LoginWindow login = new UtilityWindows.LoginWindow();
             login.ShowDialog();
             if (!login.Successful)
             {
                 Close();
                 return;
-            }*/
+            }
 
             InitializeComponent();
             DataHandler.Init(); // allows the database to be accessed
@@ -89,7 +89,7 @@ namespace Bookkeeping_manager.Windows
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //DataHandler.UploadToDatabase();
+            DataHandler.UploadToDatabase();
             // MessageBox.Show("Saved to database");
         }
 
