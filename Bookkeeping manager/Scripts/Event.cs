@@ -1,11 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace Bookkeeping_manager.Scripts
 {
@@ -19,8 +15,8 @@ namespace Bookkeeping_manager.Scripts
         public bool CanBeEdited { get; set; }
         [BsonIgnore]
         public DateTime Date { get; internal set; }
-        public string DateRaw 
-        { 
+        public string DateRaw
+        {
             get
             {
                 return Date.GetString();
@@ -87,7 +83,7 @@ namespace Bookkeeping_manager.Scripts
                 Date += Intervals[CurrentInterval];
                 CurrentInterval = CurrentInterval++ % Intervals.Count;
             }
-            if(intervals >= 0)
+            if (intervals >= 0)
             {
                 for (int i = 0; i < intervals; i++)
                 {
@@ -96,7 +92,7 @@ namespace Bookkeeping_manager.Scripts
                 UpdateBindingBase();
                 return true;
             }
-            while(Date < DateTime.Today)
+            while (Date < DateTime.Today)
             {
                 adv();
             }
@@ -121,7 +117,7 @@ namespace Bookkeeping_manager.Scripts
         }
         public bool ShowLate()
         {
-            if(ShowPeriod == 0)
+            if (ShowPeriod == 0)
                 return true;
             return (DateTime.Today - Date).TotalDays > ShowPeriod;
         }
@@ -156,7 +152,7 @@ namespace Bookkeeping_manager.Scripts
             ColourType = colourType;
             UpdateBinding = () =>
             {
-                Binding.SetProperty(BindingProperty, Date.ToString("dd/MM/yyyy"));
+                Binding.SetProperty(BindingProperty, Date.GetString());
             };
             LifeSpan = life;
             ShowPeriod = showPeriod;
@@ -234,13 +230,13 @@ namespace Bookkeeping_manager.Scripts
             forceDay = "";
             forceDate = -1;
         }
-        public static DateTime operator+(DateTime a, Interval b)
+        public static DateTime operator +(DateTime a, Interval b)
         {
-            DateTime res = a.Add(b.IntervalRaw);
+            DateTime res = a.AddOffset(b.IntervalRaw);
             if (b.ForceDay != "")
             {
                 int increment = b.DayUp ? 1 : -1;
-                while(res.DayOfWeek.ToString() != b.ForceDay)
+                while (res.DayOfWeek.ToString() != b.ForceDay)
                 {
                     res.AddDays(increment);
                 }
@@ -264,7 +260,7 @@ namespace Bookkeeping_manager.Scripts
             else if (b.LastFriday)
             {
                 res = res.GetLastDay();
-                while(res.GetDayOfWeek() != 5)
+                while (res.GetDayOfWeek() != 5)
                 {
                     res = res.AddDays(-1);
                 }
@@ -277,16 +273,23 @@ namespace Bookkeeping_manager.Scripts
         }
 
     }
+
+    public enum AssertDate
+    {
+        None, LastofMonth, FirstOfMonth, LastFridayOfMonth, Month28th
+    }
     public class DateTimeInterval
     {
         public int Year { get; set; }
         public int Month { get; set; }
         public int Day { get; set; }
+        public AssertDate AssertDate { get; set; }
         public DateTimeInterval(int y, int m, int d)
         {
             Year = y;
             Month = m;
             Day = d;
+            AssertDate = AssertDate.None;
         }
         public DateTime ToDateTime()
         {
@@ -301,8 +304,15 @@ namespace Bookkeeping_manager.Scripts
         /// <returns></returns>
         public static DateTimeInterval operator *(DateTimeInterval obj, int mult)
         {
-            DateTimeInterval res = new DateTimeInterval(obj.Year * 2, obj.Month * 2, obj.Day * 2);
+            DateTimeInterval res = new DateTimeInterval(obj.Year * mult, obj.Month * mult, obj.Day * mult);
             return res;
+        }
+        public DateTimeInterval Copy()
+        {
+            return new DateTimeInterval(Year, Month, Day)
+            {
+                AssertDate = AssertDate
+            };
         }
     }
 }

@@ -1,25 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MongoDB.Driver;
+﻿using Bookkeeping_manager.src.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using System.IO;
+using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson.IO;
 
 namespace Bookkeeping_manager.Scripts
 {
     using Database = Tuple<IMongoDatabase, string>;
-    class MongoHandler
+
+    internal class MongoHandler
     {
         private MongoClient Client { get; set; }
         private Database ActiveDatabase { get; set; }
         public MongoHandler(string connectionString)
         {
-            Client = new MongoClient(connectionString); 
+            Client = new MongoClient(connectionString);
         }
         public IMongoDatabase GetDatabase()
         {
@@ -42,7 +43,7 @@ namespace Bookkeeping_manager.Scripts
         {
             var collection = GetCollection(collectionName);
             List<BsonDocument> docs_ = new List<BsonDocument>();
-            foreach(MongoObject obj in docs)
+            foreach (MongoObject obj in docs)
             {
                 docs_.Add(obj.ToBsonDocument());
             }
@@ -58,10 +59,19 @@ namespace Bookkeeping_manager.Scripts
         public List<T> GetAllDocuments<T>(string collectionName)
         {
             var collection = GetCollection(collectionName);
-            var doc = collection.Find(new BsonDocument());
+            var doc = collection.Find(FilterDefinition<BsonDocument>.Empty);
             var docs = doc.ToList();
             List<T> documents = new List<T>();
             docs.ForEach(d => documents.Add(Deserialize<T>(d)));
+            return documents;
+        }
+        public List<Task> GetAllTasks(string collectionName)
+        {
+            var collection = GetCollection(collectionName);
+            var doc = collection.Find(FilterDefinition<BsonDocument>.Empty);
+            var docs = doc.ToList();
+            List<Task> documents = new List<Task>();
+            docs.ForEach(d => documents.Add(DeserializeTasks(d)));
             return documents;
         }
         public void Update<T>(string collectionName, ObjectId id, string attribute, T value)
@@ -70,12 +80,24 @@ namespace Bookkeeping_manager.Scripts
             var update = Builders<BsonDocument>.Update.Set(attribute, value);
             GetCollection(collectionName).UpdateOne(filter, update);
         }
+        public void Update<T>(string collection, string prop, T val, T newVal)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq(prop, val);
+            var update = Builders<BsonDocument>.Update.Set(prop, newVal);
+            GetCollection(collection).UpdateOne(filter, update);
+        }
         public void Update(string collectionName, MongoObject value)
         {
             foreach (KeyValuePair<string, object> pair in value.ToDictionary())
             {
-                Update(collectionName, value._id, pair.Key, pair.Value);
+                //Update(collectionName, value._id, pair.Key, pair.Value);
             }
+        }
+        public void Update<T>(string collection, int uid, string prop, T newVal)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("UID", uid);
+            var update = Builders<BsonDocument>.Update.Set(prop, newVal);
+            GetCollection(collection).UpdateOne(filter, update);
         }
         public IMongoCollection<BsonDocument> GetCollection(string collectionName)
         {
@@ -93,6 +115,10 @@ namespace Bookkeeping_manager.Scripts
             var res = GetCollection(collectionName).DeleteOne(fillter);
             return res.IsAcknowledged && res.DeletedCount > 0;
         }
+        public bool Delete(string collection, int uid)
+        {
+            return Delete(collection, "UID", uid);
+        }
         public void DeleteAll(string collectionName)
         {
             GetCollection(collectionName).DeleteMany(new BsonDocument());
@@ -108,6 +134,21 @@ namespace Bookkeeping_manager.Scripts
                 MessageBox.Show($"Cannot Deserialize to {typeof(T).FullName}");
                 throw new Exception();
             }
+        }
+
+        public Task DeserializeTasks(BsonDocument doc)
+        {
+            string type = doc.GetElement("_t").Value.AsString;
+            switch (type)
+            {
+                case "StaticTask":
+                    return Deserialize<StaticTask>(doc);
+                case "ReacuringTask":
+                    return Deserialize<ReacuringTask>(doc);
+                case "TimeLimitedTask":
+                    return Deserialize<TimeLimitedTask>(doc);
+            }
+            return null;
         }
 
 

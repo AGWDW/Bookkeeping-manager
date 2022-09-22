@@ -16,6 +16,9 @@ using Bookkeeping_manager.Scripts;
 using System.Diagnostics;
 using System.Windows.Threading;
 using System.Threading;
+using Bookkeeping_manager.src;
+using Bookkeeping_manager.src.Clients;
+using Bookkeeping_manager.src.Tasks;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -46,12 +49,16 @@ namespace Bookkeeping_manager.Windows
             }*/
 
             InitializeComponent();
-            DataHandler.Init(); // allows the database to be accessed
+            //DataHandler.Init(); // allows the database to be accessed
+            DatabaseConnection.Connect();
+            DatabaseConnection.PopulateUIDs();
+            DatabaseConnection.PopulateTasks();
+            DatabaseConnection.PopulateClients();
 
             // Converter
             // AM_Converter.AM_To_BM.Convert();
             // Converter
-            
+
 
 
             DataContext = this;
@@ -76,7 +83,7 @@ namespace Bookkeeping_manager.Windows
         }
 
         private void ClientOverviewButton_Click(object sender, RoutedEventArgs e)
-        { 
+        {
             MainFrame.Navigate(new ClientOverview());
         }
 
@@ -91,13 +98,14 @@ namespace Bookkeeping_manager.Windows
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            _ = 0;
             //DataHandler.UploadToDatabase();
             // MessageBox.Show("Saved to database");
         }
 
         private void ReportsViewButton_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new Reports());
+            //MainFrame.Navigate(new Reports());
         }
     }
 }

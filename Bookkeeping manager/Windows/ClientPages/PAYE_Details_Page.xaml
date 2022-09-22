@@ -126,15 +126,17 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <TextBlock>Enabled</TextBlock>
                     <toggle:HorizontalToggleSwitch x:Name="MonthlyToggle" Grid.Column="1" Checked="SwitchToggle_On" Unchecked="SwitchToggle_Off"/>
                     
                     <TextBlock Grid.Row="1" Grid.Column="0">Type</TextBlock>
-                    <GroupBox Header="NAA"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="{Binding Monthly_SelectedDateType}">
+                        <ComboBoxItem>28th of the Month</ComboBoxItem>
+                        <ComboBoxItem>Last day of the Month</ComboBoxItem>
+                        <ComboBoxItem>Last friday of the Month</ComboBoxItem>
+                    </ComboBox>
 
                     <TextBlock Grid.Row="2" Grid.Column="0">Date</TextBlock>
                     <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding Monthly_Date}" x:Name="Monthly_DateTB"/>

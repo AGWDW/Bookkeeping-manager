@@ -1,4 +1,5 @@
 ﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src;
 using Bookkeeping_manager.src.Tasks;
 using System;
 using System.Windows;
@@ -47,7 +48,7 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
 
         public void ApplyState()
         {
-            EventDate.Text = Task.GetDate().Replace("Due: ", "");
+            EventDate.Text = Task.Date;
             switch (State)
             {
                 case ViewerState.Adding:
@@ -133,6 +134,7 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            DatabaseConnection.UpdateTask(Task.UID);
         }
 
         private void EventColour_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)

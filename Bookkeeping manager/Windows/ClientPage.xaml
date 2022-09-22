@@ -8,21 +8,23 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ClientPage">
 
-    <ScrollViewer x:Name="CLientPageScroller" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer x:Name="CLientPageScroller" HorizontalScrollBarVisibility="Hidden" 
+                  VerticalScrollBarVisibility="Auto" LostFocus="SaveClient_LostFocus">
         <StackPanel Background="AliceBlue" Orientation="Vertical">
             <DockPanel>
                 <Label Content="Client Name: "  Style="{StaticResource LableTitle}" DockPanel.Dock="Left"/>
                 <TextBox Text="{Binding Client.Name}" DockPanel.Dock="Left" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
                 <Button Content="Save" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0"/>
-                <Button Content="Remove" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0" Click="RemoveClient_Click"/>
+                <Button Content="Archive" Style="{StaticResource ActionButton}" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0, 0, 10, 0" Click="RemoveClient_Click"/>
             </DockPanel>
             <Separator Style="{StaticResource HorizontalDividingLine}"/>
             <Grid VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="387*"/>
+                    <ColumnDefinition Width="383*"/>
+                    <ColumnDefinition Width="13*"/>
                 </Grid.ColumnDefinitions>
-                <DockPanel>
+                <DockPanel Grid.ColumnSpan="2" Margin="0,0,243,0">
                     <ListView x:Name="ClientCategories" SelectionChanged="ClientCategories_SelectionChanged" Style="{StaticResource ScrollOveridedList}" DockPanel.Dock="Top">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
@@ -44,7 +46,7 @@
                              AcceptsReturn="True"/>
                     </Border>
                 </DockPanel>
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="1" Grid.ColumnSpan="2">
                     <Frame x:Name="CategoryFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Style="{StaticResource mainFrameStyle}" 
                            VerticalAlignment="Stretch" MouseWheel="CategoryFrame_MouseWheel" Navigated="CategoryFrame_Navigated"/>
                 </ScrollViewer>

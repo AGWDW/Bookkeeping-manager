@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Bookkeeping_manager.Scripts;
+using System.Collections.Generic;
+using System.Security.RightsManagement;
 
 namespace Bookkeeping_manager.src.Clients
 {
     public class ClientData
     {
+        protected const string RESET_CHAR = "|#|";
         protected string parentName;
         public ClientData(string parentName)
         {
@@ -13,8 +16,16 @@ namespace Bookkeeping_manager.src.Clients
         {
             parentName = name;
         }
+        public void SetName(string name)
+        {
+            parentName = name;
+        }
+        public virtual void UpdateTasks()
+        {
+
+        }
     }
-    public class Client
+    public class Client : MongoObject
     {
         public int UID { get; set; }
         private string name;
@@ -25,6 +36,7 @@ namespace Bookkeeping_manager.src.Clients
             {
                 if(name != value)
                 {
+                    DatabaseConnection.RenameClient(UID, value);
                     name = value;
                     ClientInfomation.ReName(value);
                     foreach(var c in Contacts)
@@ -40,7 +52,19 @@ namespace Bookkeeping_manager.src.Clients
                 }
             }
         }
-        public string Comments { get; set; }
+        private string comment;
+        public string Comments
+        {
+            get => comment;
+            set
+            {
+                if(comment != value)
+                {
+                    DatabaseConnection.ChangeCommentClient(UID, value);
+                    comment = value;
+                }
+            }
+        }
         public ClientInfomation_Data ClientInfomation { get; set; }
         public List<ContactInfomation_Data> Contacts { get; set; }
         public AccountantInfomation_Data Accountant { get; set; }
@@ -59,6 +83,36 @@ namespace Bookkeeping_manager.src.Clients
             VATDetails = new VAT_Details_Data(Name);
             CISInfomation = new CIS_Infomation_Data(Name);
             PAYE_Details = new PAYE_Details_Data(Name);
+            comment = "";
+        }
+        public void UpdateName()
+        {
+            ClientInfomation.SetName(name);
+            foreach (var c in Contacts)
+            {
+                c.SetName(name);
+            }
+            Accountant.SetName(name);
+            ServiceInfomation.SetName(name);
+            VATDetails.SetName(name);
+            CISInfomation.SetName(name);
+            AccountsAndReturns.SetName(name);
+            PAYE_Details.SetName(name);
+        }
+
+        public void UpdateTasks()
+        {
+            ClientInfomation.UpdateTasks();
+            foreach (var c in Contacts)
+            {
+                c.UpdateTasks();
+            }
+            Accountant.UpdateTasks();
+            ServiceInfomation.UpdateTasks();
+            VATDetails.UpdateTasks();
+            CISInfomation.UpdateTasks();
+            AccountsAndReturns.UpdateTasks();
+            PAYE_Details.UpdateTasks();
         }
     }
 }

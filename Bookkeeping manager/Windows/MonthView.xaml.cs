@@ -40,8 +40,8 @@ namespace Bookkeeping_manager.Windows
         }
         public MonthView()
         {
-            sDay = DateTime.Today.ToString("dd/MM/yyyy");
-            eDay = DateTime.Today.AddMonths(1).ToString("dd/MM/yyyy");
+            sDay = DateTime.Today.GetString();
+            eDay = DateTime.Today.AddMonths(1).GetString();
             InitializeComponent();
             DataContext = this;
             CreateGrid();
@@ -120,7 +120,7 @@ namespace Bookkeeping_manager.Windows
             }
             foreach (Task t in Tasks)
             {
-                DateTime date = t.GetDate().Replace("Due: ", "").ToDate();
+                DateTime date = t.Date.ToDate();
                 if (date < EndDate.ToDate() && date >= StartDate.ToDate())
                 {
                     int column = date.GetDayOfWeek(); // the day of the week or column + 1
@@ -192,8 +192,8 @@ namespace Bookkeeping_manager.Windows
 
         private void PrevMonth_Click(object sender, RoutedEventArgs e)
         {
-            sDay = sDay.ToDate().AddMonths(-1).ToString("dd/MM/yyyy");
-            eDay = eDay.ToDate().AddMonths(-1).ToString("dd/MM/yyyy");
+            sDay = sDay.ToDate().AddMonths(-1).GetString();
+            eDay = eDay.ToDate().AddMonths(-1).GetString();
             CreateGrid();
             StartDay.Text = sDay;
             EndDay.Text = eDay;
@@ -229,8 +229,8 @@ namespace Bookkeeping_manager.Windows
 
         private void NextMonth_Click(object sender, RoutedEventArgs e)
         {
-            sDay = sDay.ToDate().AddMonths(1).ToString("dd/MM/yyyy");
-            eDay = eDay.ToDate().AddMonths(1).ToString("dd/MM/yyyy");
+            sDay = sDay.ToDate().AddMonths(1).GetString();
+            eDay = eDay.ToDate().AddMonths(1).GetString();
             CreateGrid();
             StartDay.Text = sDay;
             EndDay.Text = eDay;

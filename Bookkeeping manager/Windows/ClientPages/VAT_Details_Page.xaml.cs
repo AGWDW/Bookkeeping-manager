@@ -26,6 +26,9 @@ namespace Bookkeeping_manager.Windows.ClientPages
         {
             VAT_Details = client.VATDetails;
             InitializeComponent();
+            VAT_Details.Initalize(NextReturnDate_TB);
+            VAT_Details.UpdateDependents();
+
             DataContext = VAT_Details;
             MTD_Toggle.IsChecked = VAT_Details.MTD_Ready;
             DirectDebit_Toggle.IsChecked = VAT_Details.DirectDebit;

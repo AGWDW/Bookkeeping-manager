@@ -1,45 +1,70 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace Bookkeeping_manager.src.Tasks
 {
-    public abstract class Task
+    public abstract class Task : MongoObject
     {
         public int UID { get; set; }
-        public string Name { get; set; }
+        public string Date
+        {
+            get => date.GetString();
+            set => date = value.ToDate();
+        }
+        private string name;
+        public string Name
+        {
+            get => name;
+            set
+            {
+                if (!DatabaseConnection.Deserilazing)
+                {
+                    name = value;
+                }
+            }
+        }
+        [BsonIgnore]
         public SolidColorBrush ColourIndicator { get; set; }
+        public string ColourIndicatorString
+        {
+            get => ColourIndicator.ToString();
+            set => ColourIndicator = new SolidColorBrush((Color)ColorConverter.ConvertFromString(value));
+        }
         public TaskState State { get; protected set; }
         private int advanceCount;
-        protected DateTime date;
-        protected List<Task> children;
+        protected DateTime date { get; set; }
+        public List<int> ChildrenUIDs { get; set; }
 
         public Task()
         {
             UID = -1;
             State = TaskState.Due;
-            children = new List<Task>();
+            ChildrenUIDs = new List<int>();
             Name = "";
             date = DateTime.Today;
             ColourIndicator = Constants.DEFAULT_COLOUR;
             advanceCount = 0;
         }
 
-        public Task(DateTime date) : this()
+        public Task(DateTime DateRaw) : this()
         {
-            this.date = date.Date;
+            this.date = DateRaw.Date;
         }
 
         /// <summary>
         /// if static will mark for deletion /*/
-        /// if reacuring will advance the date and change state appropriatly /*/
+        /// if reacuring will advance the DateRaw and change state appropriatly /*/
         /// will advance all children as well
         /// </summary>
         public virtual void Advance()
         {
             advanceCount++;
-            foreach (Task child in children)
+            foreach (int uid in ChildrenUIDs)
             {
+                Task child = TaskManager.GetTask(uid);
                 if(child.advanceCount < advanceCount)
                 {
                     child.Advance();
@@ -49,6 +74,10 @@ namespace Bookkeeping_manager.src.Tasks
 
         public virtual void UpdateState()
         {
+            if (DatabaseConnection.Deserilazing)
+            {
+                return;
+            }
             if (date < DateTime.Today)
             {
                 State = TaskState.Late;
@@ -62,9 +91,13 @@ namespace Bookkeeping_manager.src.Tasks
                 State = TaskState.Due;
             }
         }
-        public void SetDate(DateTime date)
+        public void SetDate(DateTime DateRaw)
         {
-            this.date = date;
+            if (DatabaseConnection.Deserilazing)
+            {
+                return;
+            }
+            this.date = DateRaw;
             UpdateState();
         }
         public void SetDate(int year,int month, int day)
@@ -79,12 +112,20 @@ namespace Bookkeeping_manager.src.Tasks
 
         public bool TryAddChild(Task child)
         {
-            if(children.Contains(child))
+            if(ChildrenUIDs.Contains(child.UID))
             {
                 return false;
             }
-            children.Add(child);
+            ChildrenUIDs.Add(child.UID);
             return true;
+        }
+
+        /// <summary>
+        /// will upload to database
+        /// </summary>
+        public void Save()
+        {
+            DatabaseConnection.UpdateTask(UID);
         }
 
         public override int GetHashCode()
@@ -98,7 +139,11 @@ namespace Bookkeeping_manager.src.Tasks
         }
         public static bool operator == (Task t1, Task t2)
         {
-            return t1.UID == t2.UID;
+            if(t1 is null && t2 is null)
+            {
+                return true;
+            }
+            return !(t1 is null || t2 is null) && t1.UID == t2.UID;
         }
         public static bool operator != (Task t1, Task t2)
         {

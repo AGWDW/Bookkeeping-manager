@@ -22,6 +22,7 @@ namespace Bookkeeping_manager.src.Tasks
             base.Advance();
             date = date.AddOffset(Offset);
             UpdateState();
+            Save();
         }
     }
 }

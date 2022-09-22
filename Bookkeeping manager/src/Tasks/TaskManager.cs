@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bookkeeping_manager.Scripts;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Bookkeeping_manager.src.Tasks
     {
         Static, Reacuring, TimeLimited
     }
-    internal static class TaskManager
+    public static class TaskManager
     {
-        static int uid_counter = 1;
+        internal static int uid_counter { get; private set; } = 1;
         /// <summary>
         /// all tasks including the children
         /// </summary>
@@ -25,6 +26,7 @@ namespace Bookkeeping_manager.src.Tasks
         /// <returns>true if deleted false otherwise</returns>
         public static bool DeleteTask(int uid)
         {
+            DatabaseConnection.DeleteTask(uid);
             int deleted = AllTasks.RemoveAll((Task t) => t.UID == uid);
             Debug.Assert(deleted <= 1);
             return deleted > 0;
@@ -54,16 +56,25 @@ namespace Bookkeeping_manager.src.Tasks
         }
 
         /// <summary>
-        /// adds the task to the list of tasks and asigns it a uid (then inccrements the uid)
+        /// adds the task to the list of tasks and asigns it a uid (then inccrements the uid) 
+        /// doesnt do it if deserializing
         /// </summary>
         /// <param name="task">the task to add</param>
         /// <param name="uid">the uid assigned</param>
         /// <returns>true if success false otherwise</returns>
         public static bool AddTask(Task task, out int uid)
         {
+            if (DatabaseConnection.Deserilazing)
+            {
+                uid = uid_counter;
+                return false;
+            }
             uid = uid_counter++;
             task.UID = uid;
             AllTasks.Add(task);
+
+            DatabaseConnection.AddTask(uid);
+
             return true;
         }
 
@@ -113,6 +124,19 @@ namespace Bookkeeping_manager.src.Tasks
             }
             else
             {
+                if (DatabaseConnection.Deserilazing)
+                {
+                    actualUID = uid;
+                    switch (type)
+                    {
+                        case TaskType.Static:
+                            return new StaticTask();
+                        case TaskType.Reacuring:
+                            return new ReacuringTask();
+                        case TaskType.TimeLimited:
+                            return new TimeLimitedTask();
+                    }
+                }
                 actualUID = uid;
             }
             return t;
@@ -134,6 +158,33 @@ namespace Bookkeeping_manager.src.Tasks
             }
             t.Name = t.Name.Replace(prevName, newName);
             return true;
+        }
+
+        internal static void SetUID_Counter(int counter)
+        {
+            uid_counter = counter;
+        }
+
+        internal static void SetTasks(List<Task> tasks)
+        {
+            AllTasks = tasks;
+        }
+
+        public static void UpdateValue(int uid, ref string value)
+        {
+            UpdateValue(uid, new DateTimeInterval(0, 0, 0), ref value);
+        }
+        public static void UpdateValue(int uid, DateTimeInterval interval, ref string value)
+        {
+            Task t = GetTask(uid);
+            if (t is null)
+            {
+                return;
+            }
+            DateTime d = t.Date.ToDate();
+            d = d.AddOffset(interval);
+            value = d.GetString();
+            t.Save();
         }
     }
 }

@@ -1350,7 +1350,7 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has tasks - needs forcing last day and first day
+    // has tasks
     public class AccountsReturns : ClientDetailsBase, INotifyPropertyChanged
     {
         string ape, chAND, ct600, tDHMRCYE, chAND_f, ct600_f, tDHMRCYE_f, ctPR, arr, aPN;
@@ -1626,7 +1626,7 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has tasks - not done
+    // has tasks
     public class VATDetails : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -1942,7 +1942,7 @@ namespace Bookkeeping_manager.Scripts
             Client.Changed = true;
         }
     }
-    // has taks - needs the special month advance like ned of month or first friday
+    // has taks
     public class PayRoll : ClientDetailsBase, INotifyPropertyChanged
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

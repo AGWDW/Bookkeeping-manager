@@ -1,5 +1,5 @@
-﻿using Bookkeeping_manager.src.Tasks;
-using Bookkeeping_manager.Scripts;
+﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -10,7 +10,13 @@ namespace Bookkeeping_manager.src.Clients
     {
         private TextBox weeklyDateTB, twoWeeklyDataTB, monthlyDataTB;
         private Style normal, readonly_;
-
+        public PAYE_Details_Data(string name) : base(name)
+        {
+            Monthly_SelectedDateType = 0;
+            weeklyDue = "";
+            twoWeeklyDue = "";
+            monthlyDue = "";
+        }
         public void Initalize(TextBox weekly, TextBox twoWeekly, TextBox monthly, Style norm, Style ro)
         {
             weeklyDateTB = weekly;
@@ -19,22 +25,70 @@ namespace Bookkeeping_manager.src.Clients
             normal = norm;
             readonly_ = ro;
 
-            Weekly_PayRollEnabled = !Weekly_PayRollEnabled;
-            Weekly_PayRollEnabled = !Weekly_PayRollEnabled;
+            if (Weekly_PayRollEnabled)
+            {
+                if (weeklyDateTB != null)
+                {
+                    weeklyDateTB.Style = normal;
+                }
+            }
+            else
+            {
+                if (weeklyDateTB != null)
+                {
+                    weeklyDateTB.Style = readonly_;
+                }
+            }
 
-            TwoWeekly_PayRollEnabled = !TwoWeekly_PayRollEnabled;
-            TwoWeekly_PayRollEnabled = !TwoWeekly_PayRollEnabled;
+            if (TwoWeekly_PayRollEnabled)
+            {
+                if (twoWeeklyDataTB != null)
+                {
+                    twoWeeklyDataTB.Style = normal;
+                }
+            }
+            else
+            {
+                if (twoWeeklyDataTB != null)
+                {
+                    twoWeeklyDataTB.Style = readonly_;
+                }
+            }
 
-            Monthly_PayRollEnabled = !Monthly_PayRollEnabled;
-            Monthly_PayRollEnabled = !Monthly_PayRollEnabled;
+            if (Monthly_PayRollEnabled)
+            {
+                if (monthlyDataTB != null)
+                {
+                    monthlyDataTB.Style = normal;
+                }
+            }
+            else
+            {
+                if (monthlyDataTB != null)
+                {
+                    monthlyDataTB.Style = readonly_;
+                }
+            }
         }
-        private int weeklyDue_UML, weeklyPrepare_UML, 
-            twoWeeklyDue_UID, twoWeeklyPrepare_UID,
-            monthlyDue_UID, monthlyPrepare_UID;
+        public int weeklyDue_UID { get; set; }
+        public int weeklyPrepare_UID { get; set; }
+        public int twoWeeklyDue_UID { get; set; }
+        public int twoWeeklyPrepare_UID { get; set; }
+        public int monthlyDue_UID { get; set; }
+        public int monthlyPrepare_UID { get; set; }
+        public override void UpdateTasks()
+        {
+            TaskManager.UpdateValue(weeklyDue_UID, ref weeklyDue);
+
+            TaskManager.UpdateValue(twoWeeklyDue_UID, ref weeklyDue);
+
+            TaskManager.UpdateValue(monthlyDue_UID, ref weeklyDue);
+            base.UpdateTasks();
+        }
         public override void ReName(string name)
         {
-            TaskManager.RenameTask(weeklyDue_UML, parentName, name);
-            TaskManager.RenameTask(weeklyPrepare_UML, parentName, name);
+            TaskManager.RenameTask(weeklyDue_UID, parentName, name);
+            TaskManager.RenameTask(weeklyPrepare_UID, parentName, name);
 
             TaskManager.RenameTask(twoWeeklyDue_UID, parentName, name);
             TaskManager.RenameTask(twoWeeklyPrepare_UID, parentName, name);
@@ -43,10 +97,6 @@ namespace Bookkeeping_manager.src.Clients
             TaskManager.RenameTask(monthlyPrepare_UID, parentName, name);
             base.ReName(name);
         }
-        public PAYE_Details_Data(string name) : base(name)
-        {
-        }
-
         public string EmployerReference { get; set; }
         public string AccountsOfficeReference { get; set; }
 
@@ -63,16 +113,20 @@ namespace Bookkeeping_manager.src.Clients
                     weekly_PayrollEnabled = value;
                     if (value)
                     {
-                        weeklyDateTB.Style = normal;
-                        string prev = Weekly_Date;
-                        Weekly_Date = "";
-                        Weekly_Date = prev;
+                        if (weeklyDateTB != null)
+                        {
+                            weeklyDateTB.Style = normal;
+                        }
+                        Weekly_Date = RESET_CHAR;
                     }
                     else
                     {
-                        weeklyDateTB.Style = readonly_;
-                        TaskManager.DeleteTask(weeklyDue_UML);
-                        TaskManager.DeleteTask(weeklyPrepare_UML);
+                        if (weeklyDateTB != null)
+                        {
+                            weeklyDateTB.Style = readonly_;
+                        }
+                        TaskManager.DeleteTask(weeklyDue_UID);
+                        TaskManager.DeleteTask(weeklyPrepare_UID);
                     }
                 }
             }
@@ -86,28 +140,43 @@ namespace Bookkeeping_manager.src.Clients
             {
                 if (weeklyDue != value)
                 {
-                    weeklyDue = value;
                     if (string.IsNullOrEmpty(value))
                     {
-                        TaskManager.DeleteTask(weeklyDue_UML);
-                        TaskManager.DeleteTask(weeklyPrepare_UML);
+                        TaskManager.DeleteTask(weeklyDue_UID);
+                        TaskManager.DeleteTask(weeklyPrepare_UID);
                     }
                     else
                     {
+                        if (value != RESET_CHAR)
+                        {
+                            if (weeklyDue == "")
+                            {
+                                return;
+                            }
+                            weeklyDue = value.ToDate().GetString();
+
+                        }
                         ReacuringTask task = (ReacuringTask)
-                            TaskManager.GetOrCreate(weeklyDue_UML, TaskType.Reacuring, out weeklyDue_UML);
+                            TaskManager.GetOrCreate(weeklyDue_UID, TaskType.Reacuring, out int i);
+                        weeklyDue_UID = i;
+
                         task.Name = $"Weekly Payroll due for {parentName}";
                         task.Offset = Constants.WEEK;
                         task.SetDate(weeklyDue.ToDate());
 
 
                         ReacuringTask task2 = (ReacuringTask)
-                            TaskManager.GetOrCreate(weeklyPrepare_UML, TaskType.Reacuring, out weeklyPrepare_UML);
+                            TaskManager.GetOrCreate(weeklyPrepare_UID, TaskType.Reacuring, out i);
+                        weeklyPrepare_UID = i;
+
                         task2.Name = $"Prepare Weekly Payroll due for {parentName}";
                         task2.Offset = Constants.WEEK;
                         task2.SetDate(weeklyDue.ToDate().AddDays(-2));
 
+                        task2.Save();
+
                         task.TryAddChild(task2);
+                        task.Save();
                     }
                 }
             }
@@ -128,21 +197,26 @@ namespace Bookkeeping_manager.src.Clients
                     twoWeeklyDataEnabled = value;
                     if (value)
                     {
-                        twoWeeklyDataTB.Style = normal;
-                        string prev = TwoWeekly_Date;
-                        TwoWeekly_Date = "";
-                        TwoWeekly_Date = prev;
+                        if (weeklyDateTB != null)
+                        {
+                            twoWeeklyDataTB.Style = normal;
+                        }
+                        TwoWeekly_Date = RESET_CHAR;
                     }
                     else
                     {
-                        twoWeeklyDataTB.Style = readonly_;
+                        if (weeklyDateTB != null)
+                        {
+                            twoWeeklyDataTB.Style = readonly_;
+                        }
                         TaskManager.DeleteTask(twoWeeklyDue_UID);
                         TaskManager.DeleteTask(twoWeeklyPrepare_UID);
                     }
                 }
             }
         }
-        string twoWeeklyDue;
+
+        private string twoWeeklyDue;
         public string TwoWeekly_Date
         {
             get => twoWeeklyDue;
@@ -150,7 +224,6 @@ namespace Bookkeeping_manager.src.Clients
             {
                 if (twoWeeklyDue != value)
                 {
-                    twoWeeklyDue = value;
                     if (string.IsNullOrEmpty(value))
                     {
                         TaskManager.DeleteTask(twoWeeklyDue_UID);
@@ -158,20 +231,35 @@ namespace Bookkeeping_manager.src.Clients
                     }
                     else
                     {
+                        if (twoWeeklyDue == "")
+                        {
+                            return;
+                        }
+                        if (value != RESET_CHAR)
+                        {
+                            twoWeeklyDue = value.ToDate().GetString();
+                        }
                         ReacuringTask task = (ReacuringTask)
-                            TaskManager.GetOrCreate(twoWeeklyDue_UID, TaskType.Reacuring, out twoWeeklyDue_UID);
+                            TaskManager.GetOrCreate(twoWeeklyDue_UID, TaskType.Reacuring, out int i);
+                        twoWeeklyDue_UID = i;
+
                         task.Name = $"2 Weekly Payroll due for {parentName}";
                         task.Offset = Constants.WEEK * 2;
-                        task.SetDate(weeklyDue.ToDate());
+                        task.SetDate(twoWeeklyDue.ToDate());
 
 
                         ReacuringTask task2 = (ReacuringTask)
-                            TaskManager.GetOrCreate(twoWeeklyPrepare_UID, TaskType.Reacuring, out twoWeeklyPrepare_UID);
+                            TaskManager.GetOrCreate(twoWeeklyPrepare_UID, TaskType.Reacuring, out i);
+                        twoWeeklyPrepare_UID = i;
+
                         task2.Name = $"Prepare 2 Weekly Payroll due for {parentName}";
                         task2.Offset = Constants.WEEK * 2;
                         task2.SetDate(twoWeeklyDue.ToDate().AddDays(-2));
 
+                        task2.Save();
+
                         task.TryAddChild(task2);
+                        task.Save();
                     }
                 }
             }
@@ -191,28 +279,76 @@ namespace Bookkeeping_manager.src.Clients
                     monthlyPayRollEnabled = value;
                     if (value)
                     {
-                        monthlyDataTB.Style = normal;
-                        string prev = Monthly_Date;
-                        Monthly_Date = "";
-                        Monthly_Date = prev;
+                        if (weeklyDateTB != null)
+                        {
+                            monthlyDataTB.Style = normal;
+                        }
+                        Monthly_Date = RESET_CHAR;
                     }
                     else
                     {
-                        monthlyDataTB.Style = readonly_;
+                        if (weeklyDateTB != null)
+                        {
+                            monthlyDataTB.Style = readonly_;
+                        }
+                        Monthly_SelectedDateType = 0;
                         TaskManager.DeleteTask(monthlyDue_UID);
                         TaskManager.DeleteTask(monthlyPrepare_UID);
                     }
                 }
             }
         }
-        public string Monthly_Date
+        private int monthly_SelectedDateType;
+        public int Monthly_SelectedDateType
         {
-            get => twoWeeklyDue;
+            get => monthly_SelectedDateType;
             set
             {
-                if (twoWeeklyDue != value)
+                if (value != monthly_SelectedDateType)
                 {
-                    twoWeeklyDue = value;
+                    monthly_SelectedDateType = value;
+                    DateTimeInterval interval = Constants.MONTH.Copy();
+
+                    switch (Monthly_SelectedDateType)
+                    {
+                        case 0:
+                            interval.AssertDate = AssertDate.Month28th;
+                            break;
+                        case 1:
+                            interval.AssertDate = AssertDate.LastofMonth;
+                            break;
+                        case 2:
+                            interval.AssertDate = AssertDate.LastFridayOfMonth;
+                            break;
+                    }
+                    ReacuringTask task = (ReacuringTask)
+                        TaskManager.GetTask(monthlyDue_UID);
+
+                    if (task != null)
+                    {
+                        task.Offset = interval;
+                        task.Save();
+                    }
+
+                    task = (ReacuringTask)
+                        TaskManager.GetTask(monthlyPrepare_UID);
+
+                    if (task != null)
+                    {
+                        task.Offset = interval;
+                        task.Save();
+                    }
+                }
+            }
+        }
+        private string monthlyDue;
+        public string Monthly_Date
+        {
+            get => monthlyDue;
+            set
+            {
+                if (monthlyDue != value)
+                {
                     if (string.IsNullOrEmpty(value))
                     {
                         TaskManager.DeleteTask(monthlyDue_UID);
@@ -220,20 +356,54 @@ namespace Bookkeeping_manager.src.Clients
                     }
                     else
                     {
+                        if (value != RESET_CHAR)
+                        {
+                            if (monthlyDue == "")
+                            {
+                                return;
+                            }
+                            monthlyDue = value.ToDate().GetString();
+                        }
+                        DateTimeInterval interval = Constants.MONTH.Copy();
+
+                        switch (Monthly_SelectedDateType)
+                        {
+                            case 0:
+                                interval.AssertDate = AssertDate.Month28th;
+                                break;
+                            case 1:
+                                interval.AssertDate = AssertDate.LastofMonth;
+                                break;
+                            case 2:
+                                interval.AssertDate = AssertDate.LastFridayOfMonth;
+                                break;
+                        }
+
                         ReacuringTask task = (ReacuringTask)
-                            TaskManager.GetOrCreate(monthlyDue_UID, TaskType.Reacuring, out monthlyDue_UID);
+                            TaskManager.GetOrCreate(monthlyDue_UID, TaskType.Reacuring, out int i);
+                        monthlyDue_UID = i;
+
                         task.Name = $"Monthly Payroll due for {parentName}";
-                        task.Offset = Constants.MONTH;
-                        task.SetDate(weeklyDue.ToDate());
+                        task.Offset = interval;
+                        task.SetDate(monthlyDue.ToDate());
 
 
                         ReacuringTask task2 = (ReacuringTask)
-                            TaskManager.GetOrCreate(monthlyPrepare_UID, TaskType.Reacuring, out monthlyPrepare_UID);
+                            TaskManager.GetOrCreate(monthlyPrepare_UID, TaskType.Reacuring, out i);
+                        monthlyPrepare_UID = i;
+
                         task2.Name = $"Prepare Monthly Payroll due for {parentName}";
                         task2.Offset = Constants.MONTH;
-                        task2.SetDate(twoWeeklyDue.ToDate().AddDays(-2));
+                        task2.SetDate(monthlyDue.ToDate().AddDays(-2));
+                        task2.Save();
 
                         task.TryAddChild(task2);
+                        task.Save();
+
+                        DateTimeInterval f = interval.Copy();
+                        f.Day = f.Month = f.Year = 0;
+
+                        monthlyDue = monthlyDue.ToDate().AddOffset(f).GetString();
                     }
                 }
             }

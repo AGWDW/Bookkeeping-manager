@@ -1,5 +1,6 @@
 ﻿using Bookkeeping_manager.Scripts;
 using Bookkeeping_manager.src.Tasks;
+using MongoDB.Driver.Core.Operations;
 using System;
 
 namespace Bookkeeping_manager.src.Clients
@@ -16,10 +17,32 @@ namespace Bookkeeping_manager.src.Clients
             base.ReName(name);
         }
 
-        private int amlReview_UID;
+        public override void UpdateTasks()
+        {
+            TaskManager.UpdateValue(amlReview_UID, ref aml_ReviewDue);
+        }
+
+        public int amlReview_UID { get; set; }
         public string Position { get; set; }
         public string Title { get; set; }
-        public string FirstName { get; set; }
+        private string fName;
+        public string FirstName
+        {
+            get => fName;
+            set
+            {
+                if(fName != value)
+                {
+                    TaskManager.RenameTask(amlReview_UID, $"{fName} ({parentName}", $"{value} ({parentName}");
+                    fName = value;
+                    Task t = TaskManager.GetTask(amlReview_UID);
+                    if(t != null)
+                    {
+                        t.Save();
+                    }
+                }
+            }
+        }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public string DateOfBirth { get; set; }
@@ -42,19 +65,21 @@ namespace Bookkeeping_manager.src.Clients
                 if (value != aml_ReviewDue)
                 {
                     aml_ReviewDue = value;
-                    if(value == "")
+                    if(string.IsNullOrEmpty(value))
                     {
                         TaskManager.DeleteTask(amlReview_UID);
                         return;
                     }
                     ReacuringTask task = (ReacuringTask)
-                        TaskManager.GetOrCreate(amlReview_UID, TaskType.Reacuring, out amlReview_UID);
+                        TaskManager.GetOrCreate(amlReview_UID, TaskType.Reacuring, out int t);
+                    amlReview_UID = t;
 
                     task.Name = $"AML Review due for {FirstName} ({parentName})";
                     task.Offset = Constants.YEAR;
                     DateTime date = value.ToDate();
                     task.SetDate(date);
-                    aml_ReviewDue = date.ToString("dd/MM/yyyy");
+                    task.Save();
+                    aml_ReviewDue = date.GetString();
                 }
             }
         }

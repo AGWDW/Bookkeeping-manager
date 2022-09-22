@@ -35,7 +35,7 @@ namespace Bookkeeping_manager.src.Clients
 
         internal void SetAPE_Dependents()
         {
-            if(ape == "")
+            if(string.IsNullOrEmpty(ape) || chAccountsNextDue_Current is null)
             {
                 return;
             }
@@ -51,7 +51,10 @@ namespace Bookkeeping_manager.src.Clients
             hmrcYearEnd_Future.Text = hmrcYearEnd_Current.Text.ToDate().AddYears(1).GetString();
 
         }
-
+        public override void UpdateTasks()
+        {
+            TaskManager.UpdateValue(ape_UID, ref ape);
+        }
         public void Initialize(TextBox chAccountsNextDue_Current, TextBox ct600Due_Current, TextBox hmrcYearEnd_Current,
             TextBox chAccountsNextDue_Future, TextBox ct600Due_Future, TextBox hmrcYearEnd_Future)
         {
@@ -63,8 +66,14 @@ namespace Bookkeeping_manager.src.Clients
             this.hmrcYearEnd_Future = hmrcYearEnd_Future;
         }
 
-        private int ape_UID, reqAcc_UID, startPrep_UID, urgentPrep_UID, veryUrgentPrep_UID, 
-            ct600_UID, lastFiling_UID, taxDue_UID;
+        public int ape_UID { get; set; } 
+        public int reqAcc_UID { get; set; } 
+        public int startPrep_UID { get; set; }
+        public int urgentPrep_UID { get; set; } 
+        public int veryUrgentPrep_UID { get; set; } 
+        public int ct600_UID { get; set; } 
+        public int lastFiling_UID { get; set; } 
+        public int taxDue_UID { get;set; } 
         private string ape;
         public string AccountPeriodEnd
         {
@@ -74,15 +83,18 @@ namespace Bookkeeping_manager.src.Clients
                 if(value != ape)
                 {
                     ape = value;
-                    if (value == "")
+                    if (string.IsNullOrEmpty(value))
                     {
-                        chAccountsNextDue_Current.Text =
+                        if(chAccountsNextDue_Current != null)
+                        {
+                            chAccountsNextDue_Current.Text =
                             ct600Due_Current.Text =
                             hmrcYearEnd_Current.Text = "";
 
-                        chAccountsNextDue_Future.Text =
-                            ct600Due_Future.Text =
-                            hmrcYearEnd_Future.Text = "";
+                            chAccountsNextDue_Future.Text =
+                                ct600Due_Future.Text =
+                                hmrcYearEnd_Future.Text = "";
+                        }
 
                         TaskManager.DeleteTask(ape_UID);
                         TaskManager.DeleteTask(reqAcc_UID);
@@ -103,7 +115,8 @@ namespace Bookkeeping_manager.src.Clients
 
 
                     ReacuringTask parentTask = (ReacuringTask)
-                        TaskManager.GetOrCreate(ape_UID, TaskType.Reacuring, out ape_UID);
+                        TaskManager.GetOrCreate(ape_UID, TaskType.Reacuring, out int i);
+                    ape_UID = i;
 
                     parentTask.Name = $"Year end for {parentName}";
                     parentTask.Offset = Constants.YEAR;
@@ -112,16 +125,19 @@ namespace Bookkeeping_manager.src.Clients
 
 
                     ReacuringTask task1 = (ReacuringTask)
-                        TaskManager.GetOrCreate(reqAcc_UID, TaskType.Reacuring, out reqAcc_UID);
+                        TaskManager.GetOrCreate(reqAcc_UID, TaskType.Reacuring, out i);
+                    reqAcc_UID = i;
 
                     task1.Name = $"Request accounts info for {parentName}";
-                    task1.Offset = Constants.YEAR;
+                    task1.Offset = Constants.YEAR.Copy();
+                    task1.Offset.AssertDate = AssertDate.LastofMonth;
                     DateTime date = apeDate.AddYears(-1).AddMonths(1).GetLastDay();
                     task1.SetDate(date);
 
 
                     ReacuringTask task2 = (ReacuringTask)
-                        TaskManager.GetOrCreate(startPrep_UID, TaskType.Reacuring, out startPrep_UID);
+                        TaskManager.GetOrCreate(startPrep_UID, TaskType.Reacuring, out i);
+                    startPrep_UID = i;
 
                     task2.Name = $"Start to prepare accounts for {parentName}";
                     task2.Offset = Constants.YEAR;
@@ -130,19 +146,23 @@ namespace Bookkeeping_manager.src.Clients
 
 
                     ReacuringTask task3 = (ReacuringTask)
-                        TaskManager.GetOrCreate(urgentPrep_UID, TaskType.Reacuring, out urgentPrep_UID);
+                        TaskManager.GetOrCreate(urgentPrep_UID, TaskType.Reacuring, out i);
+                    urgentPrep_UID = i;
 
                     task3.Name = $"Urgent prepare accounts for {parentName}";
-                    task3.Offset = Constants.YEAR;
+                    task3.Offset = Constants.YEAR.Copy();
+                    task3.Offset.AssertDate = AssertDate.LastofMonth;
                     date = apeDate.AddYears(-1).AddMonths(7).GetLastDay();
                     task3.SetDate(date);
 
 
                     ReacuringTask task4 = (ReacuringTask)
-                        TaskManager.GetOrCreate(veryUrgentPrep_UID, TaskType.Reacuring, out veryUrgentPrep_UID);
+                        TaskManager.GetOrCreate(veryUrgentPrep_UID, TaskType.Reacuring, out i);
+                    veryUrgentPrep_UID = i;
 
                     task4.Name = $"VERY urgent prepare accounts for {parentName}";
-                    task4.Offset = Constants.YEAR;
+                    task4.Offset = Constants.YEAR.Copy();
+                    task4.Offset.AssertDate = AssertDate.LastofMonth;
                     date = apeDate.AddYears(-1).AddMonths(8).GetLastDay();
                     task4.SetDate(date);
 
@@ -154,7 +174,8 @@ namespace Bookkeeping_manager.src.Clients
 
 
                     ReacuringTask ct600 = (ReacuringTask)
-                        TaskManager.GetOrCreate(ct600_UID, TaskType.Reacuring, out ct600_UID);
+                        TaskManager.GetOrCreate(ct600_UID, TaskType.Reacuring, out i);
+                    ct600_UID = i;
 
                     ct600.Name = $"CT600 due for {parentName}";
                     ct600.Offset = Constants.YEAR;
@@ -162,20 +183,36 @@ namespace Bookkeeping_manager.src.Clients
                     ct600.SetDate(date);
 
                     ReacuringTask lastFillingDate = (ReacuringTask)
-                        TaskManager.GetOrCreate(lastFiling_UID, TaskType.Reacuring, out lastFiling_UID);
+                        TaskManager.GetOrCreate(lastFiling_UID, TaskType.Reacuring, out i);
+                    lastFiling_UID = i;
 
                     lastFillingDate.Name = $"Last date for filing accounts due for {parentName}";
-                    lastFillingDate.Offset = Constants.YEAR;
+                    lastFillingDate.Offset = Constants.YEAR.Copy();
+                    lastFillingDate.Offset.AssertDate = AssertDate.LastofMonth;
                     date = apeDate.AddYears(-1).GetLastDay();
                     lastFillingDate.SetDate(date);
 
                     ReacuringTask hmrc = (ReacuringTask)
-                        TaskManager.GetOrCreate(taxDue_UID, TaskType.Reacuring, out taxDue_UID);
+                        TaskManager.GetOrCreate(taxDue_UID, TaskType.Reacuring, out i);
+                    taxDue_UID = i;
 
                     hmrc.Name = $"HMRC Tax due for {parentName}";
-                    hmrc.Offset = Constants.YEAR;
+                    hmrc.Offset = Constants.YEAR.Copy();
+                    hmrc.Offset.AssertDate = AssertDate.FirstOfMonth;
                     date = apeDate.AddMonths(10).GetFirstDay();
                     hmrc.SetDate(date);
+
+
+                    parentTask.Save();
+
+                    task1.Save();
+                    task2.Save();
+                    task3.Save();
+                    task4.Save();
+
+                    ct600.Save();
+                    lastFillingDate.Save();
+                    hmrc.Save();
 
 
                     SetAPE_Dependents();

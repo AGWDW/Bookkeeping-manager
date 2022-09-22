@@ -17,10 +17,6 @@ namespace Bookkeeping_manager.Scripts
 {
     public static class Extensions
     {
-        public static DateTime Add(this DateTime a, DateTimeInterval b)
-        {
-            return a.AddDays(b.Day).AddMonths(b.Month).AddYears(b.Year);
-        }
         #region To Dictionary
         public static Dictionary<string, object> ToDictionary(this object source)
         {
@@ -141,6 +137,11 @@ namespace Bookkeeping_manager.Scripts
         /// <returns>the converted string or new date time</returns>
         public static DateTime ToDate(this string str)
         {
+            DateTime default_ = DateTime.Today;
+            if (str is null)
+            {
+                return default_;
+            }
             str = str.Trim();
             str = str.ToLower();
             string[] invalidChars = {
@@ -151,7 +152,7 @@ namespace Bookkeeping_manager.Scripts
                 str = str.Replace(invalid, "");
             }
             if(!int.TryParse(str, out _)){
-                return DateTime.Today;
+                return default_;
             }
             int day, month, year;
             string d, m, y = DateTime.Today.ToString("yyyy");
@@ -172,7 +173,7 @@ namespace Bookkeeping_manager.Scripts
                     y = str.Substring(4, 4);
                     break;
                 default:
-                    return DateTime.Today;
+                    return default_;
             }
             day = int.Parse(d);
             month = int.Parse(m);
@@ -265,7 +266,28 @@ namespace Bookkeeping_manager.Scripts
         {
             DateTime res = obj.AddDays(offset.Day);
             res = res.AddMonths(offset.Month);
-            return res.AddYears(offset.Year);
+            res = res.AddYears(offset.Year);
+            switch (offset.AssertDate)
+            {
+                case AssertDate.FirstOfMonth:
+                    res = res.GetFirstDay();
+                    break;
+                case AssertDate.LastofMonth:
+                    res = res.GetLastDay();
+                    break;
+                case AssertDate.LastFridayOfMonth:
+                    res = res.GetLastDay();
+                    while(res.GetDayOfWeek() != 5)
+                    {
+                        res = res.AddDays(-1);
+                    }
+                    break;
+                case AssertDate.Month28th:
+                    res = res.SetDay(28);
+                    break;
+            }
+          
+            return res;
         }
     }
 }

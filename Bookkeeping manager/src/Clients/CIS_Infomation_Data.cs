@@ -1,8 +1,6 @@
 ﻿using Bookkeeping_manager.Scripts;
 using Bookkeeping_manager.src.Tasks;
 using System;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace Bookkeeping_manager.src.Clients
 {
@@ -27,7 +25,8 @@ namespace Bookkeeping_manager.src.Clients
             base.ReName(name);
         }
 
-        private int withheld_UID, suffered_UID;
+        public int withheld_UID { get; set; }
+        public int suffered_UID { get; set; }
         private bool withheldEnabled;
         public bool WithheldEnabled
         {
@@ -39,12 +38,14 @@ namespace Bookkeeping_manager.src.Clients
                     withheldEnabled = value;
                     if (value)
                     {
-
                         ReacuringTask task = (ReacuringTask)
-                            TaskManager.GetOrCreate(withheld_UID, TaskType.Reacuring, out withheld_UID);
+                            TaskManager.GetOrCreate(withheld_UID, TaskType.Reacuring, out int t);
+                        withheld_UID = t;
                         task.Name = $"CIS Withheld for {parentName}";
                         task.Offset = Constants.MONTH;
                         task.SetDate(DateTime.Today.SetDay(19));
+
+                        task.Save();
                     }
                     else
                     {
@@ -65,10 +66,13 @@ namespace Bookkeeping_manager.src.Clients
                     if (value)
                     {
                         ReacuringTask task = (ReacuringTask)
-                            TaskManager.GetOrCreate(suffered_UID, TaskType.Reacuring, out suffered_UID);
+                            TaskManager.GetOrCreate(suffered_UID, TaskType.Reacuring, out int t);
+                        suffered_UID = t;
                         task.Name = $"CIS Suffered for {parentName}";
                         task.Offset = Constants.MONTH;
                         task.SetDate(DateTime.Today.SetDay(19));
+
+                        DatabaseConnection.UpdateTask(suffered_UID);
                     }
                     else
                     {

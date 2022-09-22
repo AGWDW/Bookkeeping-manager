@@ -35,37 +35,37 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0">VAT Frequency</TextBlock>
-        <ComboBox SelectedValue="{Binding VAT_Frequency}">
+        <ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="{Binding VAT_Frequency}">
             <ComboBoxItem>Monthly</ComboBoxItem>
             <ComboBoxItem>Quartly</ComboBoxItem>
         </ComboBox>
 
         <TextBlock Grid.Row="1" Grid.Column="0">VAT Period End</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding VAT_PeriodEnd}"/>
 
         <TextBlock Grid.Row="2" Grid.Column="0">Next Return Date</TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource ReadOnlyTB}" x:Name="NextReturnDate_TB"/>
 
         <TextBlock Grid.Row="3" Grid.Column="0">Reccords Recieved</TextBlock>
-        <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding ReccordsRecieved}"/>
 
         <TextBlock Grid.Row="4" Grid.Column="0">Progress Notes</TextBlock>
-        <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding ProgressNotes}"/>
 
         <TextBlock Grid.Row="5" Grid.Column="0">VAT Number</TextBlock>
-        <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding VAT_Number}"/>
 
         <TextBlock Grid.Row="6" Grid.Column="0">VAT Address</TextBlock>
-        <TextBox Grid.Row="6" Grid.Column="1" Style="{StaticResource LargeTB}"/>
+        <TextBox Grid.Row="6" Grid.Column="1" Style="{StaticResource LargeTB}" Text="{Binding VAT_Address}"/>
 
         <TextBlock Grid.Row="7" Grid.Column="0">Date of Registration</TextBlock>
-        <TextBox Grid.Row="7" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="7" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding DateOfRegistration}"/>
 
         <TextBlock Grid.Row="8" Grid.Column="0">Effective Date</TextBlock>
-        <TextBox Grid.Row="8" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="8" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding EffectiveDate}"/>
 
         <TextBlock Grid.Row="9" Grid.Column="0">Applied For MTD</TextBlock>
-        <TextBox Grid.Row="9" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="9" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding AppliedForMTD}"/>
         
         
 
@@ -87,9 +87,9 @@
 
 
         <TextBlock Grid.Row="15" Grid.Column="0">Flat Rate Category</TextBlock>
-        <TextBox Grid.Row="15" Grid.Column="1" Style="{StaticResource RegularTB}"/>
+        <TextBox Grid.Row="15" Grid.Column="1" Style="{StaticResource RegularTB}" Text="{Binding FlatRateCategory}"/>
 
         <TextBlock Grid.Row="16" Grid.Column="0">General Notes</TextBlock>
-        <TextBox Grid.Row="16" Grid.Column="1" Style="{StaticResource LargeTB}"/>
+        <TextBox Grid.Row="16" Grid.Column="1" Style="{StaticResource LargeTB}" Text="{Binding GeneralNotes}"/>
     </Grid>
 </Page>

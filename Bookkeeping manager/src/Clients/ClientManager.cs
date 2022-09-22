@@ -1,11 +1,13 @@
 ﻿using Bookkeeping_manager.src.Tasks;
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Bookkeeping_manager.src.Clients
 {
-    internal static class ClientManager
+    public static class ClientManager
     {
-        private static int uid_counter = 1;
+        internal static int uid_counter { get; private set; } = 1;
         public static List<Client> AllClients { get; set; } = new List<Client>();
         /// <summary>
         /// Gets the clinet null if not found
@@ -22,6 +24,10 @@ namespace Bookkeeping_manager.src.Clients
                 }
             }
             return null;
+        }
+        internal static void SetUID_Counter(int counter)
+        {
+            uid_counter = counter;
         }
         public static bool Rename(int uid, string name)
         {
@@ -40,8 +46,19 @@ namespace Bookkeeping_manager.src.Clients
         /// <returns></returns>
         public static bool Delete(int uid)
         {
+            DatabaseConnection.DeleteClient(uid);
+            return removeClient(uid);
+        }
+        public static bool Archive(int uid)
+        {
+            DatabaseConnection.ArchiveClient(uid);
+            return removeClient(uid);
+        }
+
+        private static bool removeClient(int uid)
+        {
             Client client = GetClient(uid);
-            if(client is null)
+            if (client is null)
             {
                 return false;
             }
@@ -54,6 +71,12 @@ namespace Bookkeeping_manager.src.Clients
             client.UID = uid_counter;
             uid = uid_counter++;
             AllClients.Add(client);
+            DatabaseConnection.AddClient(uid);
+        }
+
+        internal static void SetClients(List<Client> clients)
+        {
+            AllClients = clients;
         }
     }
 }

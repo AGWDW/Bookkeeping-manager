@@ -17,8 +17,22 @@ namespace Bookkeeping_manager.Windows.ClientPages
             Services = client.ServiceInfomation;
             InitializeComponent();
 
+            SAToggle.Checked -= Toggle_Checked_On;
+            P11DToggle.Checked -= Toggle_Checked_On;
+
+            SAToggle.Unchecked -= Toggle_Checked_Off;
+            P11DToggle.Unchecked -= Toggle_Checked_Off;
+
+
             SAToggle.IsChecked = Services.SelfAssessmentEnabled;
             P11DToggle.IsChecked = Services.P11D_Enabled;
+
+
+            SAToggle.Checked += Toggle_Checked_On;
+            P11DToggle.Checked += Toggle_Checked_On;
+
+            SAToggle.Unchecked += Toggle_Checked_Off;
+            P11DToggle.Unchecked += Toggle_Checked_Off;
 
             Services.Initalize(SelfAssess_TB, P11D_TB, (Style)FindResource("RegularTB"), (Style)FindResource("ReadOnlyTB"));
             DataContext = Services;

@@ -26,7 +26,7 @@ namespace Bookkeeping_manager.Windows
         public string Today { 
             get
             {
-                return DateTime.Now.ToString("dd/MM/yyyy");
+                return DateTime.Now.GetString();
             } 
         }
 
@@ -116,8 +116,8 @@ namespace Bookkeeping_manager.Windows
                 NextDate.Text = Next;
                 return;
             }
-            Next = t.ToString("dd/MM/yyyy");
-            NextDate.Text = t.ToString("dd/MM/yyyy");
+            Next = t.GetDate();
+            NextDate.Text = t.GetDate();
             Keyboard.ClearFocus();
 
             CreateTodaysTasks();

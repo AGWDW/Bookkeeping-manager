@@ -185,6 +185,7 @@
     <Compile Include="src\Clients\ServicesInfomation_Data.cs" />
     <Compile Include="src\Clients\VAT_Details_Data.cs" />
     <Compile Include="src\Constants.cs" />
+    <Compile Include="src\DatabaseConnection.cs" />
     <Compile Include="src\Rules\AlphaNumeric_Rule.cs" />
     <Compile Include="src\Rules\Alpha_Rule.cs" />
     <Compile Include="src\Rules\CompanyNumber_Rule.cs" />

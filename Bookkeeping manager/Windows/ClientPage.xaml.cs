@@ -1,4 +1,5 @@
-﻿using Bookkeeping_manager.src.Clients;
+﻿using Bookkeeping_manager.src;
+using Bookkeeping_manager.src.Clients;
 using Bookkeeping_manager.Windows.ClientPages;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,7 @@ namespace Bookkeeping_manager.Windows
             InitializeComponent();
             DataContext = this;
             Client = client;
+            Client.UpdateTasks();
 
             Label label = new Label()
             {
@@ -73,9 +75,9 @@ namespace Bookkeeping_manager.Windows
         private void RemoveClient_Click(object sender, RoutedEventArgs e)
         {
 
-            if (MessageBoxResult.Yes == MessageBox.Show("Are you sure you want to delete this client", "", MessageBoxButton.YesNo))
+            if (MessageBoxResult.Yes == MessageBox.Show("Are you sure you want to archive this client", "", MessageBoxButton.YesNo))
             {
-                ClientManager.Delete(Client.UID);
+                ClientManager.Archive(Client.UID);
                 NavigationService.Navigate(new ClientOverview());
                 return;
             }
@@ -84,6 +86,11 @@ namespace Bookkeeping_manager.Windows
         private void CategoryFrame_Navigated(object sender, NavigationEventArgs e)
         {
 
+        }
+
+        private void SaveClient_LostFocus(object sender, RoutedEventArgs e)
+        {
+            DatabaseConnection.UpdateClient(Client.UID);
         }
     }
 }

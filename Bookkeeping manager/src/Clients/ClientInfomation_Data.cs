@@ -14,7 +14,9 @@ namespace Bookkeeping_manager.src.Clients
     {
         TextBox confirDateBox;
         Style readOnly, regular;
-        int confirmationDate_UID, submitConfirmation_UID;
+        public int confirmationDate_UID { get; set; }
+        // not created
+        public int submitConfirmation_UID { get; set; }
         public ClientInfomation_Data(string parentName) : base(parentName)
         {
         }
@@ -23,8 +25,20 @@ namespace Bookkeeping_manager.src.Clients
             this.confirDateBox = confirDateBox;
             this.readOnly = readOnly;
             this.regular = regular;
-            ConfirmationEnabled = !ConfirmationEnabled;
-            ConfirmationEnabled = !ConfirmationEnabled;
+            if (ConfirmationEnabled)
+            {
+                if (confirDateBox != null)
+                {
+                    confirDateBox.Style = regular;
+                }
+            }
+            else
+            {
+                if (confirDateBox != null)
+                {
+                    confirDateBox.Style = readOnly;
+                }
+            }
         }
         public override void ReName(string name)
         {
@@ -32,6 +46,11 @@ namespace Bookkeeping_manager.src.Clients
             TaskManager.RenameTask(submitConfirmation_UID, parentName, name);
 
             base.ReName(name);
+        }
+        public override void UpdateTasks()
+        {
+            TaskManager.UpdateValue(confirmationDate_UID, ref confirmationStatementDate);
+            base.UpdateTasks();
         }
         public string CompanyNumber { get; set; }
         public string CharityNumber { get; set; }
@@ -48,19 +67,38 @@ namespace Bookkeeping_manager.src.Clients
                     confirmationEnabled = value;
                     if (value)
                     {
-                        confirDateBox.Style = regular;
-                        string t = confirmationStatementDate;
-                        ConfirmationStatementDate = "";
-                        ConfirmationStatementDate = t;
+                        if(confirDateBox != null)
+                        {
+                            confirDateBox.Style = regular;
+                        }
+                        ConfirmationStatementDate = RESET_CHAR;
                     }
                     else
                     {
-                        confirDateBox.Style = readOnly;
+                        if (confirDateBox != null)
+                        {
+                            confirDateBox.Style = readOnly;
+                        }
                         TaskManager.DeleteTask(confirmationDate_UID);
                         TaskManager.DeleteTask(submitConfirmation_UID);
                     }
                 }
             }
+        }
+        private void createTasks(string date)
+        {
+            ReacuringTask task = (ReacuringTask)
+                TaskManager.GetOrCreate(confirmationDate_UID, TaskType.Reacuring, out int t);
+            confirmationDate_UID = t;
+            task.Name = $"Confirmation Statement Due for {parentName}";
+            task.SetDate(date.ToDate());
+            task.Offset = Constants.YEAR;
+            task.Save();
+
+            /*TimeLimitedTask task2 = (TimeLimitedTask)
+                TaskManager.GetOrCreate(submitConfirmation_UID, TaskType.TimeLimited, out submitConfirmation_UID);
+            task2.Name = $"Submit Confirmation for {parentName}";
+            task2.Offset = Constants.YEAR;*/
         }
 
         private string confirmationStatementDate;
@@ -71,25 +109,23 @@ namespace Bookkeeping_manager.src.Clients
             {
                 if (value != confirmationStatementDate)
                 {
-                    confirmationStatementDate = value;
-                    if (value == "" || value == null)
+                    if (string.IsNullOrEmpty(value))
                     {
                         TaskManager.DeleteTask(confirmationDate_UID);
                         TaskManager.DeleteTask(submitConfirmation_UID);
                         return;
                     }
+                    if(value != RESET_CHAR)
+                    {
+                        if (confirmationStatementDate == "")
+                        {
+                            return;
+                        }
+                        confirmationStatementDate = value.ToDate().GetString();
+                    }
 
-                    ReacuringTask task = (ReacuringTask)
-                        TaskManager.GetOrCreate(confirmationDate_UID, TaskType.Reacuring, out confirmationDate_UID);
 
-                    task.Name = $"Confirmation Statement Due for {parentName}";
-                    task.SetDate(value.ToDate());
-                    task.Offset = Constants.YEAR;
-
-                    /*TimeLimitedTask task2 = (TimeLimitedTask)
-                        TaskManager.GetOrCreate(submitConfirmation_UID, TaskType.TimeLimited, out submitConfirmation_UID);
-                    task2.Name = $"Submit Confirmation for {parentName}";
-                    task2.Offset = Constants.YEAR;*/
+                    createTasks(value);
                 }
             }
         }

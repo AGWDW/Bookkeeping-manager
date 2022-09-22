@@ -92,7 +92,7 @@ namespace Bookkeeping_manager.Scripts
             }
             AllClients.ForEach(c => c.Changed = false);
         }
-
+        /*
         public static void UploadToDatabase()
         {
             Handler.RemoveAllFiles();
@@ -127,7 +127,7 @@ namespace Bookkeeping_manager.Scripts
                     {
                         MessageBox.Show("Failed to delete event");
                         throw new System.Exception();
-                    }*/
+                    }*
                     @event.Date = @event.Date.Date;
                     if(@event.Changed)
                         Handler.AddDocument("Events", @event);
@@ -150,6 +150,7 @@ namespace Bookkeeping_manager.Scripts
         {
             return AllEvents.RemoveAll(e => e.DisplayName.Contains(name)) > 0;
         }
+        */
         public static Event AddEvent(Event e)
         {
             for (int i = 0; i < AllEvents.Count; i++)
