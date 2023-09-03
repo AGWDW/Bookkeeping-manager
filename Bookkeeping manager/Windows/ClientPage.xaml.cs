@@ -90,7 +90,7 @@ namespace Bookkeeping_manager.Windows
 
         private void SaveClient_LostFocus(object sender, RoutedEventArgs e)
         {
-            DatabaseConnection.UpdateClient(Client.UID);
+            DatabaseConnection.UpdateClientSync(Client.UID);
         }
     }
 }

@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bookkeeping_manager.src.Tasks
 {
@@ -18,7 +15,7 @@ namespace Bookkeeping_manager.src.Tasks
         /// <summary>
         /// all tasks including the children
         /// </summary>
-        public static List<Task> AllTasks { get; private set; } =  new List<Task>();
+        public static List<Task> AllTasks { get; private set; } = new List<Task>();
         /// <summary>
         /// Deletes the given task from allTasks doenst effect any parents (eg if it is a child it will remain one but not be listed in allTasks)
         /// </summary>
@@ -40,7 +37,7 @@ namespace Bookkeeping_manager.src.Tasks
         public static bool DeleteTasksWhere(Predicate<Task> mask)
         {
             List<int> uids = new List<int>();
-            foreach(Task t in AllTasks)
+            foreach (Task t in AllTasks)
             {
                 if (mask(t))
                 {
@@ -48,7 +45,7 @@ namespace Bookkeeping_manager.src.Tasks
                 }
             }
             bool res = true;
-            foreach(int uid in uids)
+            foreach (int uid in uids)
             {
                 res &= DeleteTask(uid);
             }
@@ -87,7 +84,7 @@ namespace Bookkeeping_manager.src.Tasks
         {
             foreach (Task t in AllTasks)
             {
-                if(t.UID == uid)
+                if (t.UID == uid)
                 {
                     return t;
                 }
@@ -106,7 +103,7 @@ namespace Bookkeeping_manager.src.Tasks
         {
             actualUID = -1;
             Task t = GetTask(uid);
-            if(t is null)
+            if (t is null)
             {
                 switch (type)
                 {
@@ -152,11 +149,12 @@ namespace Bookkeeping_manager.src.Tasks
         public static bool RenameTask(int uid, string prevName, string newName)
         {
             Task t = GetTask(uid);
-            if(t is null)
+            if (t is null)
             {
                 return false;
             }
             t.Name = t.Name.Replace(prevName, newName);
+            t.Save();
             return true;
         }
 

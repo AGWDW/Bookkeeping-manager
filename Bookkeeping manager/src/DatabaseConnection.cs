@@ -4,11 +4,7 @@ using Bookkeeping_manager.src.Tasks;
 using MongoDB.Bson;
 using System;
 using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Xml.Linq;
 
 namespace Bookkeeping_manager.src
 {
@@ -112,8 +108,9 @@ namespace Bookkeeping_manager.src
         private static void addClient(int uid)
         {
             Clients.Client c = ClientManager.GetClient(uid);
-            if(c is null)
+            if (c is null)
             {
+                MessageBox.Show("Failed to find client in client manager");
                 return;
             }
             Connection.AddDocument(ClientsCollection, c);
@@ -126,12 +123,12 @@ namespace Bookkeeping_manager.src
             c.BeginInvoke(uid, null, null);
         }
 
-        public static void UpdateClient(int uid)
+        public static void UpdateClientAsync(int uid)
         {
-            asyncCaller c = new asyncCaller(updateClient);
+            asyncCaller c = new asyncCaller(UpdateClientSync);
             c.BeginInvoke(uid, null, null);
         }
-        private static void updateClient(int uid)
+        public static void UpdateClientSync(int uid)
         {
             deleteClient(uid);
             addClient(uid);
@@ -176,7 +173,7 @@ namespace Bookkeeping_manager.src
         private static void addTask(int uid)
         {
             Tasks.Task t = TaskManager.GetTask(uid);
-            if(t is null)
+            if (t is null)
             {
                 return;
             }

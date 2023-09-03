@@ -132,7 +132,7 @@ namespace Bookkeeping_manager.Windows
                 Name = "Default Name"
             };
             ClientManager.AddClient(c, out int _);
-            
+
             ClearGrid();
             PopulateWithClients();
 

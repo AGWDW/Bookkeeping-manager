@@ -7,16 +7,6 @@ using System.Windows;
 
 namespace Bookkeeping_manager.Scripts
 {
-    public class Document : MongoObject
-    {
-        public string FileName { get; set; }
-        public string FileName_Cloud { get; set; }
-        public string FilePath { get; set; }
-        public string GetClientName()
-        {
-            return FileName_Cloud.Substring(0, FileName_Cloud.IndexOf('|'));
-        }
-    }
     static class DataHandler 
     { 
         public static List<Client> AllClients { get; set; }
@@ -92,7 +82,7 @@ namespace Bookkeeping_manager.Scripts
             }
             AllClients.ForEach(c => c.Changed = false);
         }
-        /*
+
         public static void UploadToDatabase()
         {
             Handler.RemoveAllFiles();
@@ -127,7 +117,7 @@ namespace Bookkeeping_manager.Scripts
                     {
                         MessageBox.Show("Failed to delete event");
                         throw new System.Exception();
-                    }*
+                    }*/
                     @event.Date = @event.Date.Date;
                     if(@event.Changed)
                         Handler.AddDocument("Events", @event);
@@ -150,7 +140,6 @@ namespace Bookkeeping_manager.Scripts
         {
             return AllEvents.RemoveAll(e => e.DisplayName.Contains(name)) > 0;
         }
-        */
         public static Event AddEvent(Event e)
         {
             for (int i = 0; i < AllEvents.Count; i++)

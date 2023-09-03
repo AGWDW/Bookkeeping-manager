@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Bookkeeping_manager.Passwords;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Bookkeeping_manager.Passwords;
 
 namespace Bookkeeping_manager.Windows.UtilityWindows
 {
@@ -21,7 +10,7 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
     public partial class LoginWindow : Window
     {
         public bool Successful { get; set; }
-        Account Account { get; set; }
+        private Account Account { get; set; }
         private const int MaxAttempts = 3;
         private int Attemps;
         public LoginWindow()
@@ -32,7 +21,7 @@ namespace Bookkeeping_manager.Windows.UtilityWindows
             Account = new Account()
             {
                 UserName = "sfyorks",
-                Password = "gb59hp2DxbUlQ/CjLzMT4DHvxC02wIq1MIkoZvFrHA8mJpsKG/nlSAxzhIzZ5sH5mY+dqDL/lOUQte66jfdt38BdAAA="
+                Password = "/lrh1g5moCQg5p1sQ05bcNM7P5ayOzrsydKo4/PRPB95k/TzOwHXELLnOl+zRI8B12X5zD/9UNByBrkkjDTXtcBdAAA="
             };
             Attemps = 1;
         }

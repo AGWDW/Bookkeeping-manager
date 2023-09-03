@@ -80,9 +80,9 @@ namespace Bookkeeping_manager.src.Clients
         {
             TaskManager.UpdateValue(weeklyDue_UID, ref weeklyDue);
 
-            TaskManager.UpdateValue(twoWeeklyDue_UID, ref weeklyDue);
+            TaskManager.UpdateValue(twoWeeklyDue_UID, ref twoWeeklyDue);
 
-            TaskManager.UpdateValue(monthlyDue_UID, ref weeklyDue);
+            TaskManager.UpdateValue(monthlyDue_UID, ref monthlyDue);
             base.UpdateTasks();
         }
         public override void ReName(string name)
@@ -95,6 +95,7 @@ namespace Bookkeeping_manager.src.Clients
 
             TaskManager.RenameTask(monthlyDue_UID, parentName, name);
             TaskManager.RenameTask(monthlyPrepare_UID, parentName, name);
+
             base.ReName(name);
         }
         public string EmployerReference { get; set; }
@@ -147,15 +148,20 @@ namespace Bookkeeping_manager.src.Clients
                     }
                     else
                     {
-                        if (value != RESET_CHAR)
+                        if (value == RESET_CHAR)
                         {
-                            if (weeklyDue == "")
+                            if (string.IsNullOrEmpty(weeklyDue))
                             {
+                                weeklyDue = "";
                                 return;
                             }
-                            weeklyDue = value.ToDate().GetString();
-
                         }
+                        else
+                        {
+                            weeklyDue = value.ToDate().GetString();
+                            if (!weekly_PayrollEnabled) return;
+                        }
+
                         ReacuringTask task = (ReacuringTask)
                             TaskManager.GetOrCreate(weeklyDue_UID, TaskType.Reacuring, out int i);
                         weeklyDue_UID = i;
@@ -186,18 +192,18 @@ namespace Bookkeeping_manager.src.Clients
         public string Weekly_RTI_Deadline { get; set; }
         #endregion
         #region 2 Weekly
-        private bool twoWeeklyDataEnabled;
+        private bool twoWeeklyPayrollEnabled;
         public bool TwoWeekly_PayRollEnabled
         {
-            get => twoWeeklyDataEnabled;
+            get => twoWeeklyPayrollEnabled;
             set
             {
-                if (twoWeeklyDataEnabled != value)
+                if (twoWeeklyPayrollEnabled != value)
                 {
-                    twoWeeklyDataEnabled = value;
+                    twoWeeklyPayrollEnabled = value;
                     if (value)
                     {
-                        if (weeklyDateTB != null)
+                        if (twoWeeklyDataTB != null)
                         {
                             twoWeeklyDataTB.Style = normal;
                         }
@@ -205,7 +211,7 @@ namespace Bookkeeping_manager.src.Clients
                     }
                     else
                     {
-                        if (weeklyDateTB != null)
+                        if (twoWeeklyDataTB != null)
                         {
                             twoWeeklyDataTB.Style = readonly_;
                         }
@@ -231,14 +237,20 @@ namespace Bookkeeping_manager.src.Clients
                     }
                     else
                     {
-                        if (twoWeeklyDue == "")
+                        if (value == RESET_CHAR)
                         {
-                            return;
+                            if (string.IsNullOrEmpty(twoWeeklyDue))
+                            {
+                                twoWeeklyDue = "";
+                                return;
+                            }
                         }
-                        if (value != RESET_CHAR)
+                        else
                         {
                             twoWeeklyDue = value.ToDate().GetString();
+                            if (!twoWeeklyPayrollEnabled) return;
                         }
+
                         ReacuringTask task = (ReacuringTask)
                             TaskManager.GetOrCreate(twoWeeklyDue_UID, TaskType.Reacuring, out int i);
                         twoWeeklyDue_UID = i;
@@ -279,7 +291,7 @@ namespace Bookkeeping_manager.src.Clients
                     monthlyPayRollEnabled = value;
                     if (value)
                     {
-                        if (weeklyDateTB != null)
+                        if (monthlyDataTB != null)
                         {
                             monthlyDataTB.Style = normal;
                         }
@@ -287,13 +299,13 @@ namespace Bookkeeping_manager.src.Clients
                     }
                     else
                     {
-                        if (weeklyDateTB != null)
+                        if (monthlyDataTB != null)
                         {
                             monthlyDataTB.Style = readonly_;
                         }
-                        Monthly_SelectedDateType = 0;
                         TaskManager.DeleteTask(monthlyDue_UID);
                         TaskManager.DeleteTask(monthlyPrepare_UID);
+                        Monthly_SelectedDateType = 0;
                     }
                 }
             }
@@ -353,17 +365,10 @@ namespace Bookkeeping_manager.src.Clients
                     {
                         TaskManager.DeleteTask(monthlyDue_UID);
                         TaskManager.DeleteTask(monthlyPrepare_UID);
+                        monthlyDue = "";
                     }
                     else
                     {
-                        if (value != RESET_CHAR)
-                        {
-                            if (monthlyDue == "")
-                            {
-                                return;
-                            }
-                            monthlyDue = value.ToDate().GetString();
-                        }
                         DateTimeInterval interval = Constants.MONTH.Copy();
 
                         switch (Monthly_SelectedDateType)
@@ -377,6 +382,21 @@ namespace Bookkeeping_manager.src.Clients
                             case 2:
                                 interval.AssertDate = AssertDate.LastFridayOfMonth;
                                 break;
+                        }
+                        if (value == RESET_CHAR)
+                        {
+                            if (string.IsNullOrEmpty(monthlyDue))
+                            {
+                                monthlyDue = "";
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            DateTimeInterval f = interval.Copy();
+                            f.Day = f.Month = f.Year = 0;
+                            monthlyDue = value.ToDate().AddOffset(f).GetString();
+                            if (!monthlyPayRollEnabled) return;
                         }
 
                         ReacuringTask task = (ReacuringTask)
@@ -394,16 +414,11 @@ namespace Bookkeeping_manager.src.Clients
 
                         task2.Name = $"Prepare Monthly Payroll due for {parentName}";
                         task2.Offset = Constants.MONTH;
-                        task2.SetDate(monthlyDue.ToDate().AddDays(-2));
+                        task2.SetDate(monthlyDue.ToDate().AddDays(-3));
                         task2.Save();
 
                         task.TryAddChild(task2);
                         task.Save();
-
-                        DateTimeInterval f = interval.Copy();
-                        f.Day = f.Month = f.Year = 0;
-
-                        monthlyDue = monthlyDue.ToDate().AddOffset(f).GetString();
                     }
                 }
             }

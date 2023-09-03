@@ -4,7 +4,6 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +36,13 @@ namespace Bookkeeping_manager.Scripts
         public void AddDocument(string collectionName, MongoObject doc)
         {
             var collection = GetCollection(collectionName);
-            collection.InsertOne(doc.ToBsonDocument());
+            if (Delete(collectionName, doc._id))
+            {
+                _ = 0;
+            }
+            InsertOneOptions options = new InsertOneOptions();
+            options.BypassDocumentValidation = false;
+            collection.InsertOne(doc.ToBsonDocument(), options);
         }
         public void AddDocuments(string collectionName, params MongoObject[] docs)
         {
@@ -105,14 +110,14 @@ namespace Bookkeeping_manager.Scripts
         }
         public bool Delete(string collectionName, ObjectId id)
         {
-            var fillter = Builders<BsonDocument>.Filter.Eq("_id", id);
-            var res = GetCollection(collectionName).DeleteOne(fillter);
-            return res.IsAcknowledged && res.DeletedCount > 0;
+            // var fillter = Builders<BsonDocument>.Filter.Eq("_id", id);
+            // var res = GetCollection(collectionName).DeleteMany(fillter);
+            return Delete(collectionName, "_id", id);
         }
         public bool Delete(string collectionName, string property, object value)
         {
             var fillter = Builders<BsonDocument>.Filter.Eq(property, value);
-            var res = GetCollection(collectionName).DeleteOne(fillter);
+            var res = GetCollection(collectionName).DeleteMany(fillter);
             return res.IsAcknowledged && res.DeletedCount > 0;
         }
         public bool Delete(string collection, int uid)

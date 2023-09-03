@@ -151,7 +151,8 @@ namespace Bookkeeping_manager.Scripts
             {
                 str = str.Replace(invalid, "");
             }
-            if(!int.TryParse(str, out _)){
+            if (!int.TryParse(str, out _))
+            {
                 return default_;
             }
             int day, month, year;
@@ -166,6 +167,7 @@ namespace Bookkeeping_manager.Scripts
                     d = str.Substring(0, 2);
                     m = str.Substring(2, 2);
                     y = str.Substring(4, 2);
+                    y = $"20{y}";
                     break;
                 case 8:
                     d = str.Substring(0, 2);
@@ -277,7 +279,7 @@ namespace Bookkeeping_manager.Scripts
                     break;
                 case AssertDate.LastFridayOfMonth:
                     res = res.GetLastDay();
-                    while(res.GetDayOfWeek() != 5)
+                    while (res.GetDayOfWeek() != 5)
                     {
                         res = res.AddDays(-1);
                     }
@@ -286,7 +288,7 @@ namespace Bookkeeping_manager.Scripts
                     res = res.SetDay(28);
                     break;
             }
-          
+
             return res;
         }
     }

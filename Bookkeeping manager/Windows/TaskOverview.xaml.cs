@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Bookkeeping_manager.Scripts;
+using Bookkeeping_manager.src.Tasks;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
-using Bookkeeping_manager.src.Tasks;
 using Task = Bookkeeping_manager.src.Tasks.Task;
 
 namespace Bookkeeping_manager.Windows
@@ -23,30 +16,32 @@ namespace Bookkeeping_manager.Windows
     /// </summary>
     public partial class Home : Page
     {
-        public string Today { 
+        public string Today
+        {
             get
             {
                 return DateTime.Now.GetString();
-            } 
+            }
         }
 
-        public Home(List<Event> events)
+        public Home()
         {
             InitializeComponent();
             DataContext = this;
             PopulateWithTasks();
 
-           HorizontalSepration.SetBinding(Line.Y1Property, new Binding("ActualHeight")
-           {
-               Source = PrimaryGrid
-           });
+            HorizontalSepration.SetBinding(Line.Y1Property, new Binding("ActualHeight")
+            {
+                Source = PrimaryGrid
+            });
+            TasksUntil.SelectedDate = DateTime.Today.AddDays(14);
         }
         internal void PopulateWithTasks()
         {
             TodaysTasks.Children.Clear();
             NextTasks.Children.Clear();
 
-            foreach(Task task in TaskManager.AllTasks)
+            foreach (Task task in TaskManager.AllTasks)
             {
                 bool isLate = task.State == TaskState.Late;
                 DockPanel dockH = new DockPanel()
@@ -77,7 +72,7 @@ namespace Bookkeeping_manager.Windows
 
                 dockH.ToolTip = task.GetDate();
 
-                if(task is StaticTask)
+                if (task is StaticTask)
                 {
                     dockH.MouseUp += (o, e_) =>
                     {
@@ -86,7 +81,7 @@ namespace Bookkeeping_manager.Windows
                         PopulateWithTasks();
                     };
                 }
-                
+
                 dockH.Children.Add(tb);
                 dockH.Children.Add(button);
 
@@ -94,15 +89,23 @@ namespace Bookkeeping_manager.Windows
                 {
                     Source = PrimaryGrid.RowDefinitions[0]
                 });
-                if (task.State == TaskState.Future)
+                if (task.State == TaskState.Due || task.State == TaskState.Late)
+                {
+                    // put today
+                    if (task.State == TaskState.Due)
+                    {
+                        TodaysTasks.Children.Insert(0, dockH);
+                    }
+                    else
+                    {
+                        TodaysTasks.Children.Add(dockH);
+                    }
+
+                }
+                else if (task.Date.ToDate() < TasksUntil.SelectedDate && task.State == TaskState.Future)
                 {
                     // check if for the next category
                     NextTasks.Children.Add(dockH);
-                }
-                else
-                {
-                    // put today
-                    TodaysTasks.Children.Add(dockH);
                 }
             }
         }
@@ -131,5 +134,10 @@ namespace Bookkeeping_manager.Windows
             PopulateWithTasks();
         }
 
+
+        private void TasksUntil_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PopulateWithTasks();
+        }
     }
 }

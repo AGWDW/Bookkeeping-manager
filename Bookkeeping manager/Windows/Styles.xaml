@@ -24,6 +24,13 @@
         </Setter>
     </Style>
 
+    <Style TargetType="DatePicker" x:Key="DatePickerStyle">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Margin" Value="0, -3, 0, 0"/>
+    </Style>
+    
     <Style x:Key="NavigationButton" TargetType="Button">
         <Setter Property="Margin" Value="10, 10, 0, 0"/>
         <Setter Property="Background" Value="#3399ff"/>

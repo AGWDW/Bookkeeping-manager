@@ -1,24 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Bookkeeping_manager.src;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Bookkeeping_manager.Scripts;
-using System.Diagnostics;
 using System.Windows.Threading;
-using System.Threading;
-using Bookkeeping_manager.src;
-using Bookkeeping_manager.src.Clients;
-using Bookkeeping_manager.src.Tasks;
 
 namespace Bookkeeping_manager.Windows
 {
@@ -28,25 +11,17 @@ namespace Bookkeeping_manager.Windows
     public partial class MainWindow : Window
     {
         private readonly DispatcherTimer clock;
-        private List<Event> Events
-        {
-            get => DataHandler.AllEvents;
-            set => DataHandler.AllEvents = value;
-        }
 
         public MainWindow()
         {
-            // converter
-
-
             // Login
-            /*UtilityWindows.LoginWindow login = new UtilityWindows.LoginWindow();
+            UtilityWindows.LoginWindow login = new UtilityWindows.LoginWindow();
             login.ShowDialog();
             if (!login.Successful)
             {
                 Close();
                 return;
-            }*/
+            }
 
             InitializeComponent();
             //DataHandler.Init(); // allows the database to be accessed
@@ -65,7 +40,7 @@ namespace Bookkeeping_manager.Windows
             Clock.Content = $"{DateTime.Now:dddd dd/MM/yy} : {DateTime.Now:t}";
             clock = new DispatcherTimer
             {
-                Interval = new TimeSpan(0, 0, 1)
+                Interval = new TimeSpan(0, 0, 0, 30)
             };
             clock.Tick += (e, o) =>
             {
@@ -79,7 +54,7 @@ namespace Bookkeeping_manager.Windows
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new Home(Events));
+            MainFrame.Navigate(new Home());
         }
 
         private void ClientOverviewButton_Click(object sender, RoutedEventArgs e)
